@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 13:55:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/21 15:34:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/22 13:57:35 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -33,7 +33,7 @@ int main(void)
     hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
     hints.ai_socktype = SOCK_STREAM;
 
-    status = getaddrinfo("localhost", 0, &hints, &res);
+    status = getaddrinfo("google.com", 0, &hints, &res);
     if (status != 0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
