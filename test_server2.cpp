@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 09:18:39 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/22 14:48:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/22 17:13:34 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -135,5 +135,4 @@ void read_data_from_socket(int socket, fd_set *all_sockets, int fd_max, int serv
         printf("[%d] Got message: %s", socket, buffer);
         memset(&msg, '\0', sizeof msg);
     }
-    
 }
