@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 13:54:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/22 18:14:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/23 10:10:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -139,7 +139,7 @@ int main (void)
         {
             if (events[i].events  & (EPOLLRDHUP | EPOLLERR | EPOLLHUP))
             {
-                std::cout << "Ta a dar coco" << std::endl;
+                std::cout << "Page was hard refreshed" << std::endl;
                 close(events[i].data.fd);
             }
             else if(events[i].data.fd == server_socket)
