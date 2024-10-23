@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:46:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/23 12:06:04 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/23 14:34:59 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <fcntl.h>
-#include <sstream> 
+#include <sstream>
 
 #define PORT 8080
 #define MAX_EVENTS 128

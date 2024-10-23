@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/23 12:08:52 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/23 14:47:39 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -103,25 +103,41 @@ void accept_new_connection(int server_socket, int epoll_fd )
 
 void read_data_from_socket(int socket)
 {
+    std::string remainder = "";
     char buffer[BUFSIZ];
-    std::string msg = "A puta co pariu";
     int bytes_read;
+    
+    while (1)
+    {    
+        memset(&buffer, 0, sizeof buffer);
+        bytes_read = recv(socket, buffer, BUFSIZ, 0);
+        if (bytes_read <= 0)
+        {
+            break;
+        }
+        else
+        {
+            std::string input(buffer, buffer + bytes_read);
+            input = remainder + input;
+            remainder = input;
+        }
+    }
+
+    std::cout << socket << " Got message: " << remainder;
+    
+    reply(socket, remainder);
+}
+
+void reply(int socket, std::string received)
+{
+    
     std::string bufferM;
-    memset(&buffer, 0, sizeof buffer);
-    bytes_read = recv(socket, buffer, BUFSIZ, 0);
-    if (bytes_read <= 0)
-    {
-        close(socket);
-    }
-    else
-    {
-        std::cout << socket << " Got message: " << buffer;
-    }
+    std::string msg = "A puta co pariu";
     std::stringstream stream;
     std::string out;
     stream << msg.size();
     stream >> out;
+    
     bufferM = "HTTP/1.1 200 OK\nContent-length: " + out + "\nContent-Type: text/html" + "\n\n" + msg;
     send(socket, bufferM.c_str(), bufferM.size(), 0);
-    
 }
