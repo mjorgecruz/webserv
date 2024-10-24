@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/23 14:47:39 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/24 18:06:55 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -120,6 +120,9 @@ void read_data_from_socket(int socket)
             std::string input(buffer, buffer + bytes_read);
             input = remainder + input;
             remainder = input;
+            if (bytes_read < BUFSIZ)
+                break;
+            std::cout << remainder << std::endl;
         }
     }
 
@@ -130,14 +133,15 @@ void read_data_from_socket(int socket)
 
 void reply(int socket, std::string received)
 {
-    
+    (void) received;
     std::string bufferM;
     std::string msg = "A puta co pariu";
     std::stringstream stream;
     std::string out;
+    std::cout << msg.size() <<std::endl;
     stream << msg.size();
-    stream >> out;
-    
-    bufferM = "HTTP/1.1 200 OK\nContent-length: " + out + "\nContent-Type: text/html" + "\n\n" + msg;
+    out = stream.str();
+    bufferM = "HTTP/1.1 200 OK\r\nContent-length: " + out + "\r\nContent-Type: text/html\r\n\r\n" + msg;
+    std::cout << "lelz" <<std::endl;
     send(socket, bufferM.c_str(), bufferM.size(), 0);
 }

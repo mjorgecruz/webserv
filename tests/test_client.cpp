@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/21 13:55:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/22 13:57:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/24 15:47:13 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,44 +23,44 @@
 int main(void)
 {
 
-    struct addrinfo hints; // Hints or "filters" for getaddrinfo()
-    struct addrinfo *res;  // Result of getaddrinfo()
-    struct addrinfo *r;    // Pointer to iterate on results
-    int status; // Return value of getaddrinfo()
-    char buffer[INET6_ADDRSTRLEN]; // Buffer to convert IP address
+    // struct addrinfo hints; // Hints or "filters" for getaddrinfo()
+    // struct addrinfo *res;  // Result of getaddrinfo()
+    // struct addrinfo *r;    // Pointer to iterate on results
+    //int status; // Return value of getaddrinfo()
+    //char buffer[INET6_ADDRSTRLEN]; // Buffer to convert IP address
 
-    memset(&hints, 0, sizeof(hints)); // Initialize the structure
-    hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
-    hints.ai_socktype = SOCK_STREAM;
+    // memset(&hints, 0, sizeof(hints)); // Initialize the structure
+    // hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
+    // hints.ai_socktype = SOCK_STREAM;
 
-    status = getaddrinfo("google.com", 0, &hints, &res);
-    if (status != 0)
-    {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
-        return (2);
-    }
+    // status = getaddrinfo("google.com", 0, &hints, &res);
+    // if (status != 0)
+    // {
+    //     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+    //     return (2);
+    // }
 
-    r = res;
-    while (r != NULL) {
-        void *addr; // Pointer to IP address
-        if (r->ai_family == AF_INET) { // IPv4
-            // we need to cast the address as a sockaddr_in structure to
-            // get the IP address, since ai_addr might be either
-            // sockaddr_in (IPv4) or sockaddr_in6 (IPv6)
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)r->ai_addr;
-            // Convert the integer into a legible IP address string
-            inet_ntop(r->ai_family, &(ipv4->sin_addr), buffer, sizeof buffer);
-            printf("IPv4: %s\n", buffer);
-        } else { // IPv6
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)r->ai_addr;
-            inet_ntop(r->ai_family, &(ipv6->sin6_addr), buffer, sizeof buffer);
-            printf("IPv6: %s\n", buffer);
-        }
-        r = r->ai_next; // Next address in getaddrinfo()'s results
-    }
-    freeaddrinfo(res);
+    // r = res;
+    // while (r != NULL) {
+    //     void *addr; // Pointer to IP address
+    //     if (r->ai_family == AF_INET) { // IPv4
+    //         // we need to cast the address as a sockaddr_in structure to
+    //         // get the IP address, since ai_addr might be either
+    //         // sockaddr_in (IPv4) or sockaddr_in6 (IPv6)
+    //         struct sockaddr_in *ipv4 = (struct sockaddr_in *)r->ai_addr;
+    //         // Convert the integer into a legible IP address string
+    //         inet_ntop(r->ai_family, &(ipv4->sin_addr), buffer, sizeof buffer);
+    //         printf("IPv4: %s\n", buffer);
+    //     } else { // IPv6
+    //         struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)r->ai_addr;
+    //         inet_ntop(r->ai_family, &(ipv6->sin6_addr), buffer, sizeof buffer);
+    //         printf("IPv6: %s\n", buffer);
+    //     }
+    //     r = r->ai_next; // Next address in getaddrinfo()'s results
+    // }
+    // freeaddrinfo(res);
     
-    int clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (clientSocket == -1 )
     {
         std::cerr << "Error at socket() " << errno << std::endl;
@@ -70,7 +70,7 @@ int main(void)
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(8080);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_addr.s_addr = inet_addr("10.11.4.2");
 
     if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) != 0 )
     {

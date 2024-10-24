@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/23 16:29:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/24 15:49:50 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -27,7 +27,7 @@ class HttpRequest
         void setRequest(std::string req);
         void fillReqProperties();
             
-}
+};
 
 
 #endif
