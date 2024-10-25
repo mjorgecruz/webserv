@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 10:10:54 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/25 14:50:07 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,5 +24,6 @@ Sockets::~Sockets()
 
 void Sockets::addVectorSocket(int socket, sockaddr_in &sa)
 {
-    
+    (void) socket;
+    (void) sa;
 }

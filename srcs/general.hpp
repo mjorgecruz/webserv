@@ -1,30 +1,32 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Servers.hpp                                        :+:      :+:    :+:   */
+/*   general.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 14:47:50 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/25 14:44:49 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef SERVERS_HPP
-# define SERVERS_HPP
+
+#ifndef GENERAL_HPP
+# define GENERAL_HPP
 
 #include "webserv.hpp"
+#include "Servers.hpp"
+#include "Sockets.hpp"
+#include "Configs.hpp"
+#include "HttpRequest.hpp"
 
-class Servers
-{
-    private:
-        std::map<int, std::string> listServers;
-    
-    public:
-        Servers( void );
-        ~Servers( void );
-        void addPairServer( int port, std::string addr );
-        void configServers( void );
-};
+
+int create_server_socket( void );
+void serverings(int server_socket);
+void accept_new_connection(int server_socket, int epoll_fd );
+void read_data_from_socket(int socket);
+void reply(int socket, std::string received);
+
 
 #endif
+

@@ -6,24 +6,21 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 10:50:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/25 14:49:42 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#include "webserv.hpp"
-#include "Configs.hpp"
-#include "Sockets.hpp"
-#include "Servers.hpp"
+#include "general.hpp"
 
 int main (void)
 {
-    Configs configs;
-    Servers servers;
-    Sockets sockets;
+    // Configs configs;
+    // Servers servers;
+    // Sockets sockets;
     
     
-    servers.configServers(configs);
-    sockets.configSockets(servers);
+    // servers.configServers(configs);
+    // sockets.configSockets(servers);
     
     int server_socket;
     

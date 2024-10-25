@@ -6,11 +6,12 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 10:05:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/25 15:06:38 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#include "webserv.hpp"
+#include "general.hpp"
+#include <string>
 
 int create_server_socket( void )
 {
@@ -103,6 +104,7 @@ void accept_new_connection(int server_socket, int epoll_fd )
 
 void read_data_from_socket(int socket)
 {
+    HttpRequest request;
     std::string remainder = "";
     char buffer[BUFSIZ];
     int bytes_read;
@@ -125,7 +127,10 @@ void read_data_from_socket(int socket)
             std::cout << remainder << std::endl;
         }
     }
-
+    remainder = remainder + "\0";
+    request.setRequest(remainder);
+    request.fillReqProperties();
+    
     std::cout << socket << " Got message: " << remainder;
     
     reply(socket, remainder);
