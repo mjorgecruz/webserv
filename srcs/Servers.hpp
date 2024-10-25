@@ -1,34 +1,30 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpRequest.hpp                                    :+:      :+:    :+:   */
+/*   Servers.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 09:53:21 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/25 10:38:42 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef HTTPREQUEST_HPP
-# define HTTPREQUEST_HPP
+#ifndef SERVERS_HPP
+# define SERVERS_HPP
 
 #include "webserv.hpp"
-#include <map>
 
-class HttpRequest
+class Servers
 {
     private:
-        std::string request;
-        std::string requestType;
-        std::map<std::string, std::string> reqProperties;
-        
+        std::vector<int, std::string> listServers;
+    
     public:
-        HttpRequest();
-        ~HttpRequest();
-        void setRequest(std::string req);
-        void fillReqProperties();
+        Servers( void );
+        ~Servers( void );
+        void addPairServer( int port, std::string addr );
+        void configServers( void );
 };
-
 
 #endif

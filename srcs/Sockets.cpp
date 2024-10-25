@@ -1,34 +1,28 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpRequest.hpp                                    :+:      :+:    :+:   */
+/*   Sockets.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 09:53:21 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/25 10:10:54 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef HTTPREQUEST_HPP
-# define HTTPREQUEST_HPP
+#include "Sockets.hpp"
 
-#include "webserv.hpp"
-#include <map>
-
-class HttpRequest
+Sockets::Sockets()
 {
-    private:
-        std::string request;
-        std::string requestType;
-        std::map<std::string, std::string> reqProperties;
-        
-    public:
-        HttpRequest();
-        ~HttpRequest();
-        void setRequest(std::string req);
-        void fillReqProperties();
-};
+    std::cout << "Sockets created" <<std::endl;
+}
 
+Sockets::~Sockets()
+{
+    std::cout << "Sockets destroyed" << std::endl;
+}
 
-#endif
+void Sockets::addVectorSocket(int socket, sockaddr_in &sa)
+{
+    
+}
