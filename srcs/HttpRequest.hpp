@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 09:53:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:41:42 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
@@ -28,6 +28,8 @@ class HttpRequest
         ~HttpRequest();
         void setRequest(std::string req);
         void fillReqProperties();
+        std::string getRequest();
+        std::string searchProperty(std::string property);
 };
 
 

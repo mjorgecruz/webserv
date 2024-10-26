@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 15:09:23 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:46:00 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 
@@ -39,7 +39,7 @@ void HttpRequest::fillReqProperties()
         if (reqProperties.find(partial_line) == reqProperties.end())
         {
             prop = partial_line;
-            if (!getline(X, partial_line, ':'))
+            if (!getline(X, partial_line))
                 break;
             std::pair<std::string, std::string> properties = std::make_pair(prop, partial_line);
             reqProperties.insert(properties);
@@ -50,4 +50,17 @@ void HttpRequest::fillReqProperties()
     {
         std::cout << it->first << " : " << it->second << std::endl;
     }
+}
+
+std::string HttpRequest::getRequest()
+{
+    return request;
+}
+
+std::string HttpRequest::searchProperty(std::string property)
+{
+    std::map<std::string, std::string>::iterator it = reqProperties.find(property);
+    if (it != reqProperties.end())
+        return it->second;
+    return "undefined";
 }

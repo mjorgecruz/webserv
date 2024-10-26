@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/26 12:04:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:40:24 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ int create_server_socket( void )
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         return (-1);
-    return (socket_fd);
     sockets.addVectorSocket(socket_fd, sa);
+    return (socket_fd);
 }
 
 void serverings(int server_socket)
@@ -70,9 +70,10 @@ void serverings(int server_socket)
             {
                 accept_new_connection(server_socket, epoll_fd);
             }
-            else if (events[i].events & (EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP))
+            else if (events[i].events & (EPOLLIN | EPOLLET ))
             {
                 read_data_from_socket(events[i].data.fd);
+                close(events[i].data.fd);
             }
 		}
     }
@@ -87,10 +88,10 @@ void accept_new_connection(int server_socket, int epoll_fd )
 {
     int client_fd;
     sockaddr client;
-    socklen_t length;
+    socklen_t length = 0;
     struct epoll_event event;
 
-    std::cout<< "lala" << std::endl;
+    memset(&client, 0, sizeof(client));
     client_fd = accept(server_socket, &client, &length);
     if (client_fd == -1)
     {
@@ -114,7 +115,7 @@ void read_data_from_socket(int socket)
     {    
         memset(&buffer, 0, sizeof buffer);
         bytes_read = recv(socket, buffer, BUFSIZ, 0);
-        if (bytes_read <= 0)
+        if (bytes_read < 0)
         {
             break;
         }
@@ -125,21 +126,19 @@ void read_data_from_socket(int socket)
             remainder = input;
             if (bytes_read < BUFSIZ)
                 break;
-            std::cout << remainder << std::endl;
         }
     }
     remainder = remainder + "\0";
     request.setRequest(remainder);
     request.fillReqProperties();
     
-    //std::cout << socket << " Got message: " << remainder;
-    
-    reply(socket, remainder);
+    reply(socket, request);
 }
 
-void reply(int socket, std::string received)
+void reply(int socket, HttpRequest received)
 {
     (void) received;
+    
     std::string bufferM;
     std::string msg = "A puta co pariu";
     std::stringstream stream;
@@ -148,6 +147,5 @@ void reply(int socket, std::string received)
     stream << msg.size();
     out = stream.str();
     bufferM = "HTTP/1.1 200 OK\r\nContent-length: " + out + "\r\nContent-Type: text/html\r\n\r\n" + msg;
-    std::cout << "lelz" <<std::endl;
     send(socket, bufferM.c_str(), bufferM.size(), 0);
 }
