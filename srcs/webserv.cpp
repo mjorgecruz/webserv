@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 15:06:38 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/26 12:04:41 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "general.hpp"
 #include <string>
@@ -31,6 +31,7 @@ int create_server_socket( void )
     if (status == -1)
         return (-1);
     return (socket_fd);
+    sockets.addVectorSocket(socket_fd, sa);
 }
 
 void serverings(int server_socket)
@@ -131,7 +132,7 @@ void read_data_from_socket(int socket)
     request.setRequest(remainder);
     request.fillReqProperties();
     
-    std::cout << socket << " Got message: " << remainder;
+    //std::cout << socket << " Got message: " << remainder;
     
     reply(socket, remainder);
 }

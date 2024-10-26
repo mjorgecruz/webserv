@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -6,21 +6,37 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/25 14:49:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/26 11:51:17 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "general.hpp"
 
+Sockets sockets;
+
+void sigint_handler(int signal)
+{
+    if (signal == SIGINT)
+    {
+        printf("\nIntercepted SIGINT!\n");
+        sockets.closeAllSockets();
+        exit(0);
+    }
+}
+
+
 int main (void)
 {
+    
     // Configs configs;
     // Servers servers;
-    // Sockets sockets;
+    signal(SIGINT, sigint_handler);
     
     
     // servers.configServers(configs);
     // sockets.configSockets(servers);
+    
+
     
     int server_socket;
     
