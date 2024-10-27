@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:46:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/26 18:14:55 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/27 18:24:37 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 #include <csignal>
+#include <algorithm>
 
 #define PORT 8080
 #define MAX_EVENTS 128

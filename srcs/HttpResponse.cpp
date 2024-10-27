@@ -1,33 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   general.hpp                                        :+:      :+:    :+:   */
+/*   HttpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/26 23:25:49 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/27 19:07:35 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HttpResponse.hpp"
 
-#ifndef GENERAL_HPP
-# define GENERAL_HPP
+HttpResponse::HttpResponse()
+{}
 
-#include "webserv.hpp"
-#include "Servers.hpp"
-#include "Sockets.hpp"
-#include "Configs.hpp"
-#include "HttpRequest.hpp"
-
-extern Sockets sockets;
-
-int create_server_socket( void );
-void serverings(int server_socket);
-void accept_new_connection(int server_socket, int epoll_fd );
-void read_data_from_socket(int socket);
-void reply(int socket, HttpRequest received);
+HttpResponse::~HttpResponse()
+{}
 
 
-#endif
 
