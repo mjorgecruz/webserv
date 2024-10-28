@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Configs.cpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 15:11:21 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 16:15:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 22:36:02 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Configs.hpp"
 
@@ -41,7 +41,7 @@ void Configs::addConfig(t_config &config)
 
 t_config Configs::operator[](int num) const
 {
-    if (num < configs.size())
+    if (num < (int) configs.size())
         return this->configs[num];
     else
         throw(std::exception());

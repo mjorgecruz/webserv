@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 13:44:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 22:24:00 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Server.hpp"
 
@@ -54,7 +54,7 @@ Server::Server(int port){
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_addr.s_addr = INADDR_ANY;//inet_addr("10.11.4.4");
-    sa.sin_port = htons(PORT);
+    sa.sin_port = htons(port);
 
     socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
     if( socket_fd == -1)
@@ -78,7 +78,7 @@ Server::Server(int port, std::string host){
     memset(&sa, 0, sizeof(sa));
     sa.sin_family = AF_INET;
     sa.sin_addr.s_addr = inet_addr(host.c_str());
-    sa.sin_port = htons(PORT);
+    sa.sin_port = htons(port);
 
     socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
     if( socket_fd == -1)
@@ -86,6 +86,13 @@ Server::Server(int port, std::string host){
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         throw(std::exception());
+
+    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+    if (listen(socket_fd, SOMAXCONN) == -1)
+    {
+        std::cerr << "[E] listen failed\n";
+        throw(std::exception());
+    }
     
     _serverFd = socket_fd;
     _port = sa.sin_port;
