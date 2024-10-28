@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 15:11:21 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 15:30:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:15:03 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -39,7 +39,7 @@ void Configs::addConfig(t_config &config)
     configs.push_back(config);
 }
 
-t_config Configs::operator[](int num)
+t_config Configs::operator[](int num) const
 {
     if (num < configs.size())
         return this->configs[num];

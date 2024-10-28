@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 15:46:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 16:20:16 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -25,11 +25,8 @@ Http::Http( void )
 
 Http::Http( Configs const &config)
 {
-    size_t size = config.configSize();
-    for (int i = 0; i < size; i++)
-    {
-        Server server()
-    }
+
+    addServersToList(config);
 }
 
 Http::~Http( void )
@@ -50,5 +47,15 @@ void Http::addEpollServer( Server server )
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, event.data.fd, &event) == -1)
     {
         throw(std::exception());
+    }
+}
+
+void Http::addServersToList(Configs const & config)
+{
+    size_t size = config.configSize();
+    for (int i = 0; i < size; i++)
+    {
+        Server server(config[i].ports, config[i].host);
+        _listServers.push_back(server);
     }
 }

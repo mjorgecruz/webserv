@@ -26,7 +26,7 @@ class Configs
         ~Configs();
         void setConfigs(std::string path);
         void addConfig(t_config &configs);
-        t_config operator[](int num);
+        t_config operator[](int num) const;
         size_t configSize() const;
 };
 
