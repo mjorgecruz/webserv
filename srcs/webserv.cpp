@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
@@ -6,33 +6,13 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/27 18:33:16 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:59:46 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "general.hpp"
 #include <string>
 
-int create_server_socket( void )
-{
-    struct sockaddr_in sa;
-    int socket_fd;
-    int status;
-
-    memset(&sa, 0, sizeof(sa));
-    sa.sin_family = AF_INET;
-    sa.sin_addr.s_addr = INADDR_ANY;//inet_addr("10.11.4.4");
-    sa.sin_port = htons(PORT);
-
-    socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
-    if( socket_fd == -1)
-        return(-1);
-    status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
-    if (status == -1)
-        return (-1);
-    sockets.addVectorSocket(socket_fd, sa);
-    return (socket_fd);
-}
 
 void serverings(int server_socket)
 {
@@ -49,6 +29,7 @@ void serverings(int server_socket)
 	}
     event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
 	event.data.fd = server_socket;
+    
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &event) == -1)
     {
         std::cerr << "[E] epoll_ctl failed\n";

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/26 11:51:17 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 11:52:54 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "general.hpp"
 
@@ -25,11 +25,16 @@ void sigint_handler(int signal)
 }
 
 
-int main (void)
+int main (int ac, char **av)
 {
     
-    // Configs configs;
-    // Servers servers;
+    if ( ac != 2)
+        std::cerr << "Error while starting server:\nNo config file";
+    
+     
+    
+    Configs configs;
+    Http serversList;
     signal(SIGINT, sigint_handler);
     
     
@@ -38,9 +43,8 @@ int main (void)
     
 
     
-    int server_socket;
+    int server_socket ;
     
-    server_socket = create_server_socket();
     if (server_socket == -1)
         return (1);
 	
