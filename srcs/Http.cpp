@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 15:31:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:46:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,7 +28,7 @@ Http::Http( Configs const &config)
     size_t size = config.configSize();
     for (int i = 0; i < size; i++)
     {
-        
+        Server server()
     }
 }
 
