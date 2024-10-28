@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:47:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 13:44:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -101,4 +101,9 @@ void Server::setHostname(std::string hostname)
 const std::vector<std::string> & Server::getHostnames( void )
 {
     return _hostnames;
+}
+
+const int & Server::getServerFd( void )
+{
+    return _serverFd;
 }

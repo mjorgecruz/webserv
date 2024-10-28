@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:30 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:48:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 13:43:23 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -34,6 +34,9 @@ class Server
         Server(int port, std::string host);
         void setHostname(std::string hostname);
         const std::vector<std::string> &getHostnames( void );
+        
+        const int &getServerFd();
+        
         
 
 };

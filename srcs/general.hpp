@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:52:10 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 14:19:46 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -20,7 +20,7 @@
 #include "Configs.hpp"
 #include "HttpRequest.hpp"
 
-
+extern int g_signal;
 void serverings(int server_socket);
 void accept_new_connection(int server_socket, int epoll_fd );
 void read_data_from_socket(int socket);

@@ -6,21 +6,20 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:52:54 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/28 15:21:58 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "general.hpp"
 
-Sockets sockets;
+int g_signal = 0;
 
 void sigint_handler(int signal)
 {
     if (signal == SIGINT)
     {
         printf("\nIntercepted SIGINT!\n");
-        sockets.closeAllSockets();
-        exit(0);
+        g_signal = 1;
     }
 }
 
@@ -32,10 +31,12 @@ int main (int ac, char **av)
         std::cerr << "Error while starting server:\nNo config file";
     
      
+    signal(SIGINT, sigint_handler);
     
     Configs configs;
-    Http serversList;
-    signal(SIGINT, sigint_handler);
+    configs.setConfigs("");
+    
+    Http webservs(configs);
     
     
     // servers.configServers(configs);
