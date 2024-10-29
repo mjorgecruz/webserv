@@ -13,12 +13,9 @@ class Server : public Socket
         std::string _host;
         int _ports;
         std::vector<std::string> _hostname;
-
         std::vector<std::string> _index;
         std::map<int, std::string> _errorPages;
-
         std::map<std::string, Location *> _locations;
-
         int _maxBodySize;
     
         Server(const Server & src);
@@ -34,11 +31,9 @@ class Server : public Socket
         std::string getHost();
         int getPorts();
         std::vector<std::string> getHostname();
-
         std::vector<std::string> getIndex();
         std::map<int, std::string> getErrorPages();
-
-         std::map<std::string, Location *> getLocations();
+        std::map<std::string, Location *> getLocations();
 
         void setHost(std::string host);
         void setPorts(int port);

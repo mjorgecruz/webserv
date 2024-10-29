@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 16:23:13 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:33:33 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "general.hpp"
 
@@ -30,12 +30,10 @@ int main (int ac, char **av)
     if (ac != 2)
         std::cerr << "Error while starting server:\nNo config file";
     signal(SIGINT, sigint_handler);
-    // HttpConfig()
-    HttpConfig httpConfigs;
-    Server *configs = new (Server);
-    // configs->setConfigs("");
-    // httpConfigs.addToServerConfigs(configs);
+
     
+    Http http;
+    http.webservInitializer("");
     
     // Http webservs(httpConfigs);
 

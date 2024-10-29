@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:24:17 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:33:07 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -19,6 +19,21 @@ Http::Http( void )
 	if (epoll_fd == -1) {
         throw(std::exception());
 	}
+}
+
+void Http::webservInitializer(std::string confPath)
+{
+    //ler doc
+
+    Server *test = new (Server);
+    test->setConfigs("");
+    
+    this->addServerToList(test);
+}
+
+void Http::addServerToList(Server *server)
+{
+    _listServers.push_back(server);
 }
 
 Http::Http( HttpConfig const &config)
@@ -41,7 +56,7 @@ void Http::addEpollServer( Server &server )
 {
     struct epoll_event event;
     event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
-	event.data.fd = server.getServerFd();
+	event.data.fd = server.getSocketFd();
     
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, event.data.fd, &event) == -1)
     {

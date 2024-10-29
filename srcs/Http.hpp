@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:24:36 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:32:14 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
@@ -25,13 +25,15 @@ class Http
 
         Http(const Http &src);
         Http &operator=(const Http & src);
-        Http( void );
     
     public:
+        Http( void );
         ~Http( void );
-        Http(const HttpConfig &config);
+
+        void webservInitializer(std::string confPath);
+        void addServerToList(Server *server);
+        
         void addEpollServer( Server &server );
-        void addServersToList(HttpConfig const & config);
         Server *operator[](int num);
         int listServersSize() const;
         void runApplication();

@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 16:30:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 19:19:56 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Socket.hpp"
 
@@ -67,4 +67,14 @@ void Socket::createSocket(int port, std::string host){
     
     _socketFd = socket_fd;
     _addr = sa;
+}
+
+int Socket::getSocketFd() const
+{
+    return _socketFd;
+}
+
+const sockaddr_in Socket::getAddr() const
+{
+    return _addr;
 }
