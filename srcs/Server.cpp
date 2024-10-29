@@ -23,7 +23,7 @@ void Server::setConfigs(std::string path)
 {
     if (path.empty())
     {
-        _host = "10.11.4.4";
+        _host = "127.0.0.1";
         _errorPages[404] = "404.html";
         _index.push_back("index.html");
         _ports = 8080;
@@ -92,5 +92,6 @@ void Server::setErrorPages(std::map<int, std::string> errorPages)
 
 void Server::addLocations(std::string path, Location *locations)
 {
-    
+    (void) path;
+    (void) locations;
 }

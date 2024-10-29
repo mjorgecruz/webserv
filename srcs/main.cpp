@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 19:33:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 21:31:31 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int main (int ac, char **av)
     
     Http http;
     http.webservInitializer("");
-    
+    http.runApplication();
     // Http webservs(httpConfigs);
 
     // webservs.runApplication();
