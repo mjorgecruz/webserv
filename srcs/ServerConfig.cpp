@@ -1,25 +1,25 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Configs.cpp                                        :+:      :+:    :+:   */
+/*   ServerConfig.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 15:11:21 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 09:51:04 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 13:33:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#include "Configs.hpp"
+#include "ServerConfig.hpp"
 
-Configs::Configs()
+ServerConfig::ServerConfig()
 {}
-Configs::~Configs()
+ServerConfig::~ServerConfig()
 {
     
 }
 
-void Configs::setConfigs(std::string path)
+void ServerConfig::setConfigs(std::string path)
 {
     if (path.empty())
     {
@@ -34,12 +34,12 @@ void Configs::setConfigs(std::string path)
     }       
 }
 
-void Configs::addConfig(t_config *config)
+void ServerConfig::addConfig(t_config *config)
 {
     configs.push_back(config);
 }
 
-t_config *Configs::operator[](int num) const
+t_config *ServerConfig::operator[](int num) const
 {
     if (num < (int) configs.size())
         return this->configs[num];
@@ -47,7 +47,7 @@ t_config *Configs::operator[](int num) const
         throw(std::exception());
 }
 
-size_t Configs::configSize() const
+size_t ServerConfig::configSize() const
 {
     return configs.size();
 }

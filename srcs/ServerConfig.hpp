@@ -1,6 +1,6 @@
 
-#ifndef CONFIGS_HPP
-# define CONFIGS_HPP
+#ifndef SERVERCONFIG_HPP
+# define SERVERCONFIG_HPP
 
 #include "webserv.hpp"
 
@@ -12,20 +12,21 @@ typedef struct s_config
 
     std::vector<std::string> index;
     std::string errorPage;
+    std::map <std::string, std::string> locations;
 }   t_config;
 
-class Configs
+class ServerConfig
 {
     private:
         std::vector<t_config *> configs;
     
-        Configs(const Configs & src);
-        Configs &operator=(const Configs &src);
+        ServerConfig(const ServerConfig & src);
+        ServerConfig &operator=(const ServerConfig &src);
     public:
-        Configs();
-        ~Configs();
+        ServerConfig();
+        ~ServerConfig();
         void setConfigs(std::string path);
-        void addConfig(t_config *configs);
+        void addConfig(t_config *ServerConfig);
         t_config *operator[](int num) const;
         size_t configSize() const;
 };

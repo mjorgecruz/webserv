@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 10:23:34 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:58:51 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -14,56 +14,56 @@
 #include <string>
 
 
-void serverings(int server_socket)
-{
-    int event_count;
-    int i;
+// void serverings(int server_socket)
+// {
+//     int event_count;
+//     int i;
     
-    struct epoll_event event;
-    struct epoll_event events[MAX_EVENTS];
-	int epoll_fd = epoll_create(1);
+//     struct epoll_event event;
+//     struct epoll_event events[MAX_EVENTS];
+// 	int epoll_fd = epoll_create(1);
 
-	if (epoll_fd == -1) {
-		fprintf(stderr, "Failed to create epoll file descriptor\n");
-		return;
-	}
-    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
-	event.data.fd = server_socket;
+// 	if (epoll_fd == -1) {
+// 		fprintf(stderr, "Failed to create epoll file descriptor\n");
+// 		return;
+// 	}
+//     event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
+// 	event.data.fd = server_socket;
     
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &event) == -1)
-    {
-        std::cerr << "[E] epoll_ctl failed\n";
-        return;
-    }
+//     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &event) == -1)
+//     {
+//         std::cerr << "[E] epoll_ctl failed\n";
+//         return;
+//     }
 
-    while (true)
-    {
-        event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 30000);
+//     while (true)
+//     {
+//         event_count = epoll_wait(epoll_fd, events, MAX_EVENTS, 30000);
         
-        for (i = 0; i < event_count; i++) 
-        {
-            if (events[i].events  & (EPOLLRDHUP | EPOLLERR | EPOLLHUP))
-            {
-                std::cout << "Page was hard refreshed" << std::endl;
-                close(events[i].data.fd);
-            }
-            else if(events[i].data.fd == server_socket)
-            {
-                accept_new_connection(server_socket, epoll_fd);
-            }
-            else if (events[i].events & (EPOLLIN | EPOLLET ))
-            {
-                read_data_from_socket(events[i].data.fd);
-                close(events[i].data.fd);
-            }
-		}
-    }
+//         for (i = 0; i < event_count; i++) 
+//         {
+//             if (events[i].events  & (EPOLLRDHUP | EPOLLERR | EPOLLHUP))
+//             {
+//                 std::cout << "Page was hard refreshed" << std::endl;
+//                 close(events[i].data.fd);
+//             }
+//             else if(events[i].data.fd == server_socket)
+//             {
+//                 accept_new_connection(server_socket, epoll_fd);
+//             }
+//             else if (events[i].events & (EPOLLIN | EPOLLET ))
+//             {
+//                 read_data_from_socket(events[i].data.fd);
+//                 close(events[i].data.fd);
+//             }
+// 		}
+//     }
 
-	if (close(epoll_fd)) {
-		fprintf(stderr, "Failed to close epoll file descriptor\n");
-		return;
-	}
-}
+// 	if (close(epoll_fd)) {
+// 		fprintf(stderr, "Failed to close epoll file descriptor\n");
+// 		return;
+// 	}
+// }
 
 void accept_new_connection(int server_socket, int epoll_fd )
 {
@@ -130,12 +130,12 @@ void reply(int socket, HttpRequest received)
     int fd;
     
     request >> type >> path >> httpVersion;
-        std::cout << path << std::endl;
         std::cout << received.getRequestType() << std::endl;
     if (path == "/") {
         path = "/index.html";
     }
     path = "files" + path;
+    std::cout << path << std::endl;
     try{
         size_t bytes_read;
         fd = open(path.c_str(), O_RDONLY);
