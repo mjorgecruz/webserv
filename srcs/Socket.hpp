@@ -1,35 +1,30 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   general.hpp                                        :+:      :+:    :+:   */
+/*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:28:31 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/25 09:52:30 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/29 15:54:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-
-#ifndef GENERAL_HPP
-# define GENERAL_HPP
-
-extern int g_signal;
+#pragma once
 
 #include "webserv.hpp"
-#include "Server.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
-#include "ServerConfig.hpp"
-#include "HttpConfig.hpp"
-#include "Http.hpp"
-#include "Location.hpp"
 
+class Socket
+{
+    private:
+        int _socketFd;
+        sockaddr_in _addr;
 
-void accept_new_connection(int server_socket, int epoll_fd );
-void read_data_from_socket(int socket);
-void reply(int socket, HttpRequest received);
-
-
-#endif
-
+        Socket(const Socket &src);
+        Socket & operator=(const Socket &src);
+    public:
+        Socket();
+        ~Socket();
+        void createSocket(int port, std::string host);
+        
+};

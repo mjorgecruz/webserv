@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 13:35:28 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:24:17 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,7 +21,7 @@ Http::Http( void )
 	}
 }
 
-Http::Http( ServerConfig const &config)
+Http::Http( HttpConfig const &config)
 {
 	_epollFd = epoll_create(1);
 
@@ -49,12 +49,12 @@ void Http::addEpollServer( Server &server )
     }
 }
 
-void Http::addServersToList(ServerConfig const & config)
+void Http::addServersToList(HttpConfig const & httpConfig)
 {
-    size_t size = config.configSize();
+    size_t size = httpConfig.configSize();
     for (size_t i = 0; i < size; i++)
     {
-        Server *server = new Server(config[i]->ports, config[i]->host);
+        Server *server = new Server(httpConfig[i]->getPorts(), httpConfig[i]->getHost());
         _listServers.push_back(server);
         addEpollServer( *server );
     }

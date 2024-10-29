@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 13:33:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:42:17 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -30,13 +30,14 @@ int main (int ac, char **av)
     if (ac != 2)
         std::cerr << "Error while starting server:\nNo config file";
     signal(SIGINT, sigint_handler);
+    // HttpConfig()
+    HttpConfig httpConfigs;
+    ServerConfig *configs = new (ServerConfig);
+    configs->setConfigs("");
+    httpConfigs.addToServerConfigs(configs);
     
-    ServerConfig configs;
-    configs.setConfigs("");
     
-    Http webservs(configs);
+    // Http webservs(httpConfigs);
 
-    webservs.runApplication();
-    for (size_t i = 0; i < configs.configSize(); i++) 
-        delete configs[i];
+    // webservs.runApplication();
 }

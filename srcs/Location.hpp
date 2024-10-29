@@ -1,30 +1,28 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HttpConfig.hpp                                     :+:      :+:    :+:   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:29:59 by masoares         ###   ########.fr       */
+/*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
+/*   Updated: 2024/10/29 13:55:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-#ifndef HTTPCONFIG_HPP
-# define HTTPCONFIG_HPP
+#pragma once
 
 #include "general.hpp"
 
-class HttpConfig
+class Location
 {
     private:
+        std::string path;
+        std::vector<std::string> index;
+        std::string root;
         
-        std::vector<ServerConfig *> _ServerConfigs;
-    
     public:
-        size_t configSize() const;
-        ServerConfig *operator[](int num) const;
-        void addToServerConfigs( ServerConfig * server);
+
+    
 };
 
-#endif

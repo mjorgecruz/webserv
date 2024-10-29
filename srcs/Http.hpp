@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 13:35:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 15:24:36 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -29,9 +29,9 @@ class Http
     
     public:
         ~Http( void );
-        Http(const ServerConfig &config);
+        Http(const HttpConfig &config);
         void addEpollServer( Server &server );
-        void addServersToList(ServerConfig const & config);
+        void addServersToList(HttpConfig const & config);
         Server *operator[](int num);
         int listServersSize() const;
         void runApplication();

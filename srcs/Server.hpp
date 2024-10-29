@@ -1,42 +1,44 @@
-/******************************************************************************/
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 09:52:30 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 11:30:57 by masoares         ###   ########.fr       */
-/*                                                                            */
-/******************************************************************************/
 
-#ifndef Server_HPP
-# define Server_HPP
+#ifndef SERVER_HPP
+# define SERVER_HPP
 
-#include "webserv.hpp"
+#include "general.hpp"
+#include "Location.hpp"
 
-class Server
+class Location;
+
+class Server : public Socket
 {
     private:
-        int _serverFd;
-        int _port;
-        std::string _host;
-        sockaddr_in _addr;
-        std::vector<std::string> _hostnames;
+        std::string host;
+        int ports;
+        std::vector<std::string> hostname;
 
-        Server(const Server &src);
-        Server & operator=(const Server &src);
-        Server();
+        std::vector<std::string> index;
+        std::map<int, std::string> errorPages;
+
+        std::vector<Location> locations;
+    
+        ServerConfig(const ServerConfig & src);
+        ServerConfig &operator=(const ServerConfig &src);
     public:
-        ~Server();
-        Server(int port);
-        Server(int port, std::string host);
-        void setHostname(std::string hostname);
-        const std::vector<std::string> &getHostnames( void );
+        ServerConfig();
+        ~ServerConfig();
+        void setConfigs(std::string path);
+        Location operator[](int num) const;
+        size_t locationsSize() const;
         
-        const int &getServerFd();
-        
+
+        std::string getHost();
+        int getPorts();
+        std::vector<std::string> getHostname();
+
+        std::vector<std::string> getIndex();
+        std::map<int, std::string> getErrorPages();
+
+        std::vector<Location> getLocations();
     
 };
+
 
 #endif
