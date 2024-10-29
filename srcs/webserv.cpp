@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 10:00:34 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:59:46 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:23:34 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -113,6 +113,7 @@ void read_data_from_socket(int socket)
     request.setRequest(remainder);
     request.fillReqProperties();
     request.defineMimeType();
+
     
     reply(socket, request);
 }
@@ -129,7 +130,8 @@ void reply(int socket, HttpRequest received)
     int fd;
     
     request >> type >> path >> httpVersion;
-    
+        std::cout << path << std::endl;
+        std::cout << received.getRequestType() << std::endl;
     if (path == "/") {
         path = "/index.html";
     }

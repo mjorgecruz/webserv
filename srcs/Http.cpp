@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 22:35:39 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 10:12:10 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -23,9 +23,9 @@ Http::Http( void )
 
 Http::Http( Configs const &config)
 {
-	int epoll_fd = epoll_create(1);
+	_epollFd = epoll_create(1);
 
-	if (epoll_fd == -1) {
+	if (_epollFd == -1) {
         throw(std::exception());
 	}
     addServersToList(config);
@@ -54,7 +54,7 @@ void Http::addServersToList(Configs const & config)
     size_t size = config.configSize();
     for (size_t i = 0; i < size; i++)
     {
-        Server *server = new Server(config[i].ports, config[i].host);
+        Server *server = new Server(config[i]->ports, config[i]->host);
         _listServers.push_back(server);
         addEpollServer( *server );
     }

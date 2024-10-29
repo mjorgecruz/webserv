@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Configs.cpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 15:11:21 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 22:36:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 09:51:04 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Configs.hpp"
 
@@ -23,23 +23,23 @@ void Configs::setConfigs(std::string path)
 {
     if (path.empty())
     {
-        t_config conf;
-        conf.host = "10.11.4.4";
-        conf.errorPage = "404.html";
-        conf.index.push_back("index.html");
-        conf.ports = 8080;
-        conf.hostname = "10.11.4.4";
+        t_config *conf = new t_config();
+        conf->host = "10.11.4.4";
+        conf->errorPage = "404.html";
+        conf->index.push_back("index.html");
+        conf->ports = 8080;
+        conf->hostname = "10.11.4.4";
 
         addConfig(conf);
     }       
 }
 
-void Configs::addConfig(t_config &config)
+void Configs::addConfig(t_config *config)
 {
     configs.push_back(config);
 }
 
-t_config Configs::operator[](int num) const
+t_config *Configs::operator[](int num) const
 {
     if (num < (int) configs.size())
         return this->configs[num];

@@ -17,7 +17,7 @@ typedef struct s_config
 class Configs
 {
     private:
-        std::vector<t_config> configs;
+        std::vector<t_config *> configs;
     
         Configs(const Configs & src);
         Configs &operator=(const Configs &src);
@@ -25,8 +25,8 @@ class Configs
         Configs();
         ~Configs();
         void setConfigs(std::string path);
-        void addConfig(t_config &configs);
-        t_config operator[](int num) const;
+        void addConfig(t_config *configs);
+        t_config *operator[](int num) const;
         size_t configSize() const;
 };
 
