@@ -1,7 +1,7 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ServerConfig.cpp                                   :+:      :+:    :+:   */
+/*   Server.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,68 +10,87 @@
 /*                                                                            */
 /******************************************************************************/
 
-#include "ServerConfig.hpp"
+#include "Server.hpp"
 
-ServerConfig::ServerConfig()
+Server::Server()
 {}
-ServerConfig::~ServerConfig()
+Server::~Server()
 {
     
 }
 
-void ServerConfig::setConfigs(std::string path)
+void Server::setConfigs(std::string path)
 {
     if (path.empty())
     {
-        host = "10.11.4.4";
-        errorPages[404] = "404.html";
-        index.push_back("index.html");
-        ports = 8080;
-        hostname.push_back("10.11.4.4");
-
-        
+        _host = "10.11.4.4";
+        _errorPages[404] = "404.html";
+        _index.push_back("index.html");
+        _ports = 8080;
+        _hostname.push_back("10.11.4.4");
     }       
 }
 
 
-Location ServerConfig::operator[](int num) const
+size_t Server::locationsSize() const
 {
-    if (num < (int) locations.size())
-        return this->locations[num];
-    else
-        throw(std::exception());
+    return _locations.size();
 }
 
-size_t ServerConfig::locationsSize() const
+std::string Server::getHost()
 {
-    return locations.size();
+    return _host;
 }
 
-std::string ServerConfig::getHost()
+int Server::getPorts()
 {
-    return host;
+    return _ports;    
 }
 
-int ServerConfig::getPorts()
+std::vector<std::string> Server::getHostname()
 {
-    return ports;    
+    return _hostname;
 }
 
-std::vector<std::string> ServerConfig::getHostname()
+std::vector<std::string> Server::getIndex()
 {
-    return hostname;
+    return _index;
+}
+std::map<int, std::string> Server::getErrorPages()
+{
+    return _errorPages;
 }
 
-std::vector<std::string> ServerConfig::getIndex()
+std::map<std::string, Location *> Server::getLocations()
 {
-    return index;
-}
-std::map<int, std::string> ServerConfig::getErrorPages()
-{
-    return errorPages;
+    return _locations;   
 }
 
-std::vector<Location> ServerConfig::getLocations()
+
+void Server::setHost(std::string host)
 {
-    return locations;   
+    _host = host;
+}
+
+void Server::setPorts(int port)
+{
+    _ports = port;
+}
+void Server::setHostname( std::vector<std::string> hostnames)
+{
+    _hostname = hostnames;
+}
+
+void Server::setIndex(std::vector<std::string> index)
+{
+    _index = index;
+}
+void Server::setErrorPages(std::map<int, std::string> errorPages)
+{
+    _errorPages = errorPages;
+}
+
+void Server::addLocations(std::string path, Location *locations)
+{
+    
 }

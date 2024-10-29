@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:55:06 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:30:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,11 +26,8 @@ Socket::Socket(const Socket &src)
 {
     if (this == &src)
         return;
-    _serverFd = src._serverFd;
-    _port = src._port;
-    _host = src._host;
+    _socketFd = src._socketFd;
     _addr = src._addr;
-    _hostnames = src._hostnames;
 }
 
         
@@ -38,11 +35,8 @@ Socket & Socket::operator=(const Socket &src)
 {
     if (this == &src)
         return *this;
-    _serverFd = src._serverFd;
-    _port = src._port;
-    _host = src._host;
+    _socketFd = src._socketFd;
     _addr = src._addr;
-    _hostnames = src._hostnames;
     return *this;
 }
 
@@ -73,14 +67,4 @@ void Socket::createSocket(int port, std::string host){
     
     _socketFd = socket_fd;
     _addr = sa;
-}
-
-void Socket::setHostname(std::string hostname)
-{
-    _hostnames.push_back(hostname);
-}
-
-const std::vector<std::string> & Socket::getHostnames( void )
-{
-    return _hostnames;
 }

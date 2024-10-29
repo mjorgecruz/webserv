@@ -10,20 +10,22 @@ class Location;
 class Server : public Socket
 {
     private:
-        std::string host;
-        int ports;
-        std::vector<std::string> hostname;
+        std::string _host;
+        int _ports;
+        std::vector<std::string> _hostname;
 
-        std::vector<std::string> index;
-        std::map<int, std::string> errorPages;
+        std::vector<std::string> _index;
+        std::map<int, std::string> _errorPages;
 
-        std::vector<Location> locations;
+        std::map<std::string, Location *> _locations;
+
+        int _maxBodySize;
     
-        ServerConfig(const ServerConfig & src);
-        ServerConfig &operator=(const ServerConfig &src);
+        Server(const Server & src);
+
     public:
-        ServerConfig();
-        ~ServerConfig();
+        Server();
+        ~Server();
         void setConfigs(std::string path);
         Location operator[](int num) const;
         size_t locationsSize() const;
@@ -36,8 +38,14 @@ class Server : public Socket
         std::vector<std::string> getIndex();
         std::map<int, std::string> getErrorPages();
 
-        std::vector<Location> getLocations();
-    
+         std::map<std::string, Location *> getLocations();
+
+        void setHost(std::string host);
+        void setPorts(int port);
+        void setHostname( std::vector<std::string> hostnames);
+        void setIndex(std::vector<std::string> index);
+        void setErrorPages(std::map<int, std::string> errorPages);
+        void addLocations(std::string path, Location *locations);
 };
 
 

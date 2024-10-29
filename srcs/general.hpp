@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 15:28:31 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/29 16:19:36 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,10 +17,10 @@
 extern int g_signal;
 
 #include "webserv.hpp"
+#include "Socket.hpp"
 #include "Server.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "ServerConfig.hpp"
 #include "HttpConfig.hpp"
 #include "Http.hpp"
 #include "Location.hpp"
