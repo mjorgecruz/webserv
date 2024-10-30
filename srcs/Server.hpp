@@ -42,6 +42,7 @@ class Server : public Socket
         void setErrorPages(std::map<int, std::string> errorPages);
         void addLocations(std::string path, Location *locations);
         void serverChecker(std::string &line, std::ifstream &file);
+        void serverKeywords(std::string key, std::string &line);
 };
 
 

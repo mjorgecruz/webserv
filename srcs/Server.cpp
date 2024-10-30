@@ -11,6 +11,7 @@
 /******************************************************************************/
 
 #include "Server.hpp"
+#include <fstream>
 
 Server::Server()
 {}
@@ -111,22 +112,63 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         return ;
     }
     std::string remaining;
-    getline(iss, remaining);
+    std::getline(iss, remaining);
+
     remaining.erase(0, remaining.find_first_not_of(" \t"));
-    if(remaining.empty())
+    
+    if (remaining != "{")
     {
-
+        while (std::getline(file, line))
+        {
+            line.erase(0, line.find_first_not_of(" \t"));
+            if (line == "{")
+            {
+                serverBracket = true;
+                break;
+            }
+            else if (!line.empty())
+            {
+                std::cout << "Expected: '{' , after 'server' \n";
+                throw (std::exception());
+            }
+        }
+    }
+    else
+    {
+        serverBracket = true;
     }
 
+    //while inside server brackets true iterates lines
 
-
-
-
-    while(&line)
+    while(std::getline(file, line))
     {
-        //check that "server" is the first word in the string and if there is anything else in the string it hhas to be a "{"
-        //if it found "{" set serverBracket as true
-        //if it is not server or there is any thing  other than white spaces or the "{" returns error
+        std::istringstream iss(line);
+        std::string keyword;
+        iss >> keyword;
+        //keyword case switch or map to uuse find com functions e argumentos
     }
-    return ;
+
 }
+
+/*
+void Server::serverKeywords(std::string key, std::string &line)
+{
+    //checks keyword parameters and atributes them
+
+    //servername
+    setHostname("");
+
+    //index 
+    setIndex("");
+
+    //port division and set defaults if not both present
+    setPorts(8080);
+    setHost("localhost");
+
+    //error_pages multiple ones allowed in the same line 
+    setErrorPages(404,"");
+
+    //locations
+    addLocations("");
+}
+*/

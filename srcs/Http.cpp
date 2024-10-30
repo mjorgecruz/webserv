@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 14:39:34 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/10/30 15:02:46 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ void Http::webservInitializer(std::string confPath)
         else
         {
             Server *server = new Server();
-            try{
-                server->serverChecker(line, file);
-                
+            try
+            {
+                server->serverChecker(line, file);    
             }
             catch (std::exception &e)
             {
@@ -58,7 +58,8 @@ void Http::webservInitializer(std::string confPath)
             }
         }
     }
-    file.close();  
+    file.close();
+
 /*
     (void) confPath;
     Server *test = new (Server);
