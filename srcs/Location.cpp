@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 09:31:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 09:53:46 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Location.hpp"
 
@@ -55,6 +55,11 @@ std::vector<std::string> Location::getIndex()
 std::string Location::getRoot()
 {
     return _root;
+}
+
+std::string Location::getCgiPath()
+{
+    return _cgiPath;
 }
 
 std::vector<std::string> Location::getAllowedMethods()
