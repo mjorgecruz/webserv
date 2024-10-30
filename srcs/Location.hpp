@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 09:54:03 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/10/30 09:57:11 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Location
         ~Location( void );
         void addIndex(std::string index);
         void setRoot(std::string root);
+        void setCgiPath(std::string cgiPath);
         void addAllowedMethods(std::string method);
         void addErrorPages(int errorNum, std::string error);
         void setRedirect(std::string redir);

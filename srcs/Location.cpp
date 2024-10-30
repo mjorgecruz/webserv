@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 09:53:46 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/10/30 10:16:04 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,9 @@ std::string Location::getRoot()
     return _root;
 }
 
-std::string Location::getCgiPath()
+void Location::setCgiPath(std::string cgiPath)
 {
-    return _cgiPath;
+    _cgiPath = cgiPath;
 }
 
 std::vector<std::string> Location::getAllowedMethods()

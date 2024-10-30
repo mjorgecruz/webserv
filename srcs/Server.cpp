@@ -95,3 +95,38 @@ void Server::addLocations(std::string path, Location *locations)
     (void) path;
     (void) locations;
 }
+
+void Server::serverChecker(std::string &line, std::ifstream &file)
+{
+    bool serverBracket = false;
+
+    std::istringstream iss(line);
+    std::string firstWord;
+    iss >> firstWord;
+
+    if  (firstWord != "server")
+    {
+        std::cout << "Server Error in ServerChecker\n";
+        throw(std::exception());
+        return ;
+    }
+    std::string remaining;
+    getline(iss, remaining);
+    remaining.erase(0, remaining.find_first_not_of(" \t"));
+    if(remaining.empty())
+    {
+
+    }
+
+
+
+
+
+    while(&line)
+    {
+        //check that "server" is the first word in the string and if there is anything else in the string it hhas to be a "{"
+        //if it found "{" set serverBracket as true
+        //if it is not server or there is any thing  other than white spaces or the "{" returns error
+    }
+    return ;
+}
