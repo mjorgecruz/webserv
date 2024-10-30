@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 13:55:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 08:59:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,12 +17,15 @@
 class Location
 {
     private:
-        std::string path;
-        std::vector<std::string> index;
-        std::string root;
+        std::vector<std::string> _index;
+        std::string _root;
+        std::vector<std::string> _allowedMethods;
+        std::map<int, std::string> _errorPages;
+        std::string _redirect;
+        bool _autoIndex;
         
     public:
-
+        //getters setters
     
 };
 
