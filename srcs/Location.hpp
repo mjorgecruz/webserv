@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 08:59:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 09:29:35 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -25,6 +25,22 @@ class Location
         bool _autoIndex;
         
     public:
+        Location( void );
+        ~Location( void );
+        void addIndex(std::string index);
+        void setRoot(std::string root);
+        void addAllowedMethods(std::string method);
+        void addErrorPages(int errorNum, std::string error);
+        void setRedirect(std::string redir);
+        void setAutoIndex(bool autoindex);
+        
+        std::vector<std::string> getIndex();
+        std::string getRoot();
+        std::vector<std::string> getAllowedMethods();
+        std::map<int, std::string> getErrorPages();
+        std::string getRedirect();
+        bool getAutoIndex();
+
         //getters setters
     
 };
