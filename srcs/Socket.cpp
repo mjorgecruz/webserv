@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 19:19:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:25:21 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Socket.hpp"
 
@@ -54,6 +54,9 @@ void Socket::createSocket(int port, std::string host){
     socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
     if( socket_fd == -1)
         throw(std::exception());
+    int opt = 1;
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+ 
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         throw(std::exception());

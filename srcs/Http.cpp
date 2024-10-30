@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 09:44:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 16:11:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -155,9 +155,52 @@ void Http::runApplication()
 	}
 }
 
+void Http::accept_new_connection(int server_socket, int epoll_fd )
+{
+    int client_fd;
+    sockaddr client;
+    socklen_t length = 0;
+    struct epoll_event event;
+
+    memset(&client, 0, sizeof(client));
+    client_fd = accept(server_socket, &client, &length);
+    if (client_fd == -1)
+    {
+        std::cout<< "fd negativo" << std::endl;
+        return;
+    }
+    event.data.fd = client_fd;
+    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
+    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event);
+    std::cout<< "Added: " << client_fd << std::endl;
+}
+
 void Http::read_data_from_socket(int socket)
 {
-    HttpRequest request;
+    struct sockaddr_in addr;
+    socklen_t len;
+    int serverNumber = 0;
+    int server_fd = 0;
+
+    //check the corresponding server
+    if (getsockname(socket, (sockaddr *) &addr, &len) == -1)
+        throw(std::exception());
+    int port = ntohs(addr.sin_port);
+    std::string address = inet_ntoa(addr.sin_addr);
+    std::cout << "ADDRESS : " << address << std::endl;
+    std::cout << "PORT : " << port << std::endl;
+    while (serverNumber < _listServers.size())
+    {
+        if (port == _listServers[serverNumber]->getPorts())
+        {
+            if (address == _listServers[serverNumber]->getHost())
+            {
+                server_fd = _listServers[serverNumber]->getSocketFd();
+                break;
+            }    
+        }
+    }
+    
     std::string remainder = "";
     char buffer[BUFSIZ];
     int bytes_read;
@@ -180,10 +223,59 @@ void Http::read_data_from_socket(int socket)
         }
     }
     remainder = remainder + "\0";
-    request.setRequest(remainder);
-    request.fillReqProperties();
-    request.defineMimeType();
+    _request.setRequest(remainder);
+    _request.fillReqProperties();
+    _request.defineMimeType();
+    _request.setClientFd(server_fd);
 
+    reply(socket, _request);
+}
+
+
+void Http::analyzeRequest(Server *server, int socket)
+{
+    std::string type;
+    std::string path;
+    std::string httpVersion;
+    std::istringstream request(_request.getRequestType());
+    request >> type >> path >> httpVersion;
+    std::map<std::string, Location *> possibleLocations = server->getLocations();
+    size_t locationNum = 0;
     
-    reply(socket, request);
+    //check version
+    if (httpVersion != "HTTP/1.1")
+        throw(std::exception());
+        
+    //define location
+    std::map<std::string, Location *>::iterator it = possibleLocations.begin();
+    while (it != possibleLocations.end()) 
+    {
+        if (*(path.cend() -1) == '/')
+        {
+            DIR * root;
+            root = opendir(((it->second)->getRoot() + path).c_str());
+            if (root != NULL)
+            {
+                
+            }
+            if (it->second->getAutoIndex())
+            {
+                dirent picas = readdir(root);
+                
+            }
+            
+        }    
+            //it is a path to directory
+        locationNum++;
+    }
+    
+    //check method
+    
+
+    //define connection type
+
+
+    //searchfile
+
+    //prepare reply
 }

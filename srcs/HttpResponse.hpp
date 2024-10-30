@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/28 11:52:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 16:31:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -18,16 +18,22 @@
 class HttpResponse
 {
     private:
-        std::string output;
-        std::vector<char> content;
+        int _status;
+        //content-length: 20994
+        //content-type: text/javascript
+        
+        std::string _header;
+        std::vector<char> _content;
         
     public:
         HttpResponse();
         ~HttpResponse();
-        void setOutput();
+        void setHeader();
         void setContent();
-        std::string getOutput();
+        std::string getHeader();
         std::string getContent();
+        
+        void sendRequest();
 };
 
 

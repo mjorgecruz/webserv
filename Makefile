@@ -135,6 +135,19 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/409.html
 	@echo "</html>" >> $(HOME)/html/409.html
 
+413: defaults
+    @echo "<!DOCTYPE html>" > $(HOME)/html/413.html
+    @echo "<html lang=\"en\">" >> $(HOME)/html/413.html
+    @echo "<head>" >> $(HOME)/html/413.html
+    @echo "	<meta charset=\"UTF-8\">" >> $(HOME)/html/413.html
+    @echo "	<title>Payload Too Large</title>" >> $(HOME)/html/413.html
+    @echo "</head>" >> $(HOME)/html/413.html
+    @echo "<body>" >> $(HOME)/html/413.html
+    @echo "	<h1>413 Payload Too Large</h1>" >> $(HOME)/html/413.html
+    @echo "	<p>The request entity is larger than the server is willing or able to process.</p>" >> $(HOME)/html/413.html
+    @echo "</body>" >> $(HOME)/html/413.html
+    @echo "</html>" >> $(HOME)/html/413.html
+
 500: defaults
 	@echo "<!DOCTYPE html>" > $(HOME)/html/500.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/500.html

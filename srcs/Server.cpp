@@ -26,6 +26,7 @@ Server::Server()
     addErrorPage(403, _root + "403.html");
     addErrorPage(404, _root + "404.html");
     addErrorPage(409, _root + "409.html");
+    addErrorPage(413, _root + "413.html");
     addErrorPage(500, _root + "500.html");
     addErrorPage(502, _root + "502.html");
     addErrorPage(503, _root + "503.html");
