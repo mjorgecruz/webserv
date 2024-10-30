@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 21:59:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 09:44:05 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -153,4 +153,37 @@ void Http::runApplication()
 		fprintf(stderr, "Failed to close epoll file descriptor\n");
 		return;
 	}
+}
+
+void Http::read_data_from_socket(int socket)
+{
+    HttpRequest request;
+    std::string remainder = "";
+    char buffer[BUFSIZ];
+    int bytes_read;
+    
+    while (1)
+    {    
+        memset(&buffer, 0, sizeof buffer);
+        bytes_read = recv(socket, buffer, BUFSIZ, 0);
+        if (bytes_read < 0)
+        {
+            break;
+        }
+        else
+        {
+            std::string input(buffer, buffer + bytes_read);
+            input = remainder + input;
+            remainder = input;
+            if (bytes_read < BUFSIZ)
+                break;
+        }
+    }
+    remainder = remainder + "\0";
+    request.setRequest(remainder);
+    request.fillReqProperties();
+    request.defineMimeType();
+
+    
+    reply(socket, request);
 }

@@ -13,7 +13,28 @@
 #include "Server.hpp"
 
 Server::Server()
-{}
+{
+    if (std::getenv("HOME"))
+    {
+        _root = (std::getenv("HOME")); 
+        _root += "/html";
+    }
+    _index.push_back("index.html");
+
+    addErrorPage(204, _root + "204.html");
+    addErrorPage(301, _root + "301.html");
+    addErrorPage(403, _root + "403.html");
+    addErrorPage(404, _root + "404.html");
+    addErrorPage(409, _root + "409.html");
+    addErrorPage(500, _root + "500.html");
+    addErrorPage(502, _root + "502.html");
+    addErrorPage(503, _root + "503.html");
+    addErrorPage(504, _root + "504.html");
+
+    _maxBodySize = 1024 * 1024;
+
+
+}
 Server::~Server()
 {
     
@@ -23,6 +44,7 @@ void Server::setConfigs(std::string path)
 {
     if (path.empty())
     {
+        
         _host = "127.0.0.1";
         _errorPages[404] = "404.html";
         _index.push_back("index.html");
@@ -81,13 +103,13 @@ void Server::setHostname( std::vector<std::string> hostnames)
     _hostname = hostnames;
 }
 
-void Server::setIndex(std::vector<std::string> index)
+void Server::addIndex(std::string index)
 {
-    _index = index;
+    _index.push_back(index);
 }
-void Server::setErrorPages(std::map<int, std::string> errorPages)
+void Server::addErrorPage(int errorNum, std::string error)
 {
-    _errorPages = errorPages;
+    _errorPages[errorNum] = error;
 }
 
 void Server::addLocations(std::string path, Location *locations)
