@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 14:11:59 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:27:17 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -16,13 +16,15 @@
 #include "general.hpp"
 
 class Server;
+class HttpRequest;
+class HttpResponse;
+class Location;
 
 class Http
 {
     private:
         int _epollFd;
         std::vector<Server *> _listServers;
-        HttpRequest _request;
         //HttpResponse response;
     
     public:
@@ -41,8 +43,13 @@ class Http
 
         void accept_new_connection(int server_socket, int epoll_fd );
         
-        void read_data_from_socket(int socket);
-        void analyzeRequest(Server *server, int socket);
+        void data_transfer(int socket);
+        Server *findCorrespondingServer(int socket);
+        void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server);
+
+        std::map<std::string, Location *>::iterator findLocation(std::map<std::string, Location *> &possibleLocations, std::string path);
+         
+
 };
 
 #endif

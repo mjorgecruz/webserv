@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 16:11:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:30:04 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -141,8 +141,8 @@ void Http::runApplication()
             // }
             else if (added == 0 && events[i].events & (EPOLLIN | EPOLLET ))
             {
-                read_data_from_socket(events[i].data.fd);
-                close(events[i].data.fd);
+                data_transfer(events[i].data.fd);
+                // close(events[i].data.fd);
             }
             // else
             //     accept_new_connection(events[i].data.fd, _epollFd);
@@ -175,14 +175,37 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
     std::cout<< "Added: " << client_fd << std::endl;
 }
 
-void Http::read_data_from_socket(int socket)
+void Http::data_transfer(int socket)
 {
-    struct sockaddr_in addr;
-    socklen_t len;
-    int serverNumber = 0;
+    HttpRequest *request = new HttpRequest();
+
     int server_fd = 0;
 
-    //check the corresponding server
+    //check for the corresponding server
+    Server *correspondingServer = findCorrespondingServer(socket); 
+    server_fd = correspondingServer->getSocketFd();
+
+    //create a struct with all info
+
+
+    //fill request properties
+    request->completeRequest(socket);
+    request->setClientFd(server_fd);
+    
+    //prepare response
+    // HttpResponse *response = new HttpResponse(socket, correspondingServer);
+
+    // this->reply(socket, request, response, correspondingServer);
+
+
+}
+
+Server *Http::findCorrespondingServer(int socket)
+{
+    struct sockaddr_in addr;
+    socklen_t len = sizeof(addr);
+    size_t serverNumber = 0;
+    
     if (getsockname(socket, (sockaddr *) &addr, &len) == -1)
         throw(std::exception());
     int port = ntohs(addr.sin_port);
@@ -195,87 +218,105 @@ void Http::read_data_from_socket(int socket)
         {
             if (address == _listServers[serverNumber]->getHost())
             {
-                server_fd = _listServers[serverNumber]->getSocketFd();
                 break;
-            }    
+            }
         }
+        serverNumber++;
     }
-    
-    std::string remainder = "";
-    char buffer[BUFSIZ];
-    int bytes_read;
-    
-    while (1)
-    {    
-        memset(&buffer, 0, sizeof buffer);
-        bytes_read = recv(socket, buffer, BUFSIZ, 0);
-        if (bytes_read < 0)
-        {
-            break;
-        }
-        else
-        {
-            std::string input(buffer, buffer + bytes_read);
-            input = remainder + input;
-            remainder = input;
-            if (bytes_read < BUFSIZ)
-                break;
-        }
-    }
-    remainder = remainder + "\0";
-    _request.setRequest(remainder);
-    _request.fillReqProperties();
-    _request.defineMimeType();
-    _request.setClientFd(server_fd);
-
-    reply(socket, _request);
+    if (serverNumber == _listServers.size())
+        throw(std::exception());
+    return (_listServers[serverNumber]);
 }
 
-
-void Http::analyzeRequest(Server *server, int socket)
+void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Server* server)
 {
     std::string type;
     std::string path;
     std::string httpVersion;
-    std::istringstream request(_request.getRequestType());
+    std::string content;
+
+    //analyze request
+    std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
-    std::map<std::string, Location *> possibleLocations = server->getLocations();
-    size_t locationNum = 0;
-    
     //check version
     if (httpVersion != "HTTP/1.1")
         throw(std::exception());
-        
+
     //define location
-    std::map<std::string, Location *>::iterator it = possibleLocations.begin();
-    while (it != possibleLocations.end()) 
+    std::map<std::string, Location *> possibleLocations = server->getLocations();
+    std::map<std::string, Location *>::iterator it = this->findLocation(possibleLocations, path);
+    if (it == possibleLocations.end())
     {
-        if (*(path.cend() -1) == '/')
+        DIR * root;
+        root = opendir(((it->second)->getRoot()).c_str());
+        if (root == NULL)
+            throw(std::exception());
+        
+        //check method
+        size_t i = 0;
+        while ( i < (server->getAllowedMethods()).size())
         {
-            DIR * root;
-            root = opendir(((it->second)->getRoot() + path).c_str());
-            if (root != NULL)
+            if ((server->getAllowedMethods())[i] == type)
             {
-                
+                if (type == "GET")
+                {
+                    response->writeContent(path, server);
+                    response->setGetHeader();
+                }
+                else if (type == "POST")
+                {
+                    response->setLength(0);
+                    response->setContent("");
+                    response->setPostHeader();
+                }
+                else
+                {
+                    response->setLength(0);
+                    response->setContent("");
+                    response->setDeleteHeader();
+                }
+                break;
             }
-            if (it->second->getAutoIndex())
-            {
-                dirent picas = readdir(root);
-                
-            }
-            
-        }    
-            //it is a path to directory
-        locationNum++;
+        }
+        if (i == (server->getAllowedMethods()).size())
+            throw(std::exception());
     }
-    
-    //check method
-    
+    send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
+    send(socket, response->getContent().c_str(), response->getContent().size(), 0);
 
     //define connection type
-
 
     //searchfile
 
     //prepare reply
+    
+}
+
+std::map<std::string, Location *>::iterator Http::findLocation(std::map<std::string, Location *> &possibleLocations, std::string path)
+{
+    std::map<std::string, Location *>::iterator it = possibleLocations.begin();
+    // size_t locationNum = 0;
+    (void) path;
+
+    while (it != possibleLocations.end()) 
+    {
+        // if (*(path.cend() - 1) == '/')
+        // {
+        //     DIR * root;
+        //     root = opendir(((it->second)->getRoot() + path).c_str());
+        //     if (root != NULL)
+        //     {
+                
+        //     }
+        //     if (it->second->getAutoIndex())
+        //     {
+        //         dirent *picas = readdir(root);
+        //         picas->d_name;
+        //     }
+            
+        // }    
+            //it is a path to directory
+        it++;
+    }
+    return it;
 }

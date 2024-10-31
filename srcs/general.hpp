@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 15:06:10 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:24:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,9 +24,6 @@ extern char **envs;
 #include "HttpResponse.hpp"
 #include "Http.hpp"
 #include "Location.hpp"
-
-void reply(int socket, HttpRequest received);
-
 
 #endif
 

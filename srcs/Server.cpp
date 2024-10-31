@@ -89,6 +89,11 @@ std::map<std::string, Location *> Server::getLocations()
     return _locations;   
 }
 
+std::vector<std::string> Server::getAllowedMethods()
+{
+    return _allowedMethods;
+}
+
 
 void Server::setHost(std::string host)
 {
@@ -117,4 +122,19 @@ void Server::addLocations(std::string path, Location *locations)
 {
     (void) path;
     (void) locations;
+}
+
+void Server::addAllowedMethods(std::string method)
+{
+    _allowedMethods.push_back(method);
+}
+
+std::string Server::getRoot()
+{
+    return _root;
+}
+
+void Server::setRoot(std::string root)
+{
+    _root = root;
 }

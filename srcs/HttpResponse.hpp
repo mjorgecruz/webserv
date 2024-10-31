@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 16:31:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 17:27:35 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,23 +15,36 @@
 
 #include "general.hpp"
 
+class Server;
 class HttpResponse
 {
     private:
-        int _status;
-        //content-length: 20994
-        //content-type: text/javascript
+        int _client_fd;
+        std::string _connection;
         
+        int _status;
+        int _contentLength;//: 20994
+        std::string _contentType;// text/javascript
+        std::string _host;
+        std::string _port;
         std::string _header;
-        std::vector<char> _content;
+        std::string _content;
         
     public:
-        HttpResponse();
+        HttpResponse(int client, Server *server);
         ~HttpResponse();
-        void setHeader();
-        void setContent();
+        void setContent(std::string content);
+        void setLength(int len);
+        void setContentType(std::string type);
+        void setGetHeader();
+        void setPostHeader();
+        void setDeleteHeader();
+        
         std::string getHeader();
         std::string getContent();
+        
+        
+        void writeContent(std::string path, Server *server);
         
         void sendRequest();
 };

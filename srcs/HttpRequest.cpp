@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 16:25:04 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 11:04:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,6 +17,35 @@ HttpRequest::HttpRequest()
 
 HttpRequest::~HttpRequest()
 {}
+
+void HttpRequest::completeRequest(int socket)
+{
+    std::string remainder = "";
+    char buffer[BUFSIZ];
+    int bytes_read;
+    
+    while (1)
+    {    
+        memset(&buffer, 0, sizeof buffer);
+        bytes_read = recv(socket, buffer, BUFSIZ, 0);
+        if (bytes_read < 0)
+        {
+            break;
+        }
+        else
+        {
+            std::string input(buffer, buffer + bytes_read);
+            input = remainder + input;
+            remainder = input;
+            if (bytes_read < BUFSIZ)
+                break;
+        }
+    }
+    remainder = remainder + "\0";
+    this->setRequest(remainder);
+    this->fillReqProperties();
+    this->defineMimeType();
+}        
 
 void HttpRequest::setRequest(std::string req)
 {
@@ -121,14 +150,14 @@ std::string HttpRequest::searchProperty(std::string property)
     return "undefined";
 }
 
+void HttpRequest::setClientFd(int fd)
+{
+    _clientFd = fd;
+}
+
 //EXCEPTIONS
 
 const char *HttpRequest::HttpPageNotFoundException::what() const throw()
 {
     return "Error: Page not found";
-}
-
-void HttpRequest::setClientFd(int fd)
-{
-    _clientFd = fd;
 }

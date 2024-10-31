@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 13:25:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 10:17:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -51,7 +51,7 @@ void Socket::createSocket(int port, std::string host){
     sa.sin_addr.s_addr = inet_addr(host.c_str());
     sa.sin_port = htons(port);
 
-    socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
+    socket_fd = socket(sa.sin_family, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if( socket_fd == -1)
         throw(std::exception());
     int opt = 1;
@@ -60,8 +60,7 @@ void Socket::createSocket(int port, std::string host){
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         throw(std::exception());
-
-    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+        
     if (listen(socket_fd, SOMAXCONN) == -1)
     {
         std::cerr << "[E] listen failed\n";
