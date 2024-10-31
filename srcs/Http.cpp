@@ -60,12 +60,7 @@ void Http::webservInitializer(std::string confPath)
     }
     file.close();
 
-/*
-    (void) confPath;
-    Server *test = new (Server);
-    test->setConfigs("");
-    this->addServerToList(test);
-*/    
+
     for (size_t i = 0; i < _listServers.size(); i++)
     {
         _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());

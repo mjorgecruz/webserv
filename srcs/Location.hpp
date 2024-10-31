@@ -24,6 +24,7 @@ class Location
         std::map<int, std::string> _errorPages;
         std::string _redirect;
         bool _autoIndex;
+        std::string _path;
         
     public:
         Location( void );
@@ -42,6 +43,7 @@ class Location
         std::map<int, std::string> getErrorPages();
         std::string getRedirect();
         bool getAutoIndex();
+        void parseLocation(std::string &line, std::ifstream &file)
 
         //getters setters
     
