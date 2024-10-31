@@ -100,11 +100,11 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     if (bracePos != std::string::npos)
     {
         locationPath = locationPath.substr(0, bracePos);
-        _path = locationPath;
+        _path = locationPath; //path da location
     }
     else
     {
-        _path = locationPath;
+        _path = locationPath; //path da location
 
         if (!(std::getline(file, line) && line.find("{") != std::string::npos))
         {
@@ -155,7 +155,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         {
             hasValidKeywords = true;
             iss >> _cgiPath;
-            if (_cgiPath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
+            if (_cgiPath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos) //path sp pode ter estes caracteres?
             {
                 std::cout << "Error: Invalid CGI path: " << _cgiPath << "\n";
                 throw std::exception();
@@ -172,7 +172,8 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                     std::cout << "Error: Invalid HTTP method in allow_methods: " << method << "\n";
                     throw std::exception();
                 }
-                _allowedMethods.push_back(method);
+                //_allowedMethods.push_back(method);
+                addAllowedMethods(method);
             }
         }
         else if (keyword == "error_page")
@@ -214,7 +215,6 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
 
             if (autoIndexValue == "on")
                 setAutoIndex(true);
-                _autoIndex = true;
             else if (autoIndexValue == "off")
                 setAutoIndex(false);
             else
@@ -241,6 +241,43 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         std::cout << "Error: Expected '}' at the end of location block\n";
         throw std::exception();
     }
+}
+
+void Location::printLocationConfig() const
+{
+    std::cout << "  Root: " << _root << std::endl;
+
+    std::cout << "  Index Files: ";
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _index.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+    std::cout << "  CGI Path: " << _cgiPath << std::endl;
+
+    std::cout << "  Allowed Methods: ";
+    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _allowedMethods.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+    std::cout << "  Error Pages:" << std::endl;
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
+    {
+        std::cout << "    Error " << it->first << ": " << it->second << std::endl;
+    }
+
+    std::cout << "  Redirect: " << _redirect << std::endl;
+
+    std::cout << "  Auto Index: " << (_autoIndex ? "on" : "off") << std::endl;
 }
 
 

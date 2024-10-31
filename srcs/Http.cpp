@@ -166,3 +166,5 @@ void Http::runApplication()
 		return;
 	}
 }
+
+//need function to iterate over various servers and call the printconfigs function of each of the existing ones

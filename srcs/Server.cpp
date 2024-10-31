@@ -346,3 +346,47 @@ void Server::serverKeywords(std::string key, std::string &line)
         throw std::exception();
     }
 }
+
+void Server::printConfig() const
+{
+    std::cout << "---- Server Configuration ----" << std::endl;
+
+    std::cout << "Host: " << _host << std::endl;
+    std::cout << "Port: " << _ports << std::endl;
+
+    std::cout << "Server Names: ";
+    for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _hostname.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+
+    std::cout << "Index Files: ";
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _index.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+    std::cout << "Error Pages:" << std::endl;
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
+    {
+        std::cout << "  Error " << it->first << ": " << it->second << std::endl;
+    }
+    std::cout << "Max Body Size: " << _maxBodySize << std::endl;
+
+    std::cout << "\n---- Location Configurations ----" << std::endl;
+
+    for (std::map<std::string, Location*>::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
+    {
+        std::cout << "Location Path: " << loc->first << std::endl;
+        loc->second->printLocationConfig();
+    }
+
+    std::cout << "-----------------One server conf printed there might be more-----------------" << std::endl;
+}

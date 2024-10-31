@@ -44,8 +44,7 @@ class Location
         std::string getRedirect();
         bool getAutoIndex();
         void parseLocation(std::string &line, std::ifstream &file)
-
+        void printLocationConfig() const;
         //getters setters
-    
 };
 
