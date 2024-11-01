@@ -439,3 +439,12 @@ void Server::setRoot(std::string root)
 {
     _root = root;
 }
+
+void Server::setIndex(std::vector<std::string> index)
+{
+    _index = index;
+}
+void Server::setErrorPages(std::map<int, std::string> errorPages)
+{
+    _errorPages = errorPages;
+}

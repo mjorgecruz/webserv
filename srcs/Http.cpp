@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:33:54 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:50:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -25,51 +25,52 @@ Http::Http( void )
 void Http::webservInitializer(std::string confPath)
 {
     std::ifstream file(confPath.c_str());
-    if(!file)
+    if(file)
     {
-        std::cout << "Could Not Open :" << confPath << std::endl;
-        return ;
-    }
-    std::string line;
-    
-    while (std::getline(file, line))
-    {
-        if (line.find_first_not_of(" \t") == std::string::npos)
-            continue;
-        else
+        std::string line;
+        
+        while (std::getline(file, line))
         {
-            Server *server = new Server();
-            try
-            {
-                server->serverChecker(line, file);
-            }
-            catch (std::exception &e)
-            {
-                delete server;
-                std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
-            }
-            
-            if (server)
-                addServerToList(server);
+            if (line.find_first_not_of(" \t") == std::string::npos)
+                continue;
             else
             {
-                std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
-                throw(std::exception());
+                Server *server = new Server();
+                try
+                {
+                    server->serverChecker(line, file);
+                }
+                catch (std::exception &e)
+                {
+                    delete server;
+                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                }
+                
+                if (server)
+                    addServerToList(server);
+                else
+                {
+                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    throw(std::exception());
+                }
             }
         }
+        file.close();
+    
+        for (size_t i = 0; i < _listServers.size(); i++)
+        {
+            _listServers[i]->printConfig();
+        }
+        return ;
     }
-    file.close();
-
+    Server *server = new Server();
+    server->setConfigs("");
+    this->addServerToList(server);
     for (size_t i = 0; i < _listServers.size(); i++)
     {
-        _listServers[i]->printConfig();
+        _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
     }
-    return ;
-    // for (size_t i = 0; i < _listServers.size(); i++)
-    // {
-    //     _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
-    // }
-    // this->addServersToEpoll();  
+    this->addServersToEpoll();  
 }
 
 void Http::addServerToList(Server *server)

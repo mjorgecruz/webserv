@@ -45,6 +45,9 @@ class Server : public Socket
         void setIndex(std::vector<std::string> index);
         void setErrorPages(std::map<int, std::string> errorPages);
 
+        void addErrorPage(int errorNum, std::string error);
+        void addIndex(std::string index);
+
         void addLocations(std::string path, Location *locations);
         void addAllowedMethods(std::string method);
         void setRoot(std::string root);
