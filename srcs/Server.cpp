@@ -15,25 +15,25 @@
 
 Server::Server()
 {
-    if (std::getenv("HOME"))
-    {
-        _root = (std::getenv("HOME")); 
-        _root += "/html";
-    }
-    _index.push_back("index.html");
+    // if (std::getenv("HOME"))
+    // {
+    //     _root = (std::getenv("HOME")); 
+    //     _root += "/html";
+    // }
+    // _index.push_back("index.html");
 
-    addErrorPage(204, _root + "/204.html");
-    addErrorPage(301, _root + "/301.html");
-    addErrorPage(403, _root + "/403.html");
-    addErrorPage(404, _root + "/404.html");
-    addErrorPage(409, _root + "/409.html");
-    addErrorPage(413, _root + "/413.html");
-    addErrorPage(500, _root + "/500.html");
-    addErrorPage(502, _root + "/502.html");
-    addErrorPage(503, _root + "/503.html");
-    addErrorPage(504, _root + "/504.html");
+    // addErrorPage(204, _root + "/204.html");
+    // addErrorPage(301, _root + "/301.html");
+    // addErrorPage(403, _root + "/403.html");
+    // addErrorPage(404, _root + "/404.html");
+    // addErrorPage(409, _root + "/409.html");
+    // addErrorPage(413, _root + "/413.html");
+    // addErrorPage(500, _root + "/500.html");
+    // addErrorPage(502, _root + "/502.html");
+    // addErrorPage(503, _root + "/503.html");
+    // addErrorPage(504, _root + "/504.html");
 
-    _maxBodySize = 1024 * 1024;
+    //_maxBodySize = 1024 * 1024;
 
 
 }
@@ -212,6 +212,17 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     }
 }
 
+static bool isNumeric(const std::string &str)
+{
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+    {
+        if (!std::isdigit(*it)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Server::serverKeywords(std::string key, std::string &line)
 {
     line.erase(line.find_last_not_of(" \t") + 1);
@@ -322,7 +333,8 @@ void Server::serverKeywords(std::string key, std::string &line)
 
         while (iss >> indexName)
         {
-            if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos) {
+            if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
+            {
                 std::cout << "Invalid index format: " << indexName << "\n";
                 throw std::exception();
             }
@@ -333,13 +345,34 @@ void Server::serverKeywords(std::string key, std::string &line)
     else if (key == "error_page")
     {
         std::map<int, std::string> errorPages = _errorPages;
-        int errorCode;
-        std::string errorPage, temp;
+        std::string token, temp;
         std::istringstream iss(line);
         iss >> temp;
 
-        while (iss >> errorCode >> errorPage) {
-            errorPages[errorCode] = errorPage;
+        std::vector<int> errorCodes;
+        std::string errorPage;
+
+        while (iss >> token)
+        {
+            if (isNumeric(token))
+            {
+                int errorCode = std::atoi(token.c_str());
+                errorCodes.push_back(errorCode);
+            }
+            else
+            {
+                errorPage = token;
+                break;
+            }
+        }
+        if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+        {
+            std::cout << "Invalid error page path: " << errorPage << "\n";
+            throw std::exception();
+        }
+        for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+        {
+            errorPages[*it] = errorPage;
         }
         setErrorPages(errorPages);
     }
@@ -389,9 +422,11 @@ void Server::printConfig() const
     std::cout << "Port: " << _ports << std::endl;
 
     std::cout << "Server Names: ";
-    for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it) {
+    for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it)
+    {
         std::cout << *it;
-        if (it + 1 != _hostname.end()) {
+        if (it + 1 != _hostname.end())
+        {
             std::cout << ", ";
         }
     }
@@ -399,9 +434,11 @@ void Server::printConfig() const
 
 
     std::cout << "Index Files: ";
-    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it) {
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it)
+    {
         std::cout << *it;
-        if (it + 1 != _index.end()) {
+        if (it + 1 != _index.end())
+        {
             std::cout << ", ";
         }
     }

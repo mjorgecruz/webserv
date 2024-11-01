@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:17:15 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 16:10:49 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,16 @@ std::string Location::getPath()
     return _path;
 }
 
-//sei que tenho de dividir isto em mais functions, mas praja caguei
+static bool isNumeric(const std::string &str)
+{
+    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+    {
+        if (!std::isdigit(*it)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 void Location::parseLocation(std::string &line, std::ifstream &file)
 {
@@ -203,22 +212,35 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         else if (keyword == "error_page")
         {
             hasValidKeywords = true;
-            int errorCode;
+            std::string token;
+            std::vector<int> errorCodes;
             std::string errorPage;
-            while (iss >> errorCode)
+
+            while (iss >> token)
             {
-                if (errorCode < 400 || errorCode > 599)
+                if (isNumeric(token))
                 {
-                    std::cout << "Invalid error code: " << errorCode << "\n";
-                    throw std::exception();
+                    int errorCode = std::atoi(token.c_str());
+                    if (errorCode < 400 || errorCode > 599) {
+                        std::cout << "Invalid error code: " << errorCode << "\n";
+                        throw std::exception();
+                    }
+                    errorCodes.push_back(errorCode);
                 }
-                iss >> errorPage;
-                if (errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
+                else
                 {
-                    std::cout << "Invalid error page path: " << errorPage << "\n";
-                    throw std::exception();
+                    errorPage = token;
+                    break;
                 }
-                addErrorPages(errorCode, errorPage);
+            }
+            if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+            {
+                std::cout << "Invalid error page path: " << errorPage << "\n";
+                throw std::exception();
+            }
+            for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+            {
+                addErrorPages(*it, errorPage);
             }
         }
         else if (keyword == "return")
@@ -299,6 +321,3 @@ void Location::printLocationConfig() const
 
     std::cout << "  Auto Index: " << (_autoIndex ? "on" : "off") << std::endl;
 }
-
-
-//sei que tenho de dividir isto em mais functions, mas praja caguei

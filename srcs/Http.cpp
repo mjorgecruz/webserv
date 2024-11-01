@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:50:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 15:33:52 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -44,6 +44,7 @@ void Http::webservInitializer(std::string confPath)
                 {
                     delete server;
                     std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    throw(std::exception());
                 }
                 
                 if (server)
