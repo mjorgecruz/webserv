@@ -357,6 +357,11 @@ void Server::serverKeywords(std::string key, std::string &line)
             if (isNumeric(token))
             {
                 int errorCode = std::atoi(token.c_str());
+                if (errorCode < 400 || errorCode > 599)
+                {
+                    std::cout << "Invalid error code: " << errorCode << "\n";
+                    throw std::exception();
+                }
                 errorCodes.push_back(errorCode);
             }
             else
@@ -368,6 +373,11 @@ void Server::serverKeywords(std::string key, std::string &line)
         if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
         {
             std::cout << "Invalid error page path: " << errorPage << "\n";
+            throw std::exception();
+        }
+        if (errorCodes.empty())
+        {
+            std::cout << "Invalid error: " << errorPage << "\n";
             throw std::exception();
         }
         for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)

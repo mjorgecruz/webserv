@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 16:10:49 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 16:27:39 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,8 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                 if (isNumeric(token))
                 {
                     int errorCode = std::atoi(token.c_str());
-                    if (errorCode < 400 || errorCode > 599) {
+                    if (errorCode < 400 || errorCode > 599)
+                    {
                         std::cout << "Invalid error code: " << errorCode << "\n";
                         throw std::exception();
                     }
@@ -232,6 +233,11 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                     errorPage = token;
                     break;
                 }
+            }
+            if (errorCodes.empty())
+            {
+                std::cout << "Invalid error: " << errorPage << "\n";
+                throw std::exception();
             }
             if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
             {
