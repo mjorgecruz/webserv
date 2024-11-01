@@ -142,8 +142,6 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         throw (std::exception());
     }
 
-    std::cout << "STEP INSIDE CHECKER 4 BF LOOP!!!!\n";
-
     while (std::getline(file, line))
     {
         if (line.find_first_not_of(" \t") == std::string::npos)
@@ -261,7 +259,6 @@ void Server::serverKeywords(std::string key, std::string &line)
             }
             port = static_cast<int>(portValue);
         }
-
         setPorts(port);
     }
     else if (key == "server_name")
@@ -354,7 +351,7 @@ void Server::serverKeywords(std::string key, std::string &line)
 
 void Server::printConfig() const
 {
-    std::cout << "---- Server Configuration ----" << std::endl;
+    std::cout << "\n\n------------------------Server BLOCK Config start" << std::endl;
 
     std::cout << "Host: " << _host << std::endl;
     std::cout << "Port: " << _ports << std::endl;
@@ -385,13 +382,12 @@ void Server::printConfig() const
     }
     std::cout << "Max Body Size: " << _maxBodySize << std::endl;
 
-    std::cout << "\n---- Location Configurations ----" << std::endl;
-
     for (std::map<std::string, Location*>::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
     {
+        std::cout << "\n--------------------------------[LOCATION BLOCK]" << std::endl;
         std::cout << "Location Path: " << loc->first << std::endl;
         loc->second->printLocationConfig();
     }
 
-    std::cout << "-----------------One server conf printed there might be more-----------------" << std::endl;
+    std::cout << "---------------------------------END SERVER BLOCK\n\n" << std::endl;
 }

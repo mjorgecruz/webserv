@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 11:55:26 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:17:15 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,49 +90,64 @@ std::string Location::getPath()
 
 //sei que tenho de dividir isto em mais functions, mas praja caguei
 
-
-
 void Location::parseLocation(std::string &line, std::ifstream &file)
 {
     std::istringstream iss(line);
     std::string locationKeyword, locationPath;
-    iss >> locationKeyword;
 
-    if (!(iss >> locationPath))
-    {
-        std::cout << "Error: 'location' must be followed by a path.\n";
+    iss >> locationKeyword;
+    if (locationKeyword != "location") {
+        std::cout << "Error: Expected 'location' keyword.\n";
         throw std::exception();
     }
 
-    size_t bracePos = locationPath.find('{');
-    if (bracePos != std::string::npos)
+    if (!(iss >> locationPath)) {
+        std::cout << "Error: 'location' must be followed by a path.\n";
+        throw std::exception();
+    }
+    _path = locationPath;
+    std::string remaining;
+    std::getline(iss, remaining);
+    remaining.erase(0, remaining.find_first_not_of(" \t"));
+
+    if (remaining == "{")
     {
-        locationPath = locationPath.substr(0, bracePos);
-        _path = locationPath;
+        //ok all good
     }
     else
     {
-        _path = locationPath;
-
-        if (!(std::getline(file, line) && (line.find("{") != std::string::npos)))
-        {
-            std::cout << "Expected '{' after 'location' keyword\n";
-            throw std::exception();
+        while (std::getline(file, line)) {
+            line.erase(0, line.find_first_not_of(" \t"));
+            if (line.empty() || line.find_first_not_of(" \t") == std::string::npos) {
+                continue;
+            }
+            if (line == "{") {
+                break;
+            } else {
+                std::cout << "Error: Expected '{' after 'location' path.\n";
+                throw std::exception();
+            }
         }
     }
-
     bool hasValidKeywords = false;
-
     while (std::getline(file, line))
     {
         if (line.find_first_not_of(" \t") == std::string::npos)
             continue;
+
         line.erase(0, line.find_first_not_of(" \t"));
+
         if (line == "}")
         {
             break;
         }
 
+        if (line[line.size() - 1] != ';')
+        {
+            std::cout << "Error: Missing ';' at the end of line for keyword.\n";
+            throw std::exception();
+        }
+        line = line.substr(0, line.size() - 1);
         std::istringstream iss(line);
         std::string keyword;
         iss >> keyword;
@@ -145,7 +160,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             {
                 if (indexFile.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
                 {
-                    std::cout << "Error: Invalid index format: " << indexFile << "\n";
+                    std::cout << "Invalid index format: " << indexFile << "\n";
                     throw std::exception();
                 }
                 addIndex(indexFile);
@@ -155,9 +170,9 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         {
             hasValidKeywords = true;
             iss >> _root;
-            if (_root[0] != '/') // de certeza ?
+            if (_root[0] != '/')
             {
-                std::cout << "Error: Invalid root path: " << _root << "\n";
+                std::cout << "Invalid root path: " << _root << "\n";
                 throw std::exception();
             }
         }
@@ -165,9 +180,9 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         {
             hasValidKeywords = true;
             iss >> _cgiPath;
-            if (_cgiPath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos) //path sp pode ter estes caracteres?
+            if (_cgiPath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
             {
-                std::cout << "Error: Invalid CGI path: " << _cgiPath << "\n";
+                std::cout << "Invalid CGI path: " << _cgiPath << "\n";
                 throw std::exception();
             }
         }
@@ -179,11 +194,10 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             {
                 if (method != "POST" && method != "GET" && method != "DELETE")
                 {
-                    std::cout << "Error: Invalid HTTP method in allow_methods: " << method << "\n";
+                    std::cout << "Invalid HTTP method in allow_methods: " << method << "\n";
                     throw std::exception();
                 }
-                //_allowedMethods.push_back(method);
-                addAllowedMethods(method);
+                _allowedMethods.push_back(method);
             }
         }
         else if (keyword == "error_page")
@@ -195,13 +209,13 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             {
                 if (errorCode < 400 || errorCode > 599)
                 {
-                    std::cout << "Error: Invalid error code: " << errorCode << "\n";
+                    std::cout << "Invalid error code: " << errorCode << "\n";
                     throw std::exception();
                 }
                 iss >> errorPage;
                 if (errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
                 {
-                    std::cout << "Error: Invalid error page path: " << errorPage << "\n";
+                    std::cout << "Invalid error page path: " << errorPage << "\n";
                     throw std::exception();
                 }
                 addErrorPages(errorCode, errorPage);
@@ -211,41 +225,37 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         {
             hasValidKeywords = true;
             iss >> _redirect;
-            if (_redirect[0] != '/')
-            {
-                std::cout << "Error: Invalid redirect path: " << _redirect << "\n";
-                throw std::exception();
-            }
         }
         else if (keyword == "autoindex")
         {
             hasValidKeywords = true;
             std::string autoIndexValue;
             iss >> autoIndexValue;
-
             if (autoIndexValue == "on")
-                setAutoIndex(true);
+            {
+                _autoIndex = true;
+            }
             else if (autoIndexValue == "off")
-                setAutoIndex(false);
+            {
+                _autoIndex = false;
+            }
             else
             {
-                std::cout << "Error: Invalid value for autoindex: " << autoIndexValue << "\n";
+                std::cout << "Invalid value for autoindex: " << autoIndexValue << "\n";
                 throw std::exception();
             }
         }
         else
         {
-            std::cout << "Error: Invalid keyword in location block: " << keyword << "\n";
+            std::cout << "Invalid keyword in location block: " << keyword << "\n";
             throw std::exception();
         }
     }
-
     if (!hasValidKeywords)
     {
         std::cout << "Error: 'location' block must contain at least one valid keyword\n";
         throw std::exception();
     }
-
     if (line != "}")
     {
         std::cout << "Error: Expected '}' at the end of location block\n";

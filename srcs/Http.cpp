@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 11:46:50 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 13:36:05 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,17 +60,16 @@ void Http::webservInitializer(std::string confPath)
     }
     file.close();
 
-    for (size_t i = 0; i < _listServers.size(); ++i)
+    for (size_t i = 0; i < _listServers.size(); i++)
     {
         _listServers[i]->printConfig();
     }
-
-
-    for (size_t i = 0; i < _listServers.size(); i++)
-    {
-        _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
-    }
-    this->addServersToEpoll();  
+    return ;
+    // for (size_t i = 0; i < _listServers.size(); i++)
+    // {
+    //     _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+    // }
+    // this->addServersToEpoll();  
 }
 
 void Http::addServerToList(Server *server)
