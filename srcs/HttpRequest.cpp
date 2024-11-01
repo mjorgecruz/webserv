@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:27:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 18:36:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -45,6 +45,7 @@ void HttpRequest::completeRequest(int socket)
     this->setRequest(remainder);
     this->fillReqProperties();
     this->defineMimeType();
+
 }        
 
 void HttpRequest::setRequest(std::string req)
@@ -65,7 +66,6 @@ void HttpRequest::fillReqProperties()
     {
         if (partial_line.empty())
             continue;
-
         if (_reqProperties.find(partial_line) == _reqProperties.end())
         {
             prop = partial_line;
@@ -76,14 +76,20 @@ void HttpRequest::fillReqProperties()
             _reqProperties.insert(properties);
         }
     }
+    std::string body = "";
+    while (getline(X, partial_line))
+    {
+        body = body + partial_line;
+    }
+    setRequestBody(body);
     std::cout << getRequestType() << std::endl;
     for (std::map<std::string, std::string>::iterator it = _reqProperties.begin(); it != _reqProperties.end(); it++)
     {
         std::cout << it->first << it->second << std::endl;
     }
+    std::cout << std::endl;
+    std::cout << std::endl;
     
-    std::cout << std::endl;
-    std::cout << std::endl;
 }
 
 void HttpRequest::setRequestBody(std::string body)
@@ -176,4 +182,9 @@ const char *HttpRequest::HttpPageNotFoundException::what() const throw()
 std::string HttpRequest::getRequest()
 {
     return _request;
+}
+
+std::string HttpRequest::getRequestBody()
+{
+    return _requestBody;
 }

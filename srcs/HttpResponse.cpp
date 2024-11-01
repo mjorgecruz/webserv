@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:07:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 18:44:01 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -224,7 +224,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
         closedir(dir);
         time_t timestamp;
         time(&timestamp);
-        if (request.searchProperty("Content-Type").find("multipart/form-data") == request.searchProperty("Content-Type").size())
+        if (request.searchProperty("Content-Type").find("multipart/form-data") == std::string::npos)
         {
             std::string filename = ctime(&timestamp);
             std::replace(filename.begin(), filename.end(), ' ', '_');
@@ -237,16 +237,65 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
         }
         else
         {
-            std::string boundary = request.getRequest().substr(request.getRequest().find("boundary=") + 9);
-            std::cout << "BOUNDARY " << boundary << std::endl;
-            //std::string X = request.searchProperty("Content-Disposition");
-            // std::string filename;
-            // filename = X.substr(X.find_last_of('='), X.size() - 1);
+            if (request.searchProperty("Content-Type").find("multipart/form-data") != std::string::npos)
+            {
+                size_t startline = request.getRequest().find("boundary=") + 9;
+                size_t endline = request.getRequest().find("\r\n", startline);
+                std::string boundary = request.getRequest().substr(startline, endline - startline - 1);
+                size_t pos = request.getRequest().find("\r\n");
+
+                while (pos != std::string::npos)
+                {
+                    pos = pos + boundary.size();
+                    size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
+                    if (header_advance == std::string::npos)
+                    {
+                            return;
+                    }
+                    
+                    //check if file exists 
+                    std::string header = request.getRequest().substr(pos, header_advance - pos + 4);
+                    std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
+                    int i = 1;
+                    struct stat buffer;
+                    while (stat(filename.c_str(), &buffer) == 0)
+                    { 
+                        std::stringstream X;
+                        X << i;
+                        std::string num = X.str();
+                        filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
+                        i++;
+                    }
+                    pos = header_advance + 4;
+                    size_t part_end = request.getRequest().find(boundary, pos);
+                    if (part_end == std::string::npos)
+                        break;
+                    std::string file_content = request.getRequest().substr(pos, part_end - pos);
+                    std::ofstream file;
+
+                    file.open(filename.c_str());
+                    file << file_content;
+                    file.close();
+                    pos = request.getRequest().find(boundary, pos);
+                }
+            }
         }
         
         
     }
 }
+
+std::string HttpResponse::getFilenameUploaded(std::string header)
+{
+    std::string filename;
+    size_t pos = header.find("filename=\"") + 10;
+    size_t final_pos = header.find("\"", pos);
+    filename = header.substr(pos, final_pos - pos);
+    return filename;
+    
+}
+
+
 
 void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Server *server)
 {

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 14:55:17 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 15:20:19 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -41,7 +41,7 @@ int main (int ac, char **av)
     
     //run server configurations
     try{
-        http.webservInitializer(av[1]);
+        http.webservInitializer("");
     }
     catch(std::exception &e)
     {
