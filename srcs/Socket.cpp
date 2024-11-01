@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 10:17:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 23:00:03 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Socket.hpp"
 
@@ -79,4 +79,21 @@ int Socket::getSocketFd() const
 const sockaddr_in Socket::getAddr() const
 {
     return _addr;
+}
+
+//Exceptions
+
+const char *Socket::FdCreationException::what() const throw()
+{
+    return "Error while creating SocketFd";
+}
+
+const char *Socket::BindException::what() const throw()
+{
+     return "Error while creating Bind";
+}
+
+const char *Socket::ListenException::what() const throw()
+{
+     return "Error while creating SocketFd";
 }

@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 17:30:04 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 00:05:34 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -45,15 +45,11 @@ void Http::webservInitializer(std::string confPath)
     test->setConfigs("");
     this->addServerToList(test);
     
-    
     for (size_t i = 0; i < _listServers.size(); i++)
     {
         _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
     }
     this->addServersToEpoll();
-    
-
-    
 }
 
 void Http::addServerToList(Server *server)
@@ -76,7 +72,6 @@ Http::~Http( void )
 void Http::addEpollServer( Server *server )
 {
     struct epoll_event event;
-    //memset()
     event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
 	event.data.fd = server->getSocketFd();
     
@@ -115,37 +110,21 @@ void Http::runApplication()
 
     while (g_signal == 0)
     {
-        
         event_count = epoll_wait(_epollFd, events, MAX_EVENTS, 30000);
         
         for (int i = 0; i < event_count; i++) 
         {
-            int added = 0;
-            for (size_t j = 0; j < this->_listServers.size(); j++ )
-            {
-                if(events[i].data.fd == this->_listServers[j]->getSocketFd())
-                {
-                    accept_new_connection(this->_listServers[j]->getSocketFd(), _epollFd);
-                    added = 1;
-                    break;
-                }
-            }
             if (events[i].events  & (EPOLLRDHUP | EPOLLERR | EPOLLHUP))
             {
                 std::cout << "Page was hard refreshed" << std::endl;
                 close(events[i].data.fd);
             }
-            // else if(events[i].data.fd == this->_listServers[i]->getServerFd())
-            // {
-            //    accept_new_connection(this->_listServers[i]->getServerFd(), _epollFd);
-            // }
-            else if (added == 0 && events[i].events & (EPOLLIN | EPOLLET ))
+            else if (events[i].data.fd == this->_listServers[this->_listServers.size() - 1]->getSocketFd())
+                accept_new_connection(this->_listServers[this->_listServers.size() - 1]->getSocketFd(), _epollFd);
+            else if ( events[i].events & (EPOLLIN | EPOLLET ))
             {
                 data_transfer(events[i].data.fd);
-                // close(events[i].data.fd);
             }
-            // else
-            //     accept_new_connection(events[i].data.fd, _epollFd);
 		}
     }
     
@@ -193,11 +172,12 @@ void Http::data_transfer(int socket)
     request->setClientFd(server_fd);
     
     //prepare response
-    // HttpResponse *response = new HttpResponse(socket, correspondingServer);
+    HttpResponse *response = new HttpResponse(socket, correspondingServer);
 
-    // this->reply(socket, request, response, correspondingServer);
+    this->reply(socket, request, response, correspondingServer);
 
-
+    delete(response);
+    delete(request);
 }
 
 Server *Http::findCorrespondingServer(int socket)
@@ -248,10 +228,10 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     if (it == possibleLocations.end())
     {
         DIR * root;
-        root = opendir(((it->second)->getRoot()).c_str());
+        root = opendir(server->getRoot().c_str());
         if (root == NULL)
             throw(std::exception());
-        
+        closedir(root);
         //check method
         size_t i = 0;
         while ( i < (server->getAllowedMethods()).size())
@@ -260,6 +240,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             {
                 if (type == "GET")
                 {
+                    //response->setContentType(received->getMimeType());
                     response->writeContent(path, server);
                     response->setGetHeader();
                 }
@@ -280,10 +261,11 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         }
         if (i == (server->getAllowedMethods()).size())
             throw(std::exception());
+
     }
     send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
     send(socket, response->getContent().c_str(), response->getContent().size(), 0);
-
+    
     //define connection type
 
     //searchfile

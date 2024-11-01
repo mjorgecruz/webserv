@@ -33,7 +33,7 @@ COMPILED_FILES := $(shell if [ -d "$(ODIR)" ]; then find $(ODIR) -name "*.o" | w
 
 all: $(NAME)
 
-$(NAME): $(OBJ) defaults 204 301 
+$(NAME): $(OBJ) defaults $(ERRORS)
 	@mkdir -p $(dir $@) 
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBFLAGS)
 	@printf "$(BOLD_GREEN)...calm champions: $$(echo "$(shell find $(ODIR) -name "*.o" | wc -l) $(TOTAL_FILES)" | awk '{printf "%.2f", $$1/$$2 * 100}')%%$(RES)\r"

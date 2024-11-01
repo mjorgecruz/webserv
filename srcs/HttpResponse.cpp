@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 17:26:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/31 23:57:34 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -17,6 +17,8 @@ HttpResponse::HttpResponse(int client , Server *server)
     _client_fd = client;
     _host = server->getHost();
     _port = server->getPorts();
+
+
 }
 
 HttpResponse::~HttpResponse()
@@ -112,15 +114,18 @@ void HttpResponse::writeContent(std::string path, Server *server)
                 content = content + buffer;
                 memset(buffer, 0, 100);
             }
+            _status = 200;
             setContent(content);
             setLength(content.size());
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            path = server->getErrorPages().find(404)->second;
+            path = server->getRoot() + server->getErrorPages().find(404)->second;
+            _status = 404;
             fd = open(path.c_str(), O_RDONLY);
             if (fd == -1)
             {
+                _status = 500;
                 throw(std::exception()); //error 500 escrito na string
             }
             memset(buffer, 0, 100);
@@ -172,7 +177,7 @@ void HttpResponse::writeContent(std::string path, Server *server)
             {
                 for (size_t i = 0; i < server->getIndex().size(); i++)
                 {
-                    path = server->getRoot() + server->getIndex()[i];
+                    path = server->getRoot() + "/" + server->getIndex()[i];
                     fd = open(path.c_str(), O_RDONLY);
                     if (fd != -1)
                         break;

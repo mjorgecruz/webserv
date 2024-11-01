@@ -21,16 +21,16 @@ Server::Server()
     }
     _index.push_back("index.html");
 
-    addErrorPage(204, _root + "204.html");
-    addErrorPage(301, _root + "301.html");
-    addErrorPage(403, _root + "403.html");
-    addErrorPage(404, _root + "404.html");
-    addErrorPage(409, _root + "409.html");
-    addErrorPage(413, _root + "413.html");
-    addErrorPage(500, _root + "500.html");
-    addErrorPage(502, _root + "502.html");
-    addErrorPage(503, _root + "503.html");
-    addErrorPage(504, _root + "504.html");
+    addErrorPage(204, _root + "/204.html");
+    addErrorPage(301, _root + "/301.html");
+    addErrorPage(403, _root + "/403.html");
+    addErrorPage(404, _root + "/404.html");
+    addErrorPage(409, _root + "/409.html");
+    addErrorPage(413, _root + "/413.html");
+    addErrorPage(500, _root + "/500.html");
+    addErrorPage(502, _root + "/502.html");
+    addErrorPage(503, _root + "/503.html");
+    addErrorPage(504, _root + "/504.html");
 
     _maxBodySize = 1024 * 1024;
 
@@ -47,10 +47,14 @@ void Server::setConfigs(std::string path)
     {
         
         _host = "127.0.0.1";
-        _errorPages[404] = "404.html";
+        _errorPages[404] = "/404.html";
         _index.push_back("index.html");
         _ports = 8080;
         _hostname.push_back("10.11.4.4");
+        _allowedMethods.push_back("GET");
+        _allowedMethods.push_back("POST");
+        _allowedMethods.push_back("DELETE");
+
     }       
 }
 
