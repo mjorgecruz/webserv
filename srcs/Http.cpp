@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 13:01:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:33:54 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,32 +24,52 @@ Http::Http( void )
 
 void Http::webservInitializer(std::string confPath)
 {
-    //ler doc
-    //criar n servers com n locations e devidos campos populados
-    //criar de forma dinamica
-
-    /*
-    while (not reached EOF(confPath))
+    std::ifstream file(confPath.c_str());
+    if(!file)
     {
-        IF() each line checks keyords 
-            when sever detected enters server creation logic and adds to list (location logic and parsing in this scope aswell)
-                advances line by line until it closes the server brackets
-                
-        goes to next line if not yet at EOF and (keeps looping)
+        std::cout << "Could Not Open :" << confPath << std::endl;
+        return ;
     }
-
-    how to catch erros ? default path for cgi 2x and defaul.conf file paramethers ?   
-    */
-    (void) confPath;
-    Server *test = new (Server);
-    test->setConfigs("");
-    this->addServerToList(test);
+    std::string line;
     
+    while (std::getline(file, line))
+    {
+        if (line.find_first_not_of(" \t") == std::string::npos)
+            continue;
+        else
+        {
+            Server *server = new Server();
+            try
+            {
+                server->serverChecker(line, file);
+            }
+            catch (std::exception &e)
+            {
+                delete server;
+                std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+            }
+            
+            if (server)
+                addServerToList(server);
+            else
+            {
+                std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                throw(std::exception());
+            }
+        }
+    }
+    file.close();
+
     for (size_t i = 0; i < _listServers.size(); i++)
     {
-        _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+        _listServers[i]->printConfig();
     }
-    this->addServersToEpoll();
+    return ;
+    // for (size_t i = 0; i < _listServers.size(); i++)
+    // {
+    //     _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+    // }
+    // this->addServersToEpoll();  
 }
 
 void Http::addServerToList(Server *server)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   FileChecks.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 09:12:06 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 21:16:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/10/30 13:55:24 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 
 #include "webserv.hpp"
 
-
-class FileChecks
+class ConfCheck
 {
+    public:
+        
 };
 
 #endif

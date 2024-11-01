@@ -42,11 +42,16 @@ class Server : public Socket
         void setHost(std::string host);
         void setPorts(int port);
         void setHostname( std::vector<std::string> hostnames);
-        void addIndex(std::string index);
-        void addErrorPage(int errorNum, std::string error);
+        void setIndex(std::vector<std::string> index);
+        void setErrorPages(std::map<int, std::string> errorPages);
+
         void addLocations(std::string path, Location *locations);
         void addAllowedMethods(std::string method);
         void setRoot(std::string root);
+        
+        void serverChecker(std::string &line, std::ifstream &file);
+        void serverKeywords(std::string key, std::string &line);
+        void printConfig() const;
 };
 
 
