@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 11:04:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:27:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -65,6 +65,7 @@ void HttpRequest::fillReqProperties()
     {
         if (partial_line.empty())
             continue;
+
         if (_reqProperties.find(partial_line) == _reqProperties.end())
         {
             prop = partial_line;
@@ -78,9 +79,19 @@ void HttpRequest::fillReqProperties()
     std::cout << getRequestType() << std::endl;
     for (std::map<std::string, std::string>::iterator it = _reqProperties.begin(); it != _reqProperties.end(); it++)
     {
-        std::cout << it->first << " : " << it->second << std::endl;
+        std::cout << it->first << it->second << std::endl;
     }
+    
+    std::cout << std::endl;
+    std::cout << std::endl;
 }
+
+void HttpRequest::setRequestBody(std::string body)
+{
+    _requestBody = body;
+}
+
+
 
 void HttpRequest::defineMimeType()
 {
@@ -160,4 +171,9 @@ void HttpRequest::setClientFd(int fd)
 const char *HttpRequest::HttpPageNotFoundException::what() const throw()
 {
     return "Error: Page not found";
+}
+
+std::string HttpRequest::getRequest()
+{
+    return _request;
 }

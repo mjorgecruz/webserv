@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 00:05:34 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 13:01:45 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -225,6 +225,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //define location
     std::map<std::string, Location *> possibleLocations = server->getLocations();
     std::map<std::string, Location *>::iterator it = this->findLocation(possibleLocations, path);
+    //int fd = 0;
+    
     if (it == possibleLocations.end())
     {
         DIR * root;
@@ -246,31 +248,28 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 }
                 else if (type == "POST")
                 {
-                    response->setLength(0);
-                    response->setContent("");
+                    response->handleDataUpload(path, *received, server);
                     response->setPostHeader();
                 }
                 else
                 {
-                    response->setLength(0);
-                    response->setContent("");
+                    response->handleDataDeletion(path, *received, server);
                     response->setDeleteHeader();
                 }
                 break;
             }
+            i++;
         }
         if (i == (server->getAllowedMethods()).size())
             throw(std::exception());
 
     }
+    else
+    {
+        //fd = open();
+    }
     send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
     send(socket, response->getContent().c_str(), response->getContent().size(), 0);
-    
-    //define connection type
-
-    //searchfile
-
-    //prepare reply
     
 }
 

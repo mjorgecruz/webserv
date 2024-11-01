@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 11:05:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:12:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,6 +24,7 @@ class HttpRequest
         std::string _requestType;
         std::map<std::string, std::string> _reqProperties;
         std::string _mimeType;
+        std::string _requestBody;
         
     public:
         HttpRequest();
@@ -33,9 +34,12 @@ class HttpRequest
         void setClientFd(int fd);
         void fillReqProperties();
         void defineMimeType();
+        void setRequestBody(std::string body);
         std::string getRequestType();
         std::string searchProperty(std::string property);
         std::string getMimeType();
+        std::string getRequest();
+        std::string getRequestBody();
 
         
         class HttpPageNotFoundException: public std::exception

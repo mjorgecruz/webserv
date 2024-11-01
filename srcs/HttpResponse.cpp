@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/31 23:57:34 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 14:07:41 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpResponse.hpp"
 
@@ -141,10 +141,11 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
         catch (std::exception &e)
         {
-            path = server->getErrorPages().find(404)->second;
+            path = server->getErrorPages().find(403)->second;
             fd = open(path.c_str(), O_RDONLY);
             if (fd == -1)
             {
+                _status = 500;
                 throw(std::exception()); //error 500 escrito na string
             }
             memset(buffer, 0, 100);
@@ -203,4 +204,53 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
     }
     
+}
+
+
+void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Server *server)
+{
+    if (path.find_last_of('/') != path.size() - 1)
+    {
+        
+    }
+    else
+    {
+        //check if path exists
+        path = server->getRoot() + path;
+        DIR *dir = opendir(path.c_str());
+        if (dir == NULL){
+            throw(std::exception());
+        }
+        closedir(dir);
+        time_t timestamp;
+        time(&timestamp);
+        if (request.searchProperty("Content-Type").find("multipart/form-data") == request.searchProperty("Content-Type").size())
+        {
+            std::string filename = ctime(&timestamp);
+            std::replace(filename.begin(), filename.end(), ' ', '_');
+            std::replace(filename.begin(), filename.end(), ':', '-');
+            path = path + filename;
+            
+            int fd = open(path.c_str(), O_RDWR|O_CREAT);
+            write(fd, (request.getRequest()).c_str(), request.getRequest().size());
+            close(fd);
+        }
+        else
+        {
+            std::string boundary = request.getRequest().substr(request.getRequest().find("boundary=") + 9);
+            std::cout << "BOUNDARY " << boundary << std::endl;
+            //std::string X = request.searchProperty("Content-Disposition");
+            // std::string filename;
+            // filename = X.substr(X.find_last_of('='), X.size() - 1);
+        }
+        
+        
+    }
+}
+
+void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Server *server)
+{
+    (void) server;
+    (void) request;
+    (void) path;
 }
