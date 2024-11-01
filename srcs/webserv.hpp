@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:46:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/27 18:24:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 10:25:01 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 #include <map>
 #include <csignal>
 #include <algorithm>
+#include <fstream>
+#include <string>
 
 #define PORT 8080
 #define MAX_EVENTS 128

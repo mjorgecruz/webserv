@@ -11,7 +11,7 @@
 /******************************************************************************/
 
 #include "Server.hpp"
-#include <fstream>
+
 
 Server::Server()
 {}
@@ -108,15 +108,16 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         std::cout << "Expected 'server' keyword at the beginning of the server block\n";
         throw(std::exception());
     }
-
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
-    
+
     if (remaining != "{")
     {
         while (std::getline(file, line))
         {
+            if (line.find_first_not_of(" \t") == std::string::npos)
+                continue;
             line.erase(0, line.find_first_not_of(" \t"));
             if (line == "{")
             {
@@ -141,8 +142,13 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         throw (std::exception());
     }
 
+    std::cout << "STEP INSIDE CHECKER 4 BF LOOP!!!!\n";
+
     while (std::getline(file, line))
     {
+        if (line.find_first_not_of(" \t") == std::string::npos)
+            continue;
+          
         line.erase(0, line.find_first_not_of(" \t"));
         if (line == "}")
         {
@@ -159,8 +165,8 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             try
             {
                 location->parseLocation(line, file);
-                //addLocations(location->getPath(), location);
                 _locations[location->getPath()] = location;
+                //addLocations(location->getPath(), location);
             }
             catch (std::exception &e)
             {
@@ -176,19 +182,17 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     }
 }
 
-//tenho de dividir isto
 void Server::serverKeywords(std::string key, std::string &line)
 {
     line.erase(line.find_last_not_of(" \t") + 1);
 
-    if (line.back() != ';')
+    if (line[line.size() -1] != ';')
     {
         std::cout << "error: missing ';' for " << key << "\n";
         throw std::exception();
     }
     line = line.substr(0, line.size() - 1);
 
-    //if line empty throw
     if (line.empty())
     {
         std::cout << "error: empty value for " << key << "\n";
@@ -198,6 +202,7 @@ void Server::serverKeywords(std::string key, std::string &line)
     if (key == "listen")
     {
         std::string address;
+        std::string host;
         std::istringstream iss(line);
         iss >> address >> address;
 
@@ -269,7 +274,7 @@ void Server::serverKeywords(std::string key, std::string &line)
 
         while (iss >> hostname)
         {
-            if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname.front() == '-' || hostname.back() == '-')
+            if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
             {
                 std::cout << "Invalid server_name: " << hostname << "\n";
                 throw std::exception();
@@ -338,7 +343,7 @@ void Server::serverKeywords(std::string key, std::string &line)
             std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
             throw std::exception();
         }
-        setMaxBodySize(maxBodySize);
+        _maxBodySize = maxBodySize;
     }
     else
     {

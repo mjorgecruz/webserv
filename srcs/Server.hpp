@@ -10,13 +10,13 @@ class Location;
 class Server : public Socket
 {
     private:
-        std::string _host; //ip at listen
-        int _ports; //port at listen
-        std::vector<std::string> _hostname; //at server_name
-        std::vector<std::string> _index; //at index
-        std::map<int, std::string> _errorPages; //at error_page
-        std::map<std::string, Location *> _locations; //at location
-        int _maxBodySize; //at max_body_size
+        std::string _host;
+        int _ports;
+        std::vector<std::string> _hostname;
+        std::vector<std::string> _index;
+        std::map<int, std::string> _errorPages;
+        std::map<std::string, Location *> _locations;
+        int _maxBodySize;
     
         Server(const Server & src);
 
@@ -40,7 +40,9 @@ class Server : public Socket
         void setHostname( std::vector<std::string> hostnames);
         void setIndex(std::vector<std::string> index);
         void setErrorPages(std::map<int, std::string> errorPages);
+
         void addLocations(std::string path, Location *locations);
+        
         void serverChecker(std::string &line, std::ifstream &file);
         void serverKeywords(std::string key, std::string &line);
         void printConfig() const;

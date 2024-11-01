@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 21:31:31 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/01 10:45:19 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,17 @@ void sigint_handler(int signal)
 int main (int ac, char **av)
 {
     (void) av;
-    if (ac != 2)
-        std::cerr << "Error while starting server:\nNo config file";
-    signal(SIGINT, sigint_handler);
+    (void) ac;
+    // if (ac != 2)
+    //     std::cerr << "Error while starting server:\nNo config file";
+    // signal(SIGINT, sigint_handler);
 
     
     Http http;
-    http.webservInitializer("");
-    http.runApplication();
+    std::cout << "STEP\n";
+    http.webservInitializer("webserv.conf");
+    return 0;
+    //http.runApplication();
     // Http webservs(httpConfigs);
 
     // webservs.runApplication();

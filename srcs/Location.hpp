@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 09:57:11 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 10:03:23 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,15 @@ class Location
         void setRedirect(std::string redir);
         void setAutoIndex(bool autoindex);
         
+        std::string getPath();
         std::vector<std::string> getIndex();
         std::string getRoot();
         std::vector<std::string> getAllowedMethods();
         std::map<int, std::string> getErrorPages();
         std::string getRedirect();
         bool getAutoIndex();
-        void parseLocation(std::string &line, std::ifstream &file)
+        
+        void parseLocation(std::string &line, std::ifstream &file);
         void printLocationConfig() const;
         //getters setters
 };

@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 10:16:04 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 11:55:26 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,15 @@ bool Location::getAutoIndex()
     return _autoIndex;
 }
 
+std::string Location::getPath()
+{
+    return _path;
+}
+
 //sei que tenho de dividir isto em mais functions, mas praja caguei
+
+
+
 void Location::parseLocation(std::string &line, std::ifstream &file)
 {
     std::istringstream iss(line);
@@ -100,13 +108,13 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     if (bracePos != std::string::npos)
     {
         locationPath = locationPath.substr(0, bracePos);
-        _path = locationPath; //path da location
+        _path = locationPath;
     }
     else
     {
-        _path = locationPath; //path da location
+        _path = locationPath;
 
-        if (!(std::getline(file, line) && line.find("{") != std::string::npos))
+        if (!(std::getline(file, line) && (line.find("{") != std::string::npos)))
         {
             std::cout << "Expected '{' after 'location' keyword\n";
             throw std::exception();
@@ -117,6 +125,8 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
 
     while (std::getline(file, line))
     {
+        if (line.find_first_not_of(" \t") == std::string::npos)
+            continue;
         line.erase(0, line.find_first_not_of(" \t"));
         if (line == "}")
         {
@@ -138,7 +148,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                     std::cout << "Error: Invalid index format: " << indexFile << "\n";
                     throw std::exception();
                 }
-                setIndex(indexFile);
+                addIndex(indexFile);
             }
         }
         else if (keyword == "root")

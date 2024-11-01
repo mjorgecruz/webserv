@@ -6,12 +6,11 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/30 15:02:46 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/01 11:46:50 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Http.hpp"
-#include <fstream>
 
 Http::Http( void )
 {
@@ -25,23 +24,24 @@ Http::Http( void )
 
 void Http::webservInitializer(std::string confPath)
 {
-    std::ifstream file(confPath);
+    std::ifstream file(confPath.c_str());
     if(!file)
     {
         std::cout << "Could Not Open :" << confPath << std::endl;
         return ;
     }
     std::string line;
+    
     while (std::getline(file, line))
     {
-        if (line.empty())
+        if (line.find_first_not_of(" \t") == std::string::npos)
             continue;
         else
         {
             Server *server = new Server();
             try
             {
-                server->serverChecker(line, file);    
+                server->serverChecker(line, file);
             }
             catch (std::exception &e)
             {
@@ -59,6 +59,11 @@ void Http::webservInitializer(std::string confPath)
         }
     }
     file.close();
+
+    for (size_t i = 0; i < _listServers.size(); ++i)
+    {
+        _listServers[i]->printConfig();
+    }
 
 
     for (size_t i = 0; i < _listServers.size(); i++)
