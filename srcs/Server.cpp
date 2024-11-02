@@ -15,25 +15,25 @@
 
 Server::Server()
 {
-    // if (std::getenv("HOME"))
-    // {
-    //     _root = (std::getenv("HOME")); 
-    //     _root += "/html";
-    // }
-    // _index.push_back("index.html");
+    if (std::getenv("HOME"))
+    {
+        _root = (std::getenv("HOME")); 
+        _root += "/html";
+    }
+    _index.push_back("index.html");
 
-    // addErrorPage(204, _root + "/204.html");
-    // addErrorPage(301, _root + "/301.html");
-    // addErrorPage(403, _root + "/403.html");
-    // addErrorPage(404, _root + "/404.html");
-    // addErrorPage(409, _root + "/409.html");
-    // addErrorPage(413, _root + "/413.html");
-    // addErrorPage(500, _root + "/500.html");
-    // addErrorPage(502, _root + "/502.html");
-    // addErrorPage(503, _root + "/503.html");
-    // addErrorPage(504, _root + "/504.html");
+    addErrorPage(204, _root + "/204.html");
+    addErrorPage(301, _root + "/301.html");
+    addErrorPage(403, _root + "/403.html");
+    addErrorPage(404, _root + "/404.html");
+    addErrorPage(409, _root + "/409.html");
+    addErrorPage(413, _root + "/413.html");
+    addErrorPage(500, _root + "/500.html");
+    addErrorPage(502, _root + "/502.html");
+    addErrorPage(503, _root + "/503.html");
+    addErrorPage(504, _root + "/504.html");
 
-    //_maxBodySize = 1024 * 1024;
+    _maxBodySize = 1024 * 1024;
 
 
 }
@@ -477,14 +477,15 @@ void Server::addAllowedMethods(std::string method)
     _allowedMethods.push_back(method);
 }
 
-std::string Server::getRoot()
-{
-    return _root;
-}
 
 void Server::setRoot(std::string root)
 {
     _root = root;
+}
+
+std::string Server::getRoot()
+{
+    return _root;
 }
 
 void Server::setIndex(std::vector<std::string> index)
