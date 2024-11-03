@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 18:44:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/03 12:07:32 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -211,9 +211,13 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
 {
     if (path.find_last_of('/') != path.size() - 1)
     {
+        std::string filename = server->getRoot() + path;
+        int fd = open(path.c_str(), O_RDWR|O_CREAT);
+        write(fd, (request.getRequest()).c_str(), request.getRequest().size());
+        close(fd);
         
     }
-    else
+    else //if it is a folder
     {
         //check if path exists
         path = server->getRoot() + path;
@@ -222,68 +226,80 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
             throw(std::exception());
         }
         closedir(dir);
-        time_t timestamp;
-        time(&timestamp);
         if (request.searchProperty("Content-Type").find("multipart/form-data") == std::string::npos)
         {
+            //creates a file with the date in the path
+            time_t timestamp;
+            time(&timestamp);
             std::string filename = ctime(&timestamp);
             std::replace(filename.begin(), filename.end(), ' ', '_');
             std::replace(filename.begin(), filename.end(), ':', '-');
             path = path + filename;
             
             int fd = open(path.c_str(), O_RDWR|O_CREAT);
+            if (fd == -1)
+                throw(std::exception());
             write(fd, (request.getRequest()).c_str(), request.getRequest().size());
             close(fd);
         }
         else
         {
-            if (request.searchProperty("Content-Type").find("multipart/form-data") != std::string::npos)
+            //find the boundary
+            size_t startline = request.getRequest().find("boundary=") + 9;
+            size_t endline = request.getRequest().find("\r\n", startline);
+            std::string boundary = request.getRequest().substr(startline, endline - startline - 1);
+            
+            size_t pos = request.getRequest().find("\r\n");
+
+            //check if file exists
+            size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
+            if (header_advance == std::string::npos)
             {
-                size_t startline = request.getRequest().find("boundary=") + 9;
-                size_t endline = request.getRequest().find("\r\n", startline);
-                std::string boundary = request.getRequest().substr(startline, endline - startline - 1);
-                size_t pos = request.getRequest().find("\r\n");
-
-                while (pos != std::string::npos)
+                return;
+            }
+            std::string header = request.getRequest().substr(pos, header_advance - pos + 4);
+            std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
+            int i = 1;
+            struct stat buffer;
+            while (stat(filename.c_str(), &buffer) == 0)
+            { 
+                std::stringstream X;
+                X << i;
+                std::string num = X.str();
+                filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
+                i++;
+            }
+            
+            while (pos != std::string::npos)
+            {
+                //find next boundary (chunk)
+                pos = pos + boundary.size();
+                size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
+                if (header_advance == std::string::npos)
                 {
-                    pos = pos + boundary.size();
-                    size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
-                    if (header_advance == std::string::npos)
-                    {
-                            return;
-                    }
-                    
-                    //check if file exists 
-                    std::string header = request.getRequest().substr(pos, header_advance - pos + 4);
-                    std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
-                    int i = 1;
-                    struct stat buffer;
-                    while (stat(filename.c_str(), &buffer) == 0)
-                    { 
-                        std::stringstream X;
-                        X << i;
-                        std::string num = X.str();
-                        filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
-                        i++;
-                    }
-                    pos = header_advance + 4;
-                    size_t part_end = request.getRequest().find(boundary, pos);
-                    if (part_end == std::string::npos)
-                        break;
-                    std::string file_content = request.getRequest().substr(pos, part_end - pos);
-                    std::ofstream file;
-
-                    file.open(filename.c_str());
-                    file << file_content;
-                    file.close();
-                    pos = request.getRequest().find(boundary, pos);
+                    return;
                 }
+                pos = header_advance + 4;
+                size_t part_end = request.getRequest().find(boundary, pos);
+                if (part_end == std::string::npos)
+                    break;
+
+                //write content to file
+                std::string file_content = request.getRequest().substr(pos, part_end - pos);
+                std::ofstream file;
+                file.open(filename.c_str(), std::ios::app);
+                if (!file.is_open()) 
+                {
+                    throw(std::exception());
+                }
+                file << file_content;
+                file.close();
+                pos = request.getRequest().find(boundary, pos);
             }
         }
-        
-        
-    }
+    }    
 }
+
 
 std::string HttpResponse::getFilenameUploaded(std::string header)
 {
@@ -296,10 +312,65 @@ std::string HttpResponse::getFilenameUploaded(std::string header)
 }
 
 
-
 void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Server *server)
 {
-    (void) server;
     (void) request;
-    (void) path;
+    if (path.find_last_of('/') != path.size() - 1)
+    {
+        std::string filename = server->getRoot() + path;
+        int result = access(filename.c_str(), W_OK);
+        if (result == -1)
+        {
+            if (errno == EACCES || errno == EROFS )
+                throw(std::exception());
+            else if (errno == ENOENT)
+                throw(std::exception());
+        }
+        std::remove(filename.c_str());
+    }
+    else //if it is a folder
+    {
+        std::string folder = server->getRoot() + path;
+        if (access(folder.c_str(), W_OK) != 0)
+        {
+            if (errno == EACCES || errno == EROFS )
+                throw(std::exception());
+            else if (errno == ENOENT)
+                throw(std::exception());
+        }
+        DIR *delDirectory;
+        dirent *dirfile;
+        delDirectory = opendir(folder.c_str());
+        while ((dirfile = readdir(delDirectory)) != NULL)
+        {
+            if (dirfile->d_name[0] != '.')
+                continue;
+            std::string file = path + dirfile->d_name;
+            
+            //check if any dirfile is a directory
+            struct stat entryInfo;
+            if (stat(file.c_str(), &entryInfo) == 0)
+            {
+                if S_ISDIR(entryInfo.st_mode)
+                    throw(std::exception());
+            }
+            
+            //check if any dirfile is a deletable file
+            if (access(folder.c_str(), W_OK) != 0)
+            {
+                if (errno == EACCES || errno == EROFS )
+                    throw(std::exception());
+                else if (errno == ENOENT)
+                    throw(std::exception());
+            }
+        }
+        while ((dirfile = readdir(delDirectory)) != NULL)
+        {
+            if (dirfile->d_name[0] != '.')
+                continue;
+            std::string file = path + dirfile->d_name;
+            remove(file.c_str());
+        }
+        rmdir(folder.c_str());
+    }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 15:33:52 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/03 15:13:46 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,13 @@ void Http::webservInitializer(std::string confPath)
         {
             _listServers[i]->printConfig();
         }
+        
+        for (size_t i = 0; i < _listServers.size(); i++)
+        {
+            _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+        }
+        this->addServersToEpoll();
+        
         return ;
     }
     Server *server = new Server();
@@ -256,6 +263,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         if (root == NULL)
             throw(std::exception());
         closedir(root);
+        
         //check method
         size_t i = 0;
         while ( i < (server->getAllowedMethods()).size())

@@ -54,6 +54,7 @@ class Server : public Socket
         
         void serverChecker(std::string &line, std::ifstream &file);
         void serverKeywords(std::string key, std::string &line);
+        void setDefaultProperties( void );
         void printConfig() const;
 };
 
