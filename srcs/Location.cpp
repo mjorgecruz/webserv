@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 11:44:18 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/04 14:06:25 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ std::string Location::getRedirect()
     return _redirect;
 }
 
-bool Location::getAutoIndex()
+int Location::getAutoIndex()
 {
     return _autoIndex;
 }
@@ -365,3 +365,15 @@ void Location::keywordReturn(std::istringstream &iss)
         throw(std::exception());
     }
 }
+
+
+//cgi path apces and shit that come after 
+//both server and llocation fieldssss
+//payth spaces 
+// auto index L and S
+// error poage  L and S
+//max body size space after number 
+//rooot same old thing 
+// redirect accepting more than one thing aswell is not ok 
+
+// listen trouble with spaces after and other words in line

@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 11:44:47 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/04 14:01:29 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class Location
         std::vector<std::string> getAllowedMethods();
         std::map<int, std::string> getErrorPages();
         std::string getRedirect();
-        bool getAutoIndex();
+        int getAutoIndex();
         
         void parseLocation(std::string &line, std::ifstream &file);
         void printLocationConfig() const;
