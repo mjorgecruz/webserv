@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 11:03:36 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:55:00 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -105,7 +105,7 @@ void HttpResponse::writeContent(std::string path, Server *server)
             std::fstream file;
             file.open(path.c_str());
             if (!file.is_open())
-                throw(std::exception());
+                throw(std::HttpPageNotFoundException());
             std::string line;
             
             while (getline(file, line))
