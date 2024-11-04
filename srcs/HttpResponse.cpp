@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/03 12:07:32 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:03:36 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpResponse.hpp"
 
@@ -34,7 +34,7 @@ void HttpResponse::setGetHeader()
     std::ostringstream bufferM;
     bufferM << "HTTP/1.1" << _status << result
             << "\r\ncontent-type: " << _contentType
-            << "\r\nserver:" << _host << ":" << _port
+            << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
             << "\r\n\r\n";
     _header = bufferM.str(); 
@@ -99,20 +99,19 @@ void HttpResponse::writeContent(std::string path, Server *server)
         try
         {
             path = server->getRoot() + path;
-            size_t bytes_read;
-            fd = open(path.c_str(), O_RDONLY);
-            if (fd == -1)
-            {
-                if (errno == ENOENT)
-                    throw(HttpRequest::HttpPageNotFoundException());
-                else if (errno == EACCES)
-                    throw(std::exception());
-            }
+            
             memset(buffer, 0, 100);
-            while ((bytes_read = read(fd, buffer, 99)) > 0)
+            
+            std::fstream file;
+            file.open(path.c_str());
+            if (!file.is_open())
+                throw(std::exception());
+            std::string line;
+            
+            while (getline(file, line))
             {
-                content = content + buffer;
-                memset(buffer, 0, 100);
+                content = content + line;
+                content = content + "\n";
             }
             _status = 200;
             setContent(content);

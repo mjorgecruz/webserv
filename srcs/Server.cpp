@@ -16,6 +16,27 @@
 Server::Server()
 {
     _maxBodySize = 0;
+    
+    std::vector<std::string> possibleErrors;
+    possibleErrors.push_back("204");
+    possibleErrors.push_back("301");
+    possibleErrors.push_back("403");
+    possibleErrors.push_back("404");
+    possibleErrors.push_back("409");
+    possibleErrors.push_back("413");
+    possibleErrors.push_back("500");
+    possibleErrors.push_back("502");
+    possibleErrors.push_back("503");
+    possibleErrors.push_back("504");
+    
+    for (size_t i = 0; i < possibleErrors.size(); i++)
+    {
+        int error = static_cast<int> (strtol(possibleErrors[i].c_str(), NULL, 10));
+        std::string root = (std::getenv("HOME"));
+        root = root + "/html" + "/";
+        addErrorPage(error, (root + possibleErrors[i] + ".html"));
+    }
+
 }
 Server::~Server()
 {
@@ -327,6 +348,7 @@ void Server::serverKeywords(std::string key, std::string &line)
     {
         std::istringstream iss(line);
         iss >> _root >> _root;
+        std::cout << "root: " << _root << std::endl;
         if (_root[0] != '/')
         {
             std::cout << "Invalid root path: " << _root << "\n";
@@ -421,6 +443,7 @@ void Server::printConfig() const
 
     std::cout << "Host: " << _host << std::endl;
     std::cout << "Port: " << _ports << std::endl;
+    std::cout << "Root: " << _root << std::endl;
 
     std::cout << "Server Names: ";
     for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it)
@@ -508,27 +531,15 @@ void Server::setDefaultProperties( void )
     if (this->getIndex().empty())
         _index.push_back("index.html");
 
-    std::vector<std::string> possibleErrors;
-    possibleErrors.push_back("204");
-    possibleErrors.push_back("301");
-    possibleErrors.push_back("403");
-    possibleErrors.push_back("404");
-    possibleErrors.push_back("409");
-    possibleErrors.push_back("413");
-    possibleErrors.push_back("500");
-    possibleErrors.push_back("502");
-    possibleErrors.push_back("503");
-    possibleErrors.push_back("504");
-    
-    for (size_t i = 0; i < possibleErrors.size(); i++)
-    {
-        if (this->getErrorPages().find(static_cast<int> (strtol(possibleErrors[i].c_str(), NULL, 10))) == this->getErrorPages().end())
-        {
-            std::string root = (std::getenv("HOME"));
-            root = root + "/html" + "/";
-            addErrorPage(static_cast<int> (strtol(possibleErrors[i].c_str(), NULL, 10)), (root + possibleErrors[i] + ".html"));
-        }
-    }
     if (this->_maxBodySize == 0)
         _maxBodySize = 1024 * 1024;
+
+
+    for (std::map<int,std::string>::iterator it = _errorPages.begin(); it != _errorPages.end(); it++)
+    {
+        if ((it->second)[0] != '/')
+        {
+            addErrorPage(it->first, (_root + "/" + (it->second)));
+        }
+    }
 }

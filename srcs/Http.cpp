@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/03 15:13:46 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/04 10:08:31 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -194,7 +194,7 @@ void Http::data_transfer(int socket)
     server_fd = correspondingServer->getSocketFd();
 
     //create a struct with all info
-
+    
 
     //fill request properties
     request->completeRequest(socket);
@@ -272,7 +272,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             {
                 if (type == "GET")
                 {
-                    //response->setContentType(received->getMimeType());
+                    response->setContentType(received->getMimeType());
                     response->writeContent(path, server);
                     response->setGetHeader();
                 }
@@ -298,6 +298,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     {
         //fd = open();
     }
+    
     send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
     send(socket, response->getContent().c_str(), response->getContent().size(), 0);
     
