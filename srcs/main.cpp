@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/02 18:27:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/04 09:57:08 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ int main (int ac, char **av)
     try{
         int fd = open(av[1], O_RDONLY);
         if (fd == -1)
+        {
             http.webservInitializer("");
+        }
         else
         {
             close(fd);
