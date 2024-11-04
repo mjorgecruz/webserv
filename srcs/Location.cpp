@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 11:01:37 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:44:18 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void Location::addAllowedMethods(std::string method)
 {
     _allowedMethods.push_back(method);
 }
+
 void Location::addErrorPages(int errorNum, std::string error)
 {
     _errorPages[errorNum] = error;
@@ -42,7 +43,7 @@ void Location::setRedirect(std::string redir)
     _redirect = redir;
 }
 
-void Location::setAutoIndex(bool autoIndex)
+void Location::setAutoIndex(int autoIndex)
 {
     _autoIndex = autoIndex;
 }
@@ -143,13 +144,10 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     {
         if (line.find_first_not_of(" \t") == std::string::npos)
             continue;
-
         line.erase(0, line.find_first_not_of(" \t"));
-
+        
         if (line == "}")
-        {
             break;
-        }
 
         if (line[line.size() - 1] != ';')
         {
@@ -189,7 +187,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         else if (keyword == "return")
         {
             hasValidKeywords = true;
-            iss >> _redirect;
+            keywordReturn(iss);
         }
         else if (keyword == "autoindex")
         {
@@ -281,12 +279,14 @@ void Location::keywordIndex(std::istringstream &iss)
 
 void Location::keywordRoot(std::istringstream &iss)
 {
-    iss >> _root;
-    if (_root[0] != '/')
+    std::string newRoot;
+    iss >> newRoot;
+    if (newRoot[0] != '/')
     {
-        std::cout << "Invalid root path: " << _root << "\n";
+        std::cout << "Invalid root path: " << newRoot << "\n";
         throw std::exception();
     }
+    setRoot(newRoot);
 }
 
 void Location::keywordCgiPath(std::istringstream &iss)
@@ -309,7 +309,7 @@ void Location::keywordMethods(std::istringstream &iss)
                     std::cout << "Invalid HTTP method in allow_methods: " << method << "\n";
                     throw std::exception();
                 }
-                _allowedMethods.push_back(method);
+                addAllowedMethods(method);
             }
 }
 
@@ -350,5 +350,18 @@ void Location::keywordErrorPages(std::istringstream &iss)
     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
     {
         addErrorPages(*it, errorPage);
+    }
+}
+
+void Location::keywordReturn(std::istringstream &iss)
+{
+    std::string redir;
+    iss >> redir;
+    if (!redir.empty())
+        setRedirect(redir);
+    else
+    {
+        std::cout << "expected value after return" << std::endl;
+        throw(std::exception());
     }
 }

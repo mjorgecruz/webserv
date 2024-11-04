@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 10:59:32 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/04 11:44:47 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class Location
         void addAllowedMethods(std::string method);
         void addErrorPages(int errorNum, std::string error);
         void setRedirect(std::string redir);
-        void setAutoIndex(bool autoindex);
+        void setAutoIndex(int autoindex);
         
         std::string getPath();
         std::vector<std::string> getIndex();
@@ -53,5 +53,6 @@ class Location
         void keywordCgiPath(std::istringstream &iss);
         void keywordMethods(std::istringstream &iss);
         void keywordErrorPages(std::istringstream &iss);
+        void keywordReturn(std::istringstream &iss);
 };
 
