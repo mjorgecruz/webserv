@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 11:55:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/04 15:48:30 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -90,7 +90,6 @@ std::string HttpResponse::getContent()
 
 void HttpResponse::writeContent(std::string path, Server *server)
 {
-    char buffer[100];
     std::string content = "";
     int fd;
     
@@ -100,12 +99,10 @@ void HttpResponse::writeContent(std::string path, Server *server)
         {
             path = server->getRoot() + path;
             
-            memset(buffer, 0, 100);
-            
             std::fstream file;
             file.open(path.c_str());
             if (!file.is_open())
-                throw(std::HttpPageNotFoundException());
+                throw(HttpRequest::HttpPageNotFoundException());
             std::string line;
             
             while (getline(file, line))
@@ -119,39 +116,39 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            path = server->getRoot() + server->getErrorPages().find(404)->second;
+            path = server->getErrorPages().find(404)->second;
             _status = 404;
-            fd = open(path.c_str(), O_RDONLY);
-            if (fd == -1)
+            std::fstream file;
+            file.open(path.c_str());
+            if (!file.is_open())
             {
                 _status = 500;
-                throw(std::exception()); //error 500 escrito na string
+                throw(std::exception());
             }
-            memset(buffer, 0, 100);
-            while (read(fd, buffer, 99))
+            std::string line;
+            while (getline(file, line))
             {
-                content = content + buffer;
-                memset(buffer, 0, 100);
+                content = content + line;
+                content = content + "\n";
             }
-            std::ostringstream bufferM;
-            std::string output = bufferM.str();
             setContent(content);
             setLength(content.size());
         }
         catch (std::exception &e)
         {
             path = server->getErrorPages().find(403)->second;
-            fd = open(path.c_str(), O_RDONLY);
-            if (fd == -1)
+            std::fstream file;
+            file.open(path.c_str());
+            if (!file.is_open())
             {
                 _status = 500;
-                throw(std::exception()); //error 500 escrito na string
+                throw(std::exception());
             }
-            memset(buffer, 0, 100);
-            while (read(fd, buffer, 99))
+            std::string line;
+            while (getline(file, line))
             {
-                content = content + buffer;
-                memset(buffer, 0, 100);
+                content = content + line;
+                content = content + "\n";
             }
             setContent(content);
             setLength(content.size());
