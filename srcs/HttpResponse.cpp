@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 15:50:10 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 11:50:49 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -17,7 +17,6 @@ HttpResponse::HttpResponse(int client , Server *server)
     _client_fd = client;
     _host = server->getHost();
     _port = server->getPorts();
-
 
 }
 
@@ -32,7 +31,7 @@ void HttpResponse::setGetHeader()
     if(_status == 200)
         result = "OK";
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1" << _status << result
+    bufferM << "HTTP/1.1 " << _status << " " << result
             << "\r\ncontent-type: " << _contentType
             << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
@@ -43,9 +42,9 @@ void HttpResponse::setGetHeader()
 void HttpResponse::setPostHeader()
 {
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1" << _status
+    bufferM << "HTTP/1.1 " << _status
             << "\r\ncontent-type: " << _contentType
-            << "\r\nserver:" << _host << ":" << _port
+            << "\r\nserver: " << _host
             << "\r\ncontent-length: " << _contentLength
             << "\r\n\r\n";
     _header = bufferM.str(); 
@@ -91,7 +90,7 @@ std::string HttpResponse::getContent()
 void HttpResponse::writeContent(std::string path, Server *server)
 {
     std::string content = "";
-    int fd;
+    std::fstream file;
     
     if (path.find_last_of('/') != path.size() - 1)
     {
@@ -99,12 +98,10 @@ void HttpResponse::writeContent(std::string path, Server *server)
         {
             path = server->getRoot() + path;
             
-            std::fstream file;
             file.open(path.c_str());
             if (!file.is_open())
                 throw(HttpRequest::HttpPageNotFoundException());
             std::string line;
-            
             while (getline(file, line))
             {
                 content = content + line;
@@ -160,9 +157,11 @@ void HttpResponse::writeContent(std::string path, Server *server)
         {
             if (server->getIndex().empty())
             {
+                std::fstream file;
                 path = server->getRoot() + "index.html";
-                fd = open(path.c_str(), O_RDONLY);
-                if (fd == -1)
+                file.open(path.c_str());
+                _status = 200;
+                if (!file.is_open())
                 {
                     if (errno == ENOENT)
                         throw(HttpRequest::HttpPageNotFoundException());
@@ -175,21 +174,24 @@ void HttpResponse::writeContent(std::string path, Server *server)
                 for (size_t i = 0; i < server->getIndex().size(); i++)
                 {
                     path = server->getRoot() + "/" + server->getIndex()[i];
-                    fd = open(path.c_str(), O_RDONLY);
-                    if (fd != -1)
+                    file.open(path.c_str());
+                    _status = 200;
+                    if (file.is_open())
                         break;
                 }
-                if (fd == -1)
+                if (!file.is_open())
                 {
-                    throw(std::exception());
+                    if (errno == ENOENT)
+                        throw(std::exception());
+                    else if (errno == EACCES)
+                        throw(std::exception());
                 }
             }
-            size_t bytes_read;
-            memset(buffer, 0, 100);
-            while ((bytes_read = read(fd, buffer, 99)) > 0)
+            std::string line;
+            while (getline(file, line))
             {
-                content = content + buffer;
-                memset(buffer, 0, 100);
+                content = content + line;
+                content = content + "\n";
             }
             setContent(content);
             setLength(content.size());
@@ -209,19 +211,28 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
     {
         std::string filename = server->getRoot() + path;
         int fd = open(path.c_str(), O_RDWR|O_CREAT);
+        if (fd < 0)
+        {
+            std::cout << "ERRNO: " << errno << std::endl;
+            throw(std::exception());
+        }
+        _status = 204;
         write(fd, (request.getRequest()).c_str(), request.getRequest().size());
         close(fd);
-        
     }
     else //if it is a folder
     {
         //check if path exists
         path = server->getRoot() + path;
-        DIR *dir = opendir(path.c_str());
-        if (dir == NULL){
-            throw(std::exception());
+        struct stat buf;
+
+        if(stat(path.c_str(), &buf) == -1)
+        {
+            if (errno == ENOENT)
+                throw(std::exception());
+            else if( errno == EACCES)
+                throw(std::exception());
         }
-        closedir(dir);
         if (request.searchProperty("Content-Type").find("multipart/form-data") == std::string::npos)
         {
             //creates a file with the date in the path
@@ -293,7 +304,8 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 pos = request.getRequest().find(boundary, pos);
             }
         }
-    }    
+    }
+    _status = 204;    
 }
 
 
