@@ -20,19 +20,13 @@
         <button type="submit">Send</button>
     </form>
 
-    <button onclick="openModal()">Upload File</button>
+    <h1>Upload Files</h1>
 
-    <!-- The Modal -->
-    <div id="uploadModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>Select File to Upload</h2>
-            <form action="/upload" method="POST" enctype="multipart/form-data">
-                <input type="file" name="file" required><br><br>
-                <button type="submit">Upload</button>
-            </form>
-        </div>
-    </div>  
+    <!-- Hidden File Input -->
+    <form id="uploadForm" action="/submit/" method="post" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" style="display: none;" onchange="submitForm()">
+        <button type="button" class="button" onclick="triggerFileUpload()">Choose File to Upload</button>
+    </form>  
 
     <h2>Send a DELETE Request</h2>
     <form onsubmit="event.preventDefault(); sendDeleteRequest();">
@@ -73,7 +67,15 @@
                 closeModal();
             }
         }
-    }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        // Function to submit the form after file selection
+        function submitForm() {
+            document.getElementById('uploadForm').submit();
+        }
 </script>
 </body>
 </html>

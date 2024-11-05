@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Files</title>
+</head>
+
+<body>
+    <h1>Upload Files</h1>
+
+    <!-- Upload File Form -->
+    <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="uploadFile(event)">
+        <label for="file">Choose a file to upload:</label>
+        <input type="file" id="file" name="file">
+        <input type="submit" value="Upload" class="button">
+        <input filename="file" value="Upload" class="button">
+    </form>
+
+    <!-- Back to Menu Link -->
+    <a href="/index.html" class="button">Back to Menu</a>
+    <script>
+        async function uploadFile(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Send the POST request with custom headers
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'X-Filename': file.name // Add the filename in a custom header
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('File uploaded successfully.');
+                } else {
+                    alert('File upload failed.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during file upload.');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

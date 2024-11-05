@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 11:50:49 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 14:11:05 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -55,7 +55,7 @@ void HttpResponse::setDeleteHeader()
     std::ostringstream bufferM;
     bufferM << "HTTP/1.1" << _status
             << "\r\ncontent-type: " << _contentType
-            << "\r\nserver:" << _host << ":" << _port
+            << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
             << "\r\n\r\n";
     _header = bufferM.str(); 
@@ -266,6 +266,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
             }
             std::string header = request.getRequest().substr(pos, header_advance - pos + 4);
             std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
+            std::cout << filename << std::endl;
             int i = 1;
             struct stat buffer;
             while (stat(filename.c_str(), &buffer) == 0)
@@ -315,6 +316,8 @@ std::string HttpResponse::getFilenameUploaded(std::string header)
     size_t pos = header.find("filename=\"") + 10;
     size_t final_pos = header.find("\"", pos);
     filename = header.substr(pos, final_pos - pos);
+    std::cout << header << std::endl;
+    
     return filename;
     
 }
