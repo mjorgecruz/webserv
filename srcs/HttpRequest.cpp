@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 15:56:39 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 19:39:39 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -57,15 +57,20 @@ void HttpRequest::fillReqProperties()
 {
     std::string partial_line;
     std::string prop;
-    std::stringstream X(_request);
+
+    setHeader();
+    setRequestBody();
+
+    std::stringstream X(_header);
     
     getline(X, partial_line);
     _requestType = partial_line;
+    std::cout << _requestType <<std::endl;
 
     while (getline(X, partial_line, ':'))
     {
         if (partial_line.empty())
-            continue;
+            break;
         if (_reqProperties.find(partial_line) == _reqProperties.end())
         {
             prop = partial_line;
@@ -75,29 +80,21 @@ void HttpRequest::fillReqProperties()
             std::pair<std::string, std::string> properties = std::make_pair(prop, partial_line);
             _reqProperties.insert(properties);
         }
-    }
-    std::string body = "";
-    while (getline(X, partial_line))
-    {
-        body = body + partial_line;
-    }
-    setRequestBody(body);
-    std::cout << getRequestType() << std::endl;
-    for (std::map<std::string, std::string>::iterator it = _reqProperties.begin(); it != _reqProperties.end(); it++)
-    {
-        std::cout << it->first << it->second << std::endl;
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    
+    }   
 }
 
-void HttpRequest::setRequestBody(std::string body)
+void HttpRequest::setRequestBody()
 {
-    _requestBody = body;
+    size_t header_end = _request.find("\r\n\r\n");
+    _body = _request.substr(header_end + 4, _request.size() - 1 - header_end + 4);
 }
 
-
+void HttpRequest::setHeader()
+{
+    size_t header_end = _request.find("\r\n\r\n");
+    _header = _request.substr(0, header_end);
+    std::cout << _header << std::endl;
+}
 
 void HttpRequest::defineMimeType()
 {
@@ -187,4 +184,9 @@ std::string HttpRequest::getRequest()
 std::string HttpRequest::getRequestBody()
 {
     return _requestBody;
+}
+
+std::string HttpRequest::getHeader( void)
+{
+    return _header;
 }

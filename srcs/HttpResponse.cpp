@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 16:12:10 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 19:47:33 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -251,20 +251,21 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
         }
         else
         {
-            //find the boundary
-            size_t startline = request.getRequest().find("boundary=") + 9;
-            size_t endline = request.getRequest().find("\r\n", startline);
-            std::string boundary = request.getRequest().substr(startline, endline - startline - 1);
+            //find the boundary 
+            size_t startline = request.getHeader().find("boundary=") + 9;
+            size_t endline = request.getHeader().find("\r\n", startline);
+            std::string boundary = request.getHeader().substr(startline, endline - startline - 1);
+            std::cout << boundary << std::endl;
+            size_t pos = 0;
             
-            size_t pos = request.getRequest().find("\r\n");
-
             //check if file exists
-            size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
+            size_t header_advance = request.getRequestBody().find("\r\n\r\n", pos);
             if (header_advance == std::string::npos)
             {
                 return;
             }
-            std::string header = request.getRequest().substr(0, header_advance + 4);
+            std::string header = request.getRequestBody().substr(0, header_advance + 4);
+            std::cout << "HEADER_____\n" << header << std::endl;
             std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
             std::cout << filename << std::endl;
             int i = 1;
@@ -277,23 +278,23 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
                 i++;
             }
-            
+            pos = header_advance + 4;
             while (pos != std::string::npos)
             {
                 //find next boundary (chunk)
                 pos = pos + boundary.size();
-                size_t header_advance = request.getRequest().find("\r\n\r\n", pos);
+                size_t header_advance = request.getRequestBody().find("\r\n\r\n", pos);
                 if (header_advance == std::string::npos)
                 {
                     return;
                 }
                 pos = header_advance + 4;
-                size_t part_end = request.getRequest().find(boundary, pos);
+                size_t part_end = request.getRequestBody().find(boundary, pos);
                 if (part_end == std::string::npos)
                     break;
 
                 //write content to file
-                std::string file_content = request.getRequest().substr(pos, part_end - pos);
+                std::string file_content = request.getRequestBody().substr(pos, part_end - pos);
                 std::ofstream file;
                 file.open(filename.c_str(), std::ios::app);
                 if (!file.is_open()) 
@@ -302,7 +303,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 }
                 file << file_content;
                 file.close();
-                pos = request.getRequest().find(boundary, pos);
+                pos = request.getRequestBody().find(boundary, pos);
             }
         }
     }

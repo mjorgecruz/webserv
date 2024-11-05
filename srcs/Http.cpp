@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 11:44:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 19:35:19 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -245,6 +245,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::string content;
 
     //analyze request
+    std::cout << received->getRequestType() << std::endl;
     std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
     //check version
