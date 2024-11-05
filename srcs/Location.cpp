@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 17:33:29 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/05 18:13:34 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,18 +313,31 @@ void Location::keywordErrorPages(std::istringstream &iss)
     std::string token;
     std::vector<int> errorCodes;
     std::string errorPage;
+    int array[] = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417 ,418, 420, 421, 422, 423, 424, 425, 426, 428, 429, 431, 451};
+    std::vector<int> valid;
+    valid.assign(array, array + 60);
+    bool found;
     
     while (iss >> token)
     {
+        found = false;
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            if (errorCode < 400 || errorCode > 599)
+            for(size_t i = 0; i < valid.size(); i++)
             {
-                std::cout << "Invalid error code: " << errorCode << "\n";
+                if (valid[i] == errorCode)
+                {
+                    found = true;
+                    errorCodes.push_back(errorCode);
+                    break;
+                }
+            }
+            if (found == false)
+            {
+                std::cout << "Error: Invalid Error Code\n";
                 throw std::exception();
             }
-            errorCodes.push_back(errorCode);
         }
         else
         {
