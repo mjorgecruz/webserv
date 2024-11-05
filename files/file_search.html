@@ -10,11 +10,10 @@
     <h1>Upload Files</h1>
 
     <!-- Upload File Form -->
-    <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="uploadFile(event)">
+    <form action="/submit" method="post" enctype="multipart/form-data">
         <label for="file">Choose a file to upload:</label>
         <input type="file" id="file" name="file">
         <input type="submit" value="Upload" class="button">
-        <input filename="file" value="Upload" class="button">
     </form>
 
     <!-- Back to Menu Link -->

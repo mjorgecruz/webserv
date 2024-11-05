@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 14:11:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/05 16:12:10 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -264,7 +264,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
             {
                 return;
             }
-            std::string header = request.getRequest().substr(pos, header_advance - pos + 4);
+            std::string header = request.getRequest().substr(0, header_advance + 4);
             std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
             std::cout << filename << std::endl;
             int i = 1;
