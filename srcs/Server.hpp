@@ -64,7 +64,8 @@ class Server : public Socket
         void keywordServerName(std::string &line);
         void keywordIndex(std::string &line);
         void keywordRoot(std::string &line);
+        void keywordErrorPages(std::string &line);
+        void keywordMaxBodySize(std::string &line);
 };
-
 
 #endif

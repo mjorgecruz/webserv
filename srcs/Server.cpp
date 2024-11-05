@@ -260,78 +260,79 @@ void Server::serverKeywords(std::string key, std::string &line)
     }
     else if (key == "error_page")
     {
-        std::map<int, std::string> errorPages = _errorPages;
-        std::string token, temp;
-        std::istringstream iss(line);
-        iss >> temp;
+        keywordErrorPages(line);
+    //     std::map<int, std::string> errorPages = _errorPages;
+    //     std::string token, temp;
+    //     std::istringstream iss(line);
+    //     iss >> temp;
 
-        std::vector<int> errorCodes;
-        std::string errorPage;
+    //     std::vector<int> errorCodes;
+    //     std::string errorPage;
 
-        while (iss >> token)
-        {
-            if (isNumeric(token))
-            {
-                int errorCode = std::atoi(token.c_str());
-                if (errorCode < 400 || errorCode > 599)
-                {
-                    std::cout << "Invalid error code: " << errorCode << "\n";
-                    throw std::exception();
-                }
-                errorCodes.push_back(errorCode);
-            }
-            else
-            {
-                errorPage = token;
-                break;
-            }
-        }
-        if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-        {
-            std::cout << "Invalid error page path: " << errorPage << "\n";
-            throw std::exception();
-        }
-        if (errorCodes.empty())
-        {
-            std::cout << "Invalid error: " << errorPage << "\n";
-            throw std::exception();
-        }
-        for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
-        {
-            errorPages[*it] = errorPage;
-        }
-        setErrorPages(errorPages);
+    //     while (iss >> token)
+    //     {
+    //         if (isNumeric(token))
+    //         {
+    //             int errorCode = std::atoi(token.c_str());
+    //             if (errorCode < 400 || errorCode > 599)
+    //             {
+    //                 std::cout << "Invalid error code: " << errorCode << "\n";
+    //                 throw std::exception();
+    //             }
+    //             errorCodes.push_back(errorCode);
+    //         }
+    //         else
+    //         {
+    //             errorPage = token;
+    //             break;
+    //         }
+    //     }
+    //     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+    //     {
+    //         std::cout << "Invalid error page path: " << errorPage << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (errorCodes.empty())
+    //     {
+    //         std::cout << "Invalid error: " << errorPage << "\n";
+    //         throw std::exception();
+    //     }
+    //     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+    //     {
+    //         errorPages[*it] = errorPage;
+    //     }
+    //     setErrorPages(errorPages);
     }
     else if (key == "max_body_size")
     {
-        std::string sizeValue, temp;
-        std::istringstream iss(line);
-        iss >> temp >> sizeValue;
+    //     std::string sizeValue, temp;
+    //     std::istringstream iss(line);
+    //     iss >> temp >> sizeValue;
 
-        char* end;
-        errno = 0;
-        long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
+    //     char* end;
+    //     errno = 0;
+    //     long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
 
-        if (errno == ERANGE || maxBodySize < 0)
-        {
-            std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
-            throw std::exception();
-        }
-        if (*end == 'M' && *(end + 1) == '\0')
-        {
-            maxBodySize *= 1024 * 1024;
-        }
-        else if (*end != '\0') 
-        {
-            std::cout << "Invalid max_body_size: " << sizeValue << "\n";
-            throw std::exception();
-        }
-        if (maxBodySize <= 0)
-        {
-            std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
-            throw std::exception();
-        }
-        _maxBodySize = maxBodySize;
+    //     if (errno == ERANGE || maxBodySize < 0)
+    //     {
+    //         std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (*end == 'M' && *(end + 1) == '\0')
+    //     {
+    //         maxBodySize *= 1024 * 1024;
+    //     }
+    //     else if (*end != '\0') 
+    //     {
+    //         std::cout << "Invalid max_body_size: " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (maxBodySize <= 0)
+    //     {
+    //         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     _maxBodySize = maxBodySize;
     }
     else
     {
@@ -562,3 +563,77 @@ void Server::keywordRoot(std::string &line) // prone to errors
         throw std::exception();
     }
 }
+
+void Server::keywordErrorPages(std::string &line)
+{
+    std::map<int, std::string> errorPages = _errorPages;
+    std::string token, temp;
+    std::istringstream iss(line);
+    iss >> temp;
+    std::vector<int> errorCodes;
+    std::string errorPage;
+    while (iss >> token)
+    {
+        if (isNumeric(token))
+        {
+            int errorCode = std::atoi(token.c_str());
+            if (errorCode < 400 || errorCode > 599)
+            {
+                std::cout << "Invalid error code: " << errorCode << "\n";
+                throw std::exception();
+            }
+            errorCodes.push_back(errorCode);
+        }
+        else
+        {
+            errorPage = token;
+            break;
+        }
+    }
+    if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+    {
+        std::cout << "Invalid error page path: " << errorPage << "\n";
+        throw std::exception();
+    }
+    if (errorCodes.empty())
+    {
+        std::cout << "Invalid error: " << errorPage << "\n";
+        throw std::exception();
+    }
+    for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+    {
+        errorPages[*it] = errorPage;
+    }
+    setErrorPages(errorPages);
+}
+
+void Server::keywordMaxBodySize(std::string &line)
+{
+    std::string sizeValue, temp;
+    std::istringstream iss(line);
+    iss >> temp >> sizeValue;
+    char* end;
+    errno = 0;
+    long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
+    if (errno == ERANGE || maxBodySize < 0)
+    {
+        std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (*end == 'M' && *(end + 1) == '\0')
+    {
+        maxBodySize *= 1024 * 1024;
+    }
+    else if (*end != '\0') 
+    {
+        std::cout << "Invalid max_body_size: " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (maxBodySize <= 0)
+    {
+        std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    _maxBodySize = maxBodySize;
+}
+    
