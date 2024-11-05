@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 14:06:25 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/05 16:16:17 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,6 +355,7 @@ void Location::keywordErrorPages(std::istringstream &iss)
 
 void Location::keywordReturn(std::istringstream &iss)
 {
+    std::string remaining;
     std::string redir;
     iss >> redir;
     if (!redir.empty())
@@ -362,6 +363,12 @@ void Location::keywordReturn(std::istringstream &iss)
     else
     {
         std::cout << "expected value after return" << std::endl;
+        throw(std::exception());
+    }
+    iss >> remaining;
+    if (!remaining.empty())
+    {
+        std::cout << "return does not accept more than 1 variable!" << std::endl;
         throw(std::exception());
     }
 }
