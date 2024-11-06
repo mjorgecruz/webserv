@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# Initialize counters
 total_tests=0
 passed_tests=0
+failed_files=()
 
-# Function to run tests on a given directory with an expected exit code
+print_header() {
+    local header_text=$1
+    echo -e "\n\e[1;33m========== $header_text ==========\e[0m"
+}
+
 run_tests() {
     local dir=$1
     local expected_exit_code=$2
@@ -12,41 +16,48 @@ run_tests() {
     for file in "$dir"/*.conf; do
         ((total_tests++))
 
-        # Run the webserver with the test file, silencing its output
         ./webserv "$file" > /dev/null 2>&1
         
-        # Check the exit status
         exit_code=$?
         if [ $exit_code -eq $expected_exit_code ]; then
-            # Green for passed tests
             echo -e "\e[1;32m✅ $(basename "$file")\e[0m"
             ((passed_tests++))
         else
-            # Red for failed tests
             echo -e "\e[1;31m❌ $(basename "$file")\e[0m"
+            failed_files+=("$(basename "$file")")
         fi
     done
 }
 
-# Run tests for files in testconfs folder (should return 255 to pass)
-run_tests "testconfs" 255
+print_header "LOCATION SIDE CONFIG ERRORS"
+run_tests "/home/luis-ffe/webserv/testconfs/ko_location" 255
 
-# Run tests for files in testconfs/works folder (should return 1 to pass)
-run_tests "testconfs/works" 1
+print_header "SERVER SIDE CONFIG ERRORS"
+run_tests "/home/luis-ffe/webserv/testconfs/ko_server" 255
 
-# Print summary
+print_header "WORKING CONFIGURATIONS"
+run_tests "/home/luis-ffe/webserv/testconfs/ok_working" 1
+
 echo -e "\n========================"
 echo -e "         Summary        "
 echo -e "========================"
 echo -e "Passed: $passed_tests/$total_tests"
 echo -e "========================"
 
-# Check if all tests passed or if there were any failures
+if [ ${#failed_files[@]} -gt 0 ]; then
+    echo -e "\n\e[1;33m========== NOT PASSED IN: ==========\e[0m"
+    echo -e
+    for failed_file in "${failed_files[@]}"; do
+        echo -e "\e[1;31m❌ $failed_file\e[0m"
+    done
+fi
+
+
 if [ $passed_tests -eq $total_tests ]; then
-    # Green success message
+    echo -e
     echo -e "\e[1;32m🎉🎉🎉 ALL TESTS PASSED! 🎉🎉🎉\e[0m"
 else
-    # Red failure message
+    echo -e
     echo -e "\e[1;31m💀💀💀 YOU FAILED! 💀💀💀\e[0m"
     echo -e "\e[1;31mTry again! Don't let the tests win!\e[0m"
 fi
