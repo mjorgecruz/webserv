@@ -244,191 +244,95 @@ void Server::serverKeywords(std::string key, std::string &line)
 
     if (key == "listen")
     {
-        std::string address;
-        std::string host;
-        std::istringstream iss(line);
-        iss >> address >> address;
-
-        int port;
-        size_t colonPos = address.find(':');
-
-        if (colonPos != std::string::npos)
-        {
-            host = address.substr(0, colonPos);
-            std::string portStr = address.substr(colonPos + 1);
-
-            std::istringstream ipStream(host);
-            std::string octet;
-            int octetCount = 0;
-            bool validIP = true;
-
-            while (std::getline(ipStream, octet, '.'))
-            {
-                char* end;
-                errno = 0;
-                long octetValue = std::strtol(octet.c_str(), &end, 10);
-
-                if (*end != '\0' || errno == ERANGE || octetValue < 0 || octetValue > 255)
-                {
-                    validIP = false;
-                    break;
-                }
-                octetCount++;
-            }
-            if (octetCount != 4 || !validIP)
-            {
-                std::cout << "Invalid IP address format: " << host << "\n";
-                throw std::exception();
-            }
-            setHost(host);
-            char* end;
-            errno = 0;
-            long portValue = std::strtol(portStr.c_str(), &end, 10);
-            if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-            {
-                std::cout << "Invalid port number: " << portStr << "\n";
-                throw std::exception();
-            }
-            port = static_cast<int>(portValue);
-        }
-        else
-        {
-            char* end;
-            errno = 0;
-            long portValue = std::strtol(address.c_str(), &end, 10);
-
-            if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-            {
-                std::cout << "Invalid port number: " << address << "\n";
-                throw std::exception();
-            }
-            port = static_cast<int>(portValue);
-        }
-        setPorts(port);
+        keywordListen(line);
     }
     else if (key == "server_name")
     {
-        std::vector<std::string> hostnames = _hostname;
-        std::string hostname;
-        std::string temp;
-        std::istringstream iss(line);
-        iss >> temp;
-
-        while (iss >> hostname)
-        {
-            if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-            {
-                std::cout << "Invalid server_name: " << hostname << "\n";
-                throw std::exception();
-            }
-            hostnames.push_back(hostname);
-        }
-        setHostname(hostnames);
+        keywordServerName(line);
     }
     else if (key == "index")
     {
-        std::vector<std::string> index = _index;
-        std::string indexName;
-        std::string temp;
-        std::istringstream iss(line);
-        iss >> temp;
-
-        while (iss >> indexName)
-        {
-            if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-            {
-                std::cout << "Invalid index format: " << indexName << "\n";
-                throw std::exception();
-            }
-            index.push_back(indexName);
-        }
-        setIndex(index);
+        keywordIndex(line);
     }
     else if (key == "root")
     {
-        std::istringstream iss(line);
-        iss >> _root >> _root;
-        std::cout << "root: " << _root << std::endl;
-        if (_root[0] != '/')
-        {
-            std::cout << "Invalid root path: " << _root << "\n";
-            throw std::exception();
-        }
+        keywordRoot(line);
     }
     else if (key == "error_page")
     {
-        std::map<int, std::string> errorPages = _errorPages;
-        std::string token, temp;
-        std::istringstream iss(line);
-        iss >> temp;
+        keywordErrorPages(line);
+    //     std::map<int, std::string> errorPages = _errorPages;
+    //     std::string token, temp;
+    //     std::istringstream iss(line);
+    //     iss >> temp;
 
-        std::vector<int> errorCodes;
-        std::string errorPage;
+    //     std::vector<int> errorCodes;
+    //     std::string errorPage;
 
-        while (iss >> token)
-        {
-            if (isNumeric(token))
-            {
-                int errorCode = std::atoi(token.c_str());
-                if (errorCode < 400 || errorCode > 599)
-                {
-                    std::cout << "Invalid error code: " << errorCode << "\n";
-                    throw std::exception();
-                }
-                errorCodes.push_back(errorCode);
-            }
-            else
-            {
-                errorPage = token;
-                break;
-            }
-        }
-        if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-        {
-            std::cout << "Invalid error page path: " << errorPage << "\n";
-            throw std::exception();
-        }
-        if (errorCodes.empty())
-        {
-            std::cout << "Invalid error: " << errorPage << "\n";
-            throw std::exception();
-        }
-        for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
-        {
-            errorPages[*it] = errorPage;
-        }
-        setErrorPages(errorPages);
+    //     while (iss >> token)
+    //     {
+    //         if (isNumeric(token))
+    //         {
+    //             int errorCode = std::atoi(token.c_str());
+    //             if (errorCode < 400 || errorCode > 599)
+    //             {
+    //                 std::cout << "Invalid error code: " << errorCode << "\n";
+    //                 throw std::exception();
+    //             }
+    //             errorCodes.push_back(errorCode);
+    //         }
+    //         else
+    //         {
+    //             errorPage = token;
+    //             break;
+    //         }
+    //     }
+    //     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+    //     {
+    //         std::cout << "Invalid error page path: " << errorPage << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (errorCodes.empty())
+    //     {
+    //         std::cout << "Invalid error: " << errorPage << "\n";
+    //         throw std::exception();
+    //     }
+    //     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+    //     {
+    //         errorPages[*it] = errorPage;
+    //     }
+    //     setErrorPages(errorPages);
     }
     else if (key == "max_body_size")
     {
-        std::string sizeValue, temp;
-        std::istringstream iss(line);
-        iss >> temp >> sizeValue;
+    //     std::string sizeValue, temp;
+    //     std::istringstream iss(line);
+    //     iss >> temp >> sizeValue;
 
-        char* end;
-        errno = 0;
-        long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
+    //     char* end;
+    //     errno = 0;
+    //     long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
 
-        if (errno == ERANGE || maxBodySize < 0)
-        {
-            std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
-            throw std::exception();
-        }
-        if (*end == 'M' && *(end + 1) == '\0')
-        {
-            maxBodySize *= 1024 * 1024;
-        }
-        else if (*end != '\0') 
-        {
-            std::cout << "Invalid max_body_size: " << sizeValue << "\n";
-            throw std::exception();
-        }
-        if (maxBodySize <= 0)
-        {
-            std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
-            throw std::exception();
-        }
-        _maxBodySize = maxBodySize;
+    //     if (errno == ERANGE || maxBodySize < 0)
+    //     {
+    //         std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (*end == 'M' && *(end + 1) == '\0')
+    //     {
+    //         maxBodySize *= 1024 * 1024;
+    //     }
+    //     else if (*end != '\0') 
+    //     {
+    //         std::cout << "Invalid max_body_size: " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     if (maxBodySize <= 0)
+    //     {
+    //         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
+    //         throw std::exception();
+    //     }
+    //     _maxBodySize = maxBodySize;
     }
     else
     {
@@ -543,3 +447,193 @@ void Server::setDefaultProperties( void )
         }
     }
 }
+/////////////////new shit below here and deleted from above ///////////////////////////////////////////////////////
+
+
+
+
+
+void Server::keywordListen(std::string &line)
+{
+    std::string address;
+    std::string host;
+    std::istringstream iss(line);
+    iss >> address >> address;
+    int port;
+    size_t colonPos = address.find(':');
+    if (colonPos != std::string::npos)
+    {
+        host = address.substr(0, colonPos);
+        std::string portStr = address.substr(colonPos + 1);
+        std::istringstream ipStream(host);
+        std::string octet;
+        int octetCount = 0;
+        bool validIP = true;
+        while (std::getline(ipStream, octet, '.'))
+        {
+            char* end;
+            errno = 0;
+            long octetValue = std::strtol(octet.c_str(), &end, 10);
+            if (*end != '\0' || errno == ERANGE || octetValue < 0 || octetValue > 255)
+            {
+                validIP = false;
+                break;
+            }
+            octetCount++;
+        }
+        if (octetCount != 4 || !validIP)
+        {
+            std::cout << "Invalid IP address format: " << host << "\n";
+            throw std::exception();
+        }
+        setHost(host);
+        char* end;
+        errno = 0;
+        long portValue = std::strtol(portStr.c_str(), &end, 10);
+        if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
+        {
+            std::cout << "Invalid port number: " << portStr << "\n";
+            throw std::exception();
+        }
+        port = static_cast<int>(portValue);
+    }
+    else
+    {
+        char* end;
+        errno = 0;
+        long portValue = std::strtol(address.c_str(), &end, 10);
+        if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
+        {
+            std::cout << "Invalid port number: " << address << "\n";
+            throw std::exception();
+        }
+        port = static_cast<int>(portValue);
+    }
+    setPorts(port);
+}
+
+void Server::keywordServerName(std::string &line)
+{
+    std::vector<std::string> hostnames = _hostname;
+    std::string hostname;
+    std::string temp;
+    std::istringstream iss(line);
+    iss >> temp;
+    while (iss >> hostname)
+    {
+        if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
+        {
+            std::cout << "Invalid server_name: " << hostname << "\n";
+            throw std::exception();
+        }
+        hostnames.push_back(hostname);
+    }
+    setHostname(hostnames);
+}
+
+void Server::keywordIndex(std::string &line)
+{
+    std::vector<std::string> index = _index;
+    std::string indexName;
+    std::string temp;
+    std::istringstream iss(line);
+    iss >> temp;
+    while (iss >> indexName)
+    {
+        if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
+        {
+            std::cout << "Invalid index format: " << indexName << "\n";
+            throw std::exception();
+        }
+        index.push_back(indexName);
+    }
+    setIndex(index);
+}
+
+
+void Server::keywordRoot(std::string &line) // prone to errors
+{
+    //check how is the location rooot being done
+    std::istringstream iss(line);
+    iss >> _root >> _root;
+    std::cout << "root: " << _root << std::endl;
+    if (_root[0] != '/')
+    {
+        std::cout << "Invalid root path: " << _root << "\n";
+        throw std::exception();
+    }
+}
+
+void Server::keywordErrorPages(std::string &line)
+{
+    std::map<int, std::string> errorPages = _errorPages;
+    std::string token, temp;
+    std::istringstream iss(line);
+    iss >> temp;
+    std::vector<int> errorCodes;
+    std::string errorPage;
+    while (iss >> token)
+    {
+        if (isNumeric(token))
+        {
+            int errorCode = std::atoi(token.c_str());
+            if (errorCode < 400 || errorCode > 599)
+            {
+                std::cout << "Invalid error code: " << errorCode << "\n";
+                throw std::exception();
+            }
+            errorCodes.push_back(errorCode);
+        }
+        else
+        {
+            errorPage = token;
+            break;
+        }
+    }
+    if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+    {
+        std::cout << "Invalid error page path: " << errorPage << "\n";
+        throw std::exception();
+    }
+    if (errorCodes.empty())
+    {
+        std::cout << "Invalid error: " << errorPage << "\n";
+        throw std::exception();
+    }
+    for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
+    {
+        errorPages[*it] = errorPage;
+    }
+    setErrorPages(errorPages);
+}
+
+void Server::keywordMaxBodySize(std::string &line)
+{
+    std::string sizeValue, temp;
+    std::istringstream iss(line);
+    iss >> temp >> sizeValue;
+    char* end;
+    errno = 0;
+    long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
+    if (errno == ERANGE || maxBodySize < 0)
+    {
+        std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (*end == 'M' && *(end + 1) == '\0')
+    {
+        maxBodySize *= 1024 * 1024;
+    }
+    else if (*end != '\0') 
+    {
+        std::cout << "Invalid max_body_size: " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (maxBodySize <= 0)
+    {
+        std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    _maxBodySize = maxBodySize;
+}
+    

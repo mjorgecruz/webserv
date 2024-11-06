@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 14:06:25 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/05 18:17:21 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,13 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                 std::cout << "Invalid value for autoindex: " << autoIndexValue << "\n";
                 throw std::exception();
             }
+            std::string remaining;
+            iss >> remaining;
+            if (!remaining.empty())
+            {
+                std::cout << "ERROR: KEYWORD: [autoindex]" << std::endl;
+                throw(std::exception());
+            }
         }
         else
         {
@@ -224,43 +231,6 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         std::cout << "Error: Expected '}' at the end of location block\n";
         throw std::exception();
     }
-}
-
-void Location::printLocationConfig() const
-{
-    std::cout << "  Root: " << _root << std::endl;
-
-    std::cout << "  Index Files: ";
-    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it)
-    {
-        std::cout << *it;
-        if (it + 1 != _index.end()) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-
-    std::cout << "  CGI Path: " << _cgiPath << std::endl;
-
-    std::cout << "  Allowed Methods: ";
-    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it)
-    {
-        std::cout << *it;
-        if (it + 1 != _allowedMethods.end()) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-
-    std::cout << "  Error Pages:" << std::endl;
-    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
-    {
-        std::cout << "    Error " << it->first << ": " << it->second << std::endl;
-    }
-
-    std::cout << "  Redirect: " << _redirect << std::endl;
-
-    std::cout << "  Auto Index: " << _autoIndex << std::endl;
 }
 
 void Location::keywordIndex(std::istringstream &iss)
@@ -286,50 +256,88 @@ void Location::keywordRoot(std::istringstream &iss)
         std::cout << "Invalid root path: " << newRoot << "\n";
         throw std::exception();
     }
+    std::string remaining;
+    iss >> remaining;
+    if (!remaining.empty())
+    {
+        std::cout << "ERROR: KEYWORD: [cgi_path]" << std::endl;
+        throw(std::exception());
+    }
     setRoot(newRoot);
 }
 
 void Location::keywordCgiPath(std::istringstream &iss)
 {
-    iss >> _cgiPath;
-    if (_cgiPath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
+    std::string path;
+    iss >> path;
+    if (path.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
     {
-        std::cout << "Invalid CGI path: " << _cgiPath << "\n";
+        std::cout << "Invalid CGI path: " << path << "\n";
         throw std::exception();
     }
+
+    std::string remaining;
+    iss >> remaining;
+    if (!remaining.empty())
+    {
+        std::cout << "ERROR: KEYWORD: [cgi_path]" << std::endl;
+        throw(std::exception());
+    }
+    setCgiPath(path);
 }
 
 void Location::keywordMethods(std::istringstream &iss)
 {
-            std::string method;
-            while (iss >> method)
-            {
-                if (method != "POST" && method != "GET" && method != "DELETE")
-                {
-                    std::cout << "Invalid HTTP method in allow_methods: " << method << "\n";
-                    throw std::exception();
-                }
-                addAllowedMethods(method);
-            }
+    int i = 0;
+    std::string method;
+    while (iss >> method)
+    {
+        if (method != "POST" && method != "GET" && method != "DELETE")
+        {
+            std::cout << "Invalid HTTP method in allow_methods: " << method << "\n";
+            throw std::exception();
+        }
+        addAllowedMethods(method);
+        i++;
+    }
+    if  (i > 3 || i == 0)
+    {
+        std::cout << "ERROR: Invalid method count";
+        throw std::exception();
+    }
 }
 
 void Location::keywordErrorPages(std::istringstream &iss)
 {
+    std::string remaining;
     std::string token;
     std::vector<int> errorCodes;
     std::string errorPage;
+    int array[] = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417 ,418, 420, 421, 422, 423, 424, 425, 426, 428, 429, 431, 451};
+    std::vector<int> valid;
+    valid.assign(array, array + 60);
+    bool found;
     
     while (iss >> token)
     {
+        found = false;
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            if (errorCode < 400 || errorCode > 599)
+            for(size_t i = 0; i < valid.size(); i++)
             {
-                std::cout << "Invalid error code: " << errorCode << "\n";
+                if (valid[i] == errorCode)
+                {
+                    found = true;
+                    errorCodes.push_back(errorCode);
+                    break;
+                }
+            }
+            if (found == false)
+            {
+                std::cout << "Error: Invalid Error Code\n";
                 throw std::exception();
             }
-            errorCodes.push_back(errorCode);
         }
         else
         {
@@ -347,6 +355,14 @@ void Location::keywordErrorPages(std::istringstream &iss)
         std::cout << "Invalid error page path: " << errorPage << "\n";
         throw std::exception();
     }
+    
+    iss >> remaining;
+    if (!remaining.empty())
+    {
+        std::cout << "ERROR: KEYWORD: [erro_pages] cannot accept more than 1 erro_page" << std::endl;
+        throw(std::exception());
+    }
+    
     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
     {
         addErrorPages(*it, errorPage);
@@ -355,6 +371,7 @@ void Location::keywordErrorPages(std::istringstream &iss)
 
 void Location::keywordReturn(std::istringstream &iss)
 {
+    std::string remaining;
     std::string redir;
     iss >> redir;
     if (!redir.empty())
@@ -364,16 +381,38 @@ void Location::keywordReturn(std::istringstream &iss)
         std::cout << "expected value after return" << std::endl;
         throw(std::exception());
     }
+    iss >> remaining;
+    if (!remaining.empty())
+    {
+        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 1 variable" << std::endl;
+        throw(std::exception());
+    }
 }
 
-
-//cgi path apces and shit that come after 
-//both server and llocation fieldssss
-//payth spaces 
-// auto index L and S
-// error poage  L and S
-//max body size space after number 
-//rooot same old thing 
-// redirect accepting more than one thing aswell is not ok 
-
-// listen trouble with spaces after and other words in line
+/*Funtion to print all the configurations of each location class*/
+void Location::printLocationConfig() const {
+    std::cout << "  Root: " << _root << std::endl;
+    std::cout << "  Index Files: ";
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _index.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "  CGI Path: " << _cgiPath << std::endl;
+    std::cout << "  Allowed Methods: ";
+    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _allowedMethods.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "  Error Pages:" << std::endl;
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it) {
+        std::cout << "    Error " << it->first << ": " << it->second << std::endl;
+    }
+    std::cout << "  Redirect: " << _redirect << std::endl;
+    std::cout << "  Auto Index: " << _autoIndex << std::endl;
+}
