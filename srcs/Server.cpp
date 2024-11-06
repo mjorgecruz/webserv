@@ -132,11 +132,12 @@ void Server::addLocations(std::string path, Location *locations)
 void Server::serverChecker(std::string &line, std::ifstream &file)
 {
     bool serverBracket = false;
-    bool listenExists = false;
+    std::map<std::string, int> keyword_counter;
     std::istringstream iss(line);
     std::string firstWord;
     iss >> firstWord;
 
+    initKeywordCounter(keyword_counter);
     if  (firstWord != "server")
     {
         std::cout << "Expected 'server' keyword at the beginning of the server block\n";
@@ -198,7 +199,6 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             {
                 location->parseLocation(line, file);
                 _locations[location->getPath()] = location;
-                //addLocations(location->getPath(), location);
             }
             catch (std::exception &e)
             {
@@ -209,16 +209,10 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         }
         else
         {
-            if (keyword == "listen")
-                listenExists = true;
+            incrementKeywordCount(keyword_counter, keyword);
             serverKeywords(keyword, line);
         }
-
-        if (!listenExists)
-        {
-            std::cout << "No listen Keyword Found in Server Block\n";
-            throw std::exception();
-        }
+        checkForDuplicateKeywords(keyword_counter);
     }
     this->setDefaultProperties();
 }
@@ -379,7 +373,6 @@ void Server::setDefaultProperties( void )
     if (this->_maxBodySize == 0)
         _maxBodySize = 1024 * 1024;
 
-
     for (std::map<int,std::string>::iterator it = _errorPages.begin(); it != _errorPages.end(); it++)
     {
         if ((it->second)[0] != '/')
@@ -497,8 +490,8 @@ void Server::keywordIndex(std::string &line)
     setIndex(index);
 }
 
-
-void Server::keywordRoot(std::string &line) // prone to errors
+// prone to errors
+void Server::keywordRoot(std::string &line) 
 {
     //check how is the location rooot being done
     std::istringstream iss(line);
@@ -556,7 +549,7 @@ void Server::keywordErrorPages(std::string &line)
 
 void Server::keywordMaxBodySize(std::string &line)
 {
-    std::string sizeValue, temp;
+    std::string sizeValue, temp, extra;
     std::istringstream iss(line);
     iss >> temp >> sizeValue;
     char* end;
@@ -571,7 +564,7 @@ void Server::keywordMaxBodySize(std::string &line)
     {
         maxBodySize *= 1024 * 1024;
     }
-    else if (*end != '\0') 
+    else if (*end != '\0')
     {
         std::cout << "Invalid max_body_size: " << sizeValue << "\n";
         throw std::exception();
@@ -581,6 +574,51 @@ void Server::keywordMaxBodySize(std::string &line)
         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
         throw std::exception();
     }
+
+    iss >> extra;
+    if(!extra.empty())
+    {
+        std::cout << "Error in max_body_size\n";
+        throw std::exception();
+    }
     _maxBodySize = maxBodySize;
 }
-    
+
+void Server::initKeywordCounter(std::map<std::string, int> &count)
+{
+    count["listen"] = 0;
+    count["max_body_size"] = 0;
+    count["index"] = 0;
+    count["root"] = 0;
+    count["server_name"] = 0;
+}
+
+void Server::incrementKeywordCount(std::map<std::string, int> &count, std::string key)
+{
+    if (count.find(key) != count.end())
+    {
+        count[key] += 1;
+    }
+    else if (key != "error_page")
+    {
+        std::cout << "Invalid keyword in Server Block\n";
+        throw std::exception();
+    }
+}
+
+void Server::checkForDuplicateKeywords(std::map<std::string, int> &count)
+{
+    for(std::map<std::string, int>::const_iterator it = count.begin(); it != count.end(); it++)
+    {
+        if(it->second > 1)
+        {
+            std::cout << "Error Keyword Duplicates Found\n";
+            throw std::exception();
+        }
+    }
+    if (count["listen"] == 0)
+    {
+        std::cout << "Error Keyword Listen Not Found\n";
+        throw std::exception();
+    }
+}

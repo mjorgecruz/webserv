@@ -66,6 +66,9 @@ class Server : public Socket
         void keywordRoot(std::string &line);
         void keywordErrorPages(std::string &line);
         void keywordMaxBodySize(std::string &line);
+        void initKeywordCounter(std::map<std::string, int> &count);
+        void incrementKeywordCount(std::map<std::string, int> &count, std::string key);
+        void checkForDuplicateKeywords(std::map<std::string, int> &count);
 };
 
 #endif
