@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 00:15:12 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/06 09:09:58 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpResponse.hpp"
 
@@ -258,16 +258,17 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
             std::cout << boundary << std::endl;
             size_t pos = 0;
             
-            //check if file exists
+            //check if file has at least one part
             size_t header_advance = request.getRequestBody().find("\r\n\r\n", pos);
             if (header_advance == std::string::npos)
             {
+                _status = 204;
                 return;
             }
+
+            //define filename
             std::string header = request.getRequestBody().substr(0, header_advance + 4);
-            std::cout << "HEADER_____\n" << header << std::endl;
             std::string filename = server->getRoot() + "/" + getFilenameUploaded(header);
-            std::cout << filename << std::endl;
             int i = 1;
             struct stat buffer;
             while (stat(filename.c_str(), &buffer) == 0)
@@ -278,6 +279,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
                 i++;
             }
+            
             //pos = header_advance + 4;
             while (pos != std::string::npos)
             {
@@ -317,7 +319,6 @@ std::string HttpResponse::getFilenameUploaded(std::string header)
     size_t pos = header.find("filename=\"") + 10;
     size_t final_pos = header.find("\"", pos);
     filename = header.substr(pos, final_pos - pos);
-    std::cout << header << std::endl;
     
     return filename;
     
