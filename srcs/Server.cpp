@@ -459,6 +459,20 @@ void Server::keywordServerName(std::string &line)
     std::string temp;
     std::istringstream iss(line);
     iss >> temp;
+    iss >> hostname;
+    if (hostname.empty())
+    {
+        std::cout << "Error: server_name keyword no assigned value\n";
+        throw std::exception();
+    }
+
+    if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
+    {
+        std::cout << "Invalid server_name: " << hostname << "\n";
+        throw std::exception();
+    }
+    hostnames.push_back(hostname);
+
     while (iss >> hostname)
     {
         if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
@@ -474,10 +488,18 @@ void Server::keywordServerName(std::string &line)
 void Server::keywordIndex(std::string &line)
 {
     std::vector<std::string> index = _index;
-    std::string indexName;
-    std::string temp;
+    std::string indexName, temp;
     std::istringstream iss(line);
     iss >> temp;
+    iss >> indexName;
+
+    if(indexName.empty())
+    {
+        std::cout << "Invalid index format: " << indexName << "\n";
+        throw std::exception();
+    }
+    index.push_back(indexName);
+
     while (iss >> indexName)
     {
         if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
