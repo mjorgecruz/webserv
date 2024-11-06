@@ -14,6 +14,7 @@ DEFAULT_INDEX = index.html
 DEFAULT_DIR = $(HOME)/html
 DEFAULT_CONF = default.conf
 ERRORS = 204 301 403 404 409 500 502 503 504
+ERROR_FILES := $(DEFAULT_DIR)/204 $(DEFAULT_DIR)/301 $(DEFAULT_DIR)/403 $(DEFAULT_DIR)/404 $(DEFAULT_DIR)/409 $(DEFAULT_DIR)/500 $(DEFAULT_DIR)/502 $(DEFAULT_DIR)/503 $(DEFAULT_DIR)/504
 
 CFLAGS = -Wall -Werror -Wextra -g
 
@@ -33,7 +34,7 @@ COMPILED_FILES := $(shell if [ -d "$(ODIR)" ]; then find $(ODIR) -name "*.o" | w
 
 all: $(NAME)
 
-$(NAME): $(OBJ) defaults $(ERRORS)
+$(NAME): $(OBJ) $(DEFAULT_DIR)/default.conf $(ERROR_FILES)
 	@mkdir -p $(dir $@) 
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBFLAGS)
 	@printf "$(BOLD_GREEN)...calm champions: $$(echo "$(shell find $(ODIR) -name "*.o" | wc -l) $(TOTAL_FILES)" | awk '{printf "%.2f", $$1/$$2 * 100}')%%$(RES)\r"
@@ -55,6 +56,10 @@ fclean: clean
 clean:
 	@$(RM) $(OBJ)
 	@$(RM) $(ODIR)
+
+$(ERROR_FILES): $(ERRORS)
+
+$(DEFAULT_DIR)/default.conf: defaults
 
 defaults:
 	@mkdir -p $(DEFAULT_DIR)

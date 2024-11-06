@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 09:09:58 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/06 09:18:54 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -287,9 +287,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 pos = pos + boundary.size();
                 size_t header_advance = request.getRequestBody().find("\r\n\r\n", pos);
                 if (header_advance == std::string::npos)
-                {
-                    return;
-                }
+                    break;
                 pos = header_advance + 4;
                 size_t part_end = request.getRequestBody().find(boundary, pos);
                 if (part_end == std::string::npos)
