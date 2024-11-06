@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/01 17:25:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/06 18:35:37 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -51,11 +51,18 @@ class HttpResponse
         void handleDataDeletion(std::string path, HttpRequest &request, Server *server);
 
         std::string getFilenameUploaded(std::string header);
-
+        std::string getNameUpload(std::string header);
+        int definePathType(std::string &path, Server *server);
+        void logFileCreation(std::string &path, HttpRequest &request);
+        void fileSaver(HttpRequest &request, Server *server, std::string path);
+        void addToFile(size_t &pos, size_t &part_end, std::string filename, HttpRequest &request, std::string boundary); 
+        
         //location found
         void writeContent(std::string path, Location *location);
         void handleDataUpload(std::string path, HttpRequest &request, Location *location);
         void handleDataDeletion(std::string path, HttpRequest &request, Location *location);
+
+        void writeToFilename(HttpRequest request, std::string filename);
 };
 
 

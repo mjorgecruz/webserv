@@ -38,7 +38,7 @@
     <script>
         function sendDeleteRequest() {
             const fileName = document.getElementById('fileName').value;
-            fetch(`/delete-file/${encodeURIComponent(fileName)}`, {
+            fetch(`/submit/${encodeURIComponent(fileName)}`, {
                 method: 'DELETE'
             })
             .then(response => {
