@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 19:47:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:15:12 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -278,7 +278,7 @@ void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Serv
                 filename = server->getRoot() + "/(" + num + ")" + getFilenameUploaded(header);
                 i++;
             }
-            pos = header_advance + 4;
+            //pos = header_advance + 4;
             while (pos != std::string::npos)
             {
                 //find next boundary (chunk)
