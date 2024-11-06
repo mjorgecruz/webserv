@@ -52,7 +52,6 @@ if [ ${#failed_files[@]} -gt 0 ]; then
     done
 fi
 
-
 if [ $passed_tests -eq $total_tests ]; then
     echo -e
     echo -e "\e[1;32m🎉🎉🎉 ALL TESTS PASSED! 🎉🎉🎉\e[0m"
