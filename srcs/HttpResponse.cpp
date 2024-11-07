@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 18:35:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:03:51 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -391,8 +391,7 @@ void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Se
         else if (pathExistance == -2)
             throw(std::exception());
         }
-    
-    (void) request;
+
     if (path.find_last_of('/') != path.size() - 1)
     {
         std::string filename = server->getRoot() + path;
