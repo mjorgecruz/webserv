@@ -19,7 +19,7 @@ class Server : public Socket
         std::map<std::string, Location *> _locations;
         std::vector<std::string> _allowedMethods;
         long _maxBodySize;
-        bool _autoIndex;
+        int _autoIndex;
     
         Server(const Server & src);
 

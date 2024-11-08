@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 00:01:27 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 09:45:50 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -343,16 +343,27 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
     Info._host = server->getHost();
     Info._ports = server->getPorts();
     
-    Info._root;
-    Info._hostname;
-    Info._index;
-    Info._errorPages;
+    if (location != NULL)
+    {
+        if (location->getRoot().empty())
+            Info._root = location->getRoot();
+        Info._hostname() = server->getHostname();
+        if (location->getIndex().empty())
+            Info._index = location->getIndex();
+            
+        Info._errorPages;
 
-    Info._allowedMethods;
-    Info._maxBodySize;
-    Info._autoIndex;
-    
-    Info._cgiPath;
-    Info._redirect;
-    Info._path;
+        Info._allowedMethods;
+        Info._maxBodySize;
+        Info._autoIndex;
+        
+        Info._cgiPath;
+        Info._redirect;
+        Info._path;
+        
+    }
+    else
+    {
+        
+    }
 }
