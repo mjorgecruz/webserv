@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 09:04:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 00:01:27 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -193,9 +193,6 @@ void Http::data_transfer(int socket)
     Server *correspondingServer = findCorrespondingServer(socket); 
     server_fd = correspondingServer->getSocketFd();
 
-    //create a struct with all info
-    
-
     //fill request properties
     request->completeRequest(socket);
     request->setClientFd(server_fd);
@@ -248,6 +245,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::cout << received->getRequestType() << std::endl;
     std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
+    
     //check version
     if (httpVersion != "HTTP/1.1")
         throw(std::exception());
@@ -255,7 +253,14 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //define location
     std::map<std::string, Location *> possibleLocations = server->getLocations();
     std::map<std::string, Location *>::iterator it = this->findLocation(possibleLocations, path);
-    
+
+    //define all properties considering path received
+    t_info Info;
+    if(it != possibleLocations.end())
+        fillStructInfo(Info, server, it->second);
+    else
+        fillStructInfo(Info, server, NULL);
+
     if (it == possibleLocations.end())
     {
         DIR * root;
@@ -293,7 +298,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         }
         if (i == (server->getAllowedMethods()).size())
             throw(std::exception());
-
     }
     else
     {
@@ -332,4 +336,23 @@ std::map<std::string, Location *>::iterator Http::findLocation(std::map<std::str
         it++;
     }
     return it;
+}
+
+void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
+{
+    Info._host = server->getHost();
+    Info._ports = server->getPorts();
+    
+    Info._root;
+    Info._hostname;
+    Info._index;
+    Info._errorPages;
+
+    Info._allowedMethods;
+    Info._maxBodySize;
+    Info._autoIndex;
+    
+    Info._cgiPath;
+    Info._redirect;
+    Info._path;
 }
