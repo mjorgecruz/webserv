@@ -36,6 +36,8 @@ Server::Server()
         root = root + "/html" + "/";
         addErrorPage(error, (root + possibleErrors[i] + ".html"));
     }
+    _root = (std::getenv("HOME"));
+    _root = _root + "/html";
 
 }
 Server::~Server()
@@ -47,19 +49,15 @@ void Server::setConfigs(std::string path)
 {
     if (path.empty())
     {
-        
         _host = "127.0.0.1";
-        _errorPages[404] = "/404.html";
         _index.push_back("index.html");
         _ports = 8080;
         _hostname.push_back("10.11.4.4");
         _allowedMethods.push_back("GET");
         _allowedMethods.push_back("POST");
         _allowedMethods.push_back("DELETE");
-
     }       
 }
-
 
 size_t Server::locationsSize() const
 {
@@ -426,7 +424,7 @@ void Server::setErrorPages(std::map<int, std::string> errorPages)
 
 void Server::setAutoIndex(int autoindex)
 {
-    _autoindex = autoindex
+    _autoIndex = autoindex;
 }
 
 

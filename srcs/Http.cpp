@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 19:29:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:38:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,6 +344,7 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
     Info._host = server->getHost();
     Info._ports = server->getPorts();
     Info._hostname = server->getHostname();
+    Info._maxBodySize = server->getMaxBodySize();
     
     if (location != NULL)
     {
@@ -360,11 +361,11 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
             Info._index = server->getIndex();
         
         //Error pages
-        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it < server->getErrorPages().end; ++it)
+        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it != server->getErrorPages().end(); ++it)
         {
             Info._errorPages[it->first] = it->second;
         }
-        for( std::map<int, std::string>::iterator it = location->getErrorPages().begin(); it < location->getErrorPages().end; ++it)
+        for( std::map<int, std::string>::iterator it = location->getErrorPages().begin(); it != location->getErrorPages().end(); ++it)
         {
             Info._errorPages[it->first] = it->second;
         }
@@ -374,9 +375,6 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
             Info._allowedMethods = location->getAllowedMethods();
         else
             Info._allowedMethods = server->getAllowedMethods();
-
-        //Body Size
-        Info._maxBodySize;
 
         //AutoIndex
         if (location->getAutoIndex() < 0)
@@ -397,12 +395,12 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
     {
         Info._root = server->getRoot();
         Info._index = server->getIndex();
-        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it < server->getErrorPages().end; ++it)
+        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it != server->getErrorPages().end(); ++it)
         {
             Info._errorPages[it->first] = it->second;
         }
         Info._allowedMethods = server->getAllowedMethods();
-        Info._maxBodySize = server->getMaxBodySize();
+        
         if (server->getAutoIndex() <= 0)
             Info._autoIndex = 0;
         else

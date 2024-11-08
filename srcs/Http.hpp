@@ -6,19 +6,21 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 00:02:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:32:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
 
+#include "InputHandler.hpp"
 #include "general.hpp"
 
 class Server;
 class HttpRequest;
 class HttpResponse;
 class Location;
+class InputHandler;
 
 class Http
 {

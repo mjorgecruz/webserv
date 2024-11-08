@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/07 09:03:51 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:34:41 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -383,6 +383,7 @@ void HttpResponse::addToFile(size_t &pos, size_t &part_end, std::string filename
 
 void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Server *server)
 {
+    (void) request;
     int pathExistance = definePathType(path, server);
     if (pathExistance < 0)
     {
