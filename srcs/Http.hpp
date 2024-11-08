@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 19:32:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 22:56:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,9 @@ class Http
 
         void webservInitializer(std::string confPath);
         void addServerToList(Server *server);
-        
         void addServersToEpoll( void );
-        
         void addEpollServer( Server *server );
+        
         Server *operator[](int num);
         int listServersSize() const;
         void runApplication();
@@ -49,8 +48,10 @@ class Http
         void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server);
 
         void fillStructInfo(t_info &Info, Server *server, Location *location);
-
+        
         std::map<std::string, Location *>::iterator findLocation(std::map<std::string, Location *> &possibleLocations, std::string path);
+        
+        void sendData(int socket, HttpResponse *response);
 };
 
 #endif

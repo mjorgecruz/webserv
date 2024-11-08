@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 19:34:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 23:26:00 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void HttpResponse::setPostHeader()
             << "\r\ncontent-type: " << _contentType
             << "\r\nserver: " << _host
             << "\r\ncontent-length: " << _contentLength
-            << "\r\n\r\n";
+            << "\r\n\r\n" << std::endl;
     _header = bufferM.str(); 
 }
 
@@ -293,12 +293,18 @@ void HttpResponse::logFileCreation(std::string &path, HttpRequest &request)
     std::replace(filename.begin(), filename.end(), ':', '-');
     path = path + filename;
     
-    int fd = open(path.c_str(), O_RDWR|O_CREAT);
-    if (fd == -1)
+
+    std::string file_content = request.getRequestBody();
+    std::ofstream file;
+    
+    file.open(path.c_str(), std::ios::app);
+    if (!file.is_open()) 
+    {
         throw(std::exception());
-    write(fd, (request.getRequestBody()).c_str(), request.getRequestBody().size());
-    close(fd);
-}
+    }
+    file << file_content;
+    file.close();
+}   
 
 void HttpResponse::fileSaver(HttpRequest &request, Server *server, std::string path)
 {
@@ -459,7 +465,6 @@ void HttpResponse::writeToFilename(HttpRequest request, std::string filename)
     int fd = open(filename.c_str(), O_RDWR|O_CREAT);
     if (fd < 0)
     {
-        std::cout << "ERRNO: " << errno << std::endl;
         throw(std::exception());
     }
     _status = 204;

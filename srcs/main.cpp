@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 09:57:08 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/08 20:20:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,21 @@ int main (int ac, char **av)
     
     //run server configurations
     try{
-        int fd = open(av[1], O_RDONLY);
-        if (fd == -1)
+        if (av[1])
         {
-            http.webservInitializer("");
+            int fd = open(av[1], O_RDONLY);
+            if (fd == -1)
+            {
+                http.webservInitializer("");
+            }
+            else
+            {
+                close(fd);
+                http.webservInitializer(av[1]);
+            }
         }
         else
-        {
-            close(fd);
-            http.webservInitializer(av[1]);
-        }
+            http.webservInitializer("");
     }
     catch(std::exception &e)
     {
