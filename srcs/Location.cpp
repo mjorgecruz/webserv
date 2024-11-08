@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/05 18:17:21 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:14:50 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,10 @@ std::map<int, std::string> Location::getErrorPages()
     return _errorPages;
 }
 
-
+std::string Location::getCgiPath()
+{
+    return _cgiPath;
+}
 std::string Location::getRedirect()
 {
     return _redirect;

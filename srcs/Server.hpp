@@ -33,13 +33,14 @@ class Server : public Socket
 
         std::string getHost();
         int getPorts();
+        std::string getRoot();
         std::vector<std::string> getHostname();
         std::vector<std::string> getIndex();
         std::map<int, std::string> getErrorPages();
         std::map<std::string, Location *> getLocations();
         std::vector<std::string> getAllowedMethods();
-        std::string getRoot();
-        bool getAutoIndex();
+        int getMaxBodySize();
+        int getAutoIndex();
 
 
         void setHost(std::string host);
@@ -54,11 +55,12 @@ class Server : public Socket
         void addLocations(std::string path, Location *locations);
         void addAllowedMethods(std::string method);
         void setRoot(std::string root);
-        void setAutoIndex(bool autoindex);
+        void setAutoIndex(int autoindex);
         
         void serverChecker(std::string &line, std::ifstream &file);
-        void serverKeywords(std::string key, std::string &line);
         void setDefaultProperties( void );
+
+        void serverKeywords(std::string key, std::string &line);
         void printConfig() const;
         void keywordListen(std::string &line);
         void keywordServerName(std::string &line);

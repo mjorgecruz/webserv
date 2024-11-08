@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/04 14:01:29 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:13:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Location
         std::string getPath();
         std::vector<std::string> getIndex();
         std::string getRoot();
+        std::string getCgiPath();
         std::vector<std::string> getAllowedMethods();
         std::map<int, std::string> getErrorPages();
         std::string getRedirect();

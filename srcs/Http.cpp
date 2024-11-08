@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 09:45:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 19:29:35 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -255,11 +255,11 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::map<std::string, Location *>::iterator it = this->findLocation(possibleLocations, path);
 
     //define all properties considering path received
-    t_info Info;
-    if(it != possibleLocations.end())
-        fillStructInfo(Info, server, it->second);
-    else
-        fillStructInfo(Info, server, NULL);
+    // t_info Info;
+    // if(it != possibleLocations.end())
+    //     fillStructInfo(Info, server, it->second);
+    // else
+    //     fillStructInfo(Info, server, NULL);
 
     if (it == possibleLocations.end())
     {
@@ -340,30 +340,72 @@ std::map<std::string, Location *>::iterator Http::findLocation(std::map<std::str
 
 void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
 {
+    //Hostname, host and port
     Info._host = server->getHost();
     Info._ports = server->getPorts();
+    Info._hostname = server->getHostname();
     
     if (location != NULL)
     {
-        if (location->getRoot().empty())
+        //Root
+        if (!location->getRoot().empty())
             Info._root = location->getRoot();
-        Info._hostname() = server->getHostname();
+        else
+            Info._root = server->getRoot();
+
+        //Index
         if (location->getIndex().empty())
             Info._index = location->getIndex();
-            
-        Info._errorPages;
+        else   
+            Info._index = server->getIndex();
+        
+        //Error pages
+        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it < server->getErrorPages().end; ++it)
+        {
+            Info._errorPages[it->first] = it->second;
+        }
+        for( std::map<int, std::string>::iterator it = location->getErrorPages().begin(); it < location->getErrorPages().end; ++it)
+        {
+            Info._errorPages[it->first] = it->second;
+        }
 
-        Info._allowedMethods;
+        //Allowed Methods
+        if (!location->getAllowedMethods().empty())
+            Info._allowedMethods = location->getAllowedMethods();
+        else
+            Info._allowedMethods = server->getAllowedMethods();
+
+        //Body Size
         Info._maxBodySize;
-        Info._autoIndex;
+
+        //AutoIndex
+        if (location->getAutoIndex() < 0)
+        {
+            if (server->getAutoIndex() <= 0)
+                Info._autoIndex = 0;
+            else
+                Info._autoIndex = 1;
+        }
+        else
+            Info._autoIndex = location->getAutoIndex();
         
-        Info._cgiPath;
-        Info._redirect;
-        Info._path;
-        
+        Info._cgiPath = location->getCgiPath();
+        Info._redirect = location->getRedirect();
+        Info._path = location->getPath();
     }
     else
     {
-        
+        Info._root = server->getRoot();
+        Info._index = server->getIndex();
+        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it < server->getErrorPages().end; ++it)
+        {
+            Info._errorPages[it->first] = it->second;
+        }
+        Info._allowedMethods = server->getAllowedMethods();
+        Info._maxBodySize = server->getMaxBodySize();
+        if (server->getAutoIndex() <= 0)
+            Info._autoIndex = 0;
+        else
+            Info._autoIndex = 1;
     }
 }

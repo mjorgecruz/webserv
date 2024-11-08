@@ -100,6 +100,15 @@ std::vector<std::string> Server::getAllowedMethods()
     return _allowedMethods;
 }
 
+int Server::getMaxBodySize()
+{
+    return _maxBodySize;
+}
+
+int Server::getAutoIndex()
+{
+    return _autoIndex;
+}
 
 void Server::setHost(std::string host)
 {
@@ -415,6 +424,11 @@ void Server::setErrorPages(std::map<int, std::string> errorPages)
     _errorPages = errorPages;
 }
 
+void Server::setAutoIndex(int autoindex)
+{
+    _autoindex = autoindex
+}
+
 
 void Server::setDefaultProperties( void )
 {
@@ -447,6 +461,8 @@ void Server::setDefaultProperties( void )
         }
     }
 }
+
+
 /////////////////new shit below here and deleted from above ///////////////////////////////////////////////////////
 
 
