@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 01:16:27 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 01:53:13 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ void InputHandler::fileSaver(HttpRequest &request, t_info &info, std::string pat
         std::string originalFilename = getFilenameUploaded(part_header);
         std::string name = getNameUpload(part_header);
     
-        std::string filename = info._root + "/" + originalFilename;
+        std::string filename = path + "/" + originalFilename;
         
         int i = 1;
         struct stat buffer;

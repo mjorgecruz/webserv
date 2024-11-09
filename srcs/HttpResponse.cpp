@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 01:17:24 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 01:44:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ HttpResponse::HttpResponse(int client , Server *server)
     _client_fd = client;
     _host = server->getHost();
     _port = server->getPorts();
+    _content = "";
 
 }
 

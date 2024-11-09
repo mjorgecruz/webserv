@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 01:17:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 01:33:08 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,6 +286,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 InputHandler handlePost;
                 handlePost.handleDataUpload(path, *received, Info);
                 response->setStatus(Info._status);
+                response->setLength(0);
                 response->setPostHeader();
                 std::cout << "HEADER\n" << response->getHeader();
             }
@@ -356,10 +357,7 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
             Info._index = server->getIndex();
         
         //Error pages
-        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it != server->getErrorPages().end(); ++it)
-        {
-            Info._errorPages[it->first] = it->second;
-        }
+        Info._errorPages = server->getErrorPages();
         for( std::map<int, std::string>::iterator it = location->getErrorPages().begin(); it != location->getErrorPages().end(); ++it)
         {
             Info._errorPages[it->first] = it->second;
@@ -390,10 +388,7 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
     {
         Info._root = server->getRoot();
         Info._index = server->getIndex();
-        for( std::map<int, std::string>::iterator it = server->getErrorPages().begin(); it != server->getErrorPages().end(); ++it)
-        {
-            Info._errorPages[it->first] = it->second;
-        }
+        Info._errorPages = server->getErrorPages();
         Info._allowedMethods = server->getAllowedMethods();
         
         if (server->getAutoIndex() <= 0)
