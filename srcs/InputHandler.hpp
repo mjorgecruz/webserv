@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 23:32:41 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 22:48:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/08 23:57:49 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ class InputHandler
         int definePathType(std::string &path, Server *server);
         void logFileCreation(std::string &path, HttpRequest &request);
         void fileSaver(HttpRequest &request, Server *server, std::string path);
-        void addToFile(size_t &pos, size_t &part_end, std::string filename, HttpRequest &request, std::string boundary); 
+        void addToFile(size_t &pos, size_t &part_end, std::string filename, HttpRequest &request, std::string boundary);
+        void writeToFilename(HttpRequest request, std::string filename);
 };

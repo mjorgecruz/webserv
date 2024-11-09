@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 23:26:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 00:07:20 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,43 +202,6 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
     }
     
-}
-
-
-void HttpResponse::handleDataUpload(std::string path, HttpRequest &request, Server *server)
-{
-
-    int pathExistance = definePathType(path, server);
-    
-    //check if path is folder or file
-    if (path.find_last_of('/') != path.size() - 1)
-    {
-        writeToFilename(request, path);
-    }
-    else //if it is a folder
-    {
-        //check if path exists
-        if (pathExistance < 0)
-        {
-            if (pathExistance == -1)
-                throw(std::exception());
-            else if (pathExistance == -2)
-                throw(std::exception());
-        }
-        
-        //check if POST will be sent in parts or not
-        if (request.searchProperty("Content-Type").find("multipart/form-data") == std::string::npos)
-        {
-            //creates a file with the date in the path
-            logFileCreation(path, request);
-        }
-        else
-        {
-            //save all files sent
-            fileSaver(request, server, path);
-        }
-    }
-    _status = 204;    
 }
 
 
