@@ -38,6 +38,7 @@ Server::Server()
     }
     _root = (std::getenv("HOME"));
     _root = _root + "/html";
+    _host = "127.0.0.1";
 
 }
 Server::~Server()
