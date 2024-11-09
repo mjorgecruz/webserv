@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 00:13:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 01:17:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,6 +257,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //define all properties considering path received
     
     t_info Info;
+    Info._status = 0;
     if(it != possibleLocations.end())
         fillStructInfo(Info, server, it->second);
     else
@@ -277,19 +278,20 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             if (type == "GET")
             {
                 response->setContentType(received->getMimeType());
-                response->writeContent(path, server);
+                response->writeContent(path, Info);
                 response->setGetHeader();
             }
             else if (type == "POST")
             {
                 InputHandler handlePost;
-                handlePost->handleDataUpload(path, *received, info);
-                handlePost->setPostHeader();
+                handlePost.handleDataUpload(path, *received, Info);
+                response->setStatus(Info._status);
+                response->setPostHeader();
                 std::cout << "HEADER\n" << response->getHeader();
             }
             else
             {
-                response->handleDataDeletion(path, *received, server);
+                response->handleDataDeletion(path, *received, Info);
                 response->setDeleteHeader();
             }
             break;
@@ -298,8 +300,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
     if (i == (server->getAllowedMethods()).size())
         throw(std::exception());
-    send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
-    send(socket, response->getContent().c_str(), response->getContent().size(), 0);
+    sendData(socket, response);
     
 }
 

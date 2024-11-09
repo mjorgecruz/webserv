@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 00:07:20 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 01:17:24 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ HttpResponse::HttpResponse(int client , Server *server)
 HttpResponse::~HttpResponse()
 {}
 
+void HttpResponse::setStatus(int status)
+{
+    _status = status;
+}
 
 void HttpResponse::setGetHeader()
 {
@@ -87,7 +91,7 @@ std::string HttpResponse::getContent()
     return _content;
 }
 
-void HttpResponse::writeContent(std::string path, Server *server)
+void HttpResponse::writeContent(std::string path, t_info  &info)
 {
     std::string content = "";
     std::fstream file;
@@ -96,7 +100,7 @@ void HttpResponse::writeContent(std::string path, Server *server)
     {
         try
         {
-            path = server->getRoot() + path;
+            path = info._root + path;
             
             file.open(path.c_str());
             if (!file.is_open())
@@ -113,7 +117,7 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            path = server->getErrorPages().find(404)->second;
+            path = info._errorPages.find(404)->second;
             _status = 404;
             std::fstream file;
             file.open(path.c_str());
@@ -133,7 +137,7 @@ void HttpResponse::writeContent(std::string path, Server *server)
         }
         catch (std::exception &e)
         {
-            path = server->getErrorPages().find(403)->second;
+            path = info._errorPages.find(403)->second;
             std::fstream file;
             file.open(path.c_str());
             if (!file.is_open())
@@ -155,10 +159,10 @@ void HttpResponse::writeContent(std::string path, Server *server)
     {
         try
         {
-            if (server->getIndex().empty())
+            if (info._index.empty())
             {
                 std::fstream file;
-                path = server->getRoot() + "index.html";
+                path = info._root + "index.html";
                 file.open(path.c_str());
                 _status = 200;
                 if (!file.is_open())
@@ -171,9 +175,9 @@ void HttpResponse::writeContent(std::string path, Server *server)
             }
             else
             {
-                for (size_t i = 0; i < server->getIndex().size(); i++)
+                for (size_t i = 0; i < info._index.size(); i++)
                 {
-                    path = server->getRoot() + "/" + server->getIndex()[i];
+                    path = info._root + "/" + info._index[i];
                     file.open(path.c_str());
                     _status = 200;
                     if (file.is_open())
@@ -205,155 +209,10 @@ void HttpResponse::writeContent(std::string path, Server *server)
 }
 
 
-std::string HttpResponse::getFilenameUploaded(std::string header)
-{
-    std::string filename;
-    size_t pos = header.find("filename=\"") + 10;
-    size_t final_pos = header.find("\"", pos);
-    
-    filename = header.substr(pos, final_pos - pos);
-    
-    return filename;
-}
-
-std::string HttpResponse::getNameUpload(std::string header)
-{
-    std::string name;
-    size_t pos = header.find("name=\"") + 6;
-    size_t final_pos = header.find("\"", pos);
-    name = header.substr(pos, final_pos - pos);
-
-    return name;
-}
-
-int HttpResponse::definePathType(std::string &path, Server *server)
-{
-    //path will end in "/" if path is of a directory
-    path = server->getRoot() + path;
-    struct stat buf;
-    
-    if(stat(path.c_str(), &buf) == -1)
-    {
-        if (errno == ENOENT)
-            return -1;
-        else if( errno == EACCES)
-            return -2;
-    }
-    if (S_ISDIR(buf.st_mode))
-    {
-        if (path.find_last_of('/') != path.size() - 1)
-            path = path + "/";
-    }
-    return 1;
-}
-
-void HttpResponse::logFileCreation(std::string &path, HttpRequest &request)
-{
-    time_t timestamp;
-    time(&timestamp);
-    std::string filename = ctime(&timestamp);
-    std::replace(filename.begin(), filename.end(), ' ', '_');
-    std::replace(filename.begin(), filename.end(), ':', '-');
-    path = path + filename;
-    
-
-    std::string file_content = request.getRequestBody();
-    std::ofstream file;
-    
-    file.open(path.c_str(), std::ios::app);
-    if (!file.is_open()) 
-    {
-        throw(std::exception());
-    }
-    file << file_content;
-    file.close();
-}   
-
-void HttpResponse::fileSaver(HttpRequest &request, Server *server, std::string path)
-{
-    //find the boundary 
-    size_t startline = request.getHeader().find("boundary=") + 9;
-    size_t endline = request.getHeader().find("\r\n", startline);
-    std::string boundary = request.getHeader().substr(startline, endline - startline - 1);
-
-    //check if file has at least one part
-    size_t header_advance = request.getRequestBody().find("\r\n\r\n", 0);
-    if (header_advance == std::string::npos)
-    {
-        _status = 400;
-        throw(std::exception());
-    }
-    
-    size_t pos = 0;
-    
-    while (pos != std::string::npos)
-    {
-        //define filename
-        header_advance = request.getRequestBody().find("\r\n\r\n", pos);
-        std::string part_header = request.getRequestBody().substr(pos, header_advance + 4 - pos);
-        std::string originalFilename = getFilenameUploaded(part_header);
-        std::string name = getNameUpload(part_header);
-    
-        std::string filename = server->getRoot() + "/" + originalFilename;
-        
-        int i = 1;
-        struct stat buffer;
-        while (stat(filename.c_str(), &buffer) == 0)
-        { 
-            std::stringstream X;
-            X << i;
-            std::string num = X.str();
-            filename = path + "(" + num + ")" + getFilenameUploaded(part_header);
-            i++;
-        }
-        
-        //loop to add stuff to the filename (looped until a new filename or name is found)
-        while (pos != std::string::npos)
-        {
-            pos = pos + boundary.size();
-            header_advance = request.getRequestBody().find("\r\n\r\n", pos);
-            if (header_advance == std::string::npos)
-                return;
-            std::string part_header = request.getRequestBody().substr(pos, header_advance + 4 - pos);
-            std::string newFilename = getFilenameUploaded(part_header);
-            std::string newName = getNameUpload(part_header);
-            if (newFilename != originalFilename && newName != name)
-                break;
-
-             //find next boundary (chunk)
-            if (header_advance == std::string::npos)
-                return;
-            pos = header_advance + 4;
-            size_t part_end = request.getRequestBody().find(boundary, pos);
-            if (part_end == std::string::npos)
-                return;
-    
-            //write content to file
-            addToFile(pos, part_end, filename, request, boundary);
-        }
-    }
-}
-
-void HttpResponse::addToFile(size_t &pos, size_t &part_end, std::string filename, HttpRequest &request, std::string boundary)
-{
-    std::string file_content = request.getRequestBody().substr(pos, part_end - pos);
-    std::ofstream file;
-    
-    file.open(filename.c_str(), std::ios::app);
-    if (!file.is_open()) 
-    {
-        throw(std::exception());
-    }
-    file << file_content;
-    file.close();
-    pos = request.getRequestBody().find(boundary, pos);
-}
-
-
-void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Server *server)
+void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, t_info &info)
 {
     (void) request;
-    int pathExistance = definePathType(path, server);
+    int pathExistance = definePathType(path, info);
     if (pathExistance < 0)
     {
         if (pathExistance == -1)
@@ -364,7 +223,7 @@ void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Se
 
     if (path.find_last_of('/') != path.size() - 1)
     {
-        std::string filename = server->getRoot() + path;
+        std::string filename = info._root + path;
         int result = access(filename.c_str(), W_OK);
         if (result == -1)
         {
@@ -377,7 +236,7 @@ void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Se
     }
     else //if it is a folder
     {
-        std::string folder = server->getRoot() + path;
+        std::string folder = info._root + path;
         if (access(folder.c_str(), W_OK) != 0)
         {
             if (errno == EACCES || errno == EROFS )
@@ -422,15 +281,22 @@ void HttpResponse::handleDataDeletion(std::string path, HttpRequest &request, Se
     }
 }
 
-
-void HttpResponse::writeToFilename(HttpRequest request, std::string filename)
+int HttpResponse::definePathType(std::string &path, t_info &info)
 {
-    int fd = open(filename.c_str(), O_RDWR|O_CREAT);
-    if (fd < 0)
+    //path will end in "/" if path is of a directory
+    path = info._root + path;
+    struct stat buf;
+    if(stat(path.c_str(), &buf) == -1)
     {
-        throw(std::exception());
+        if (errno == ENOENT)
+            return -1;
+        else if( errno == EACCES)
+            return -2;
     }
-    _status = 204;
-    write(fd, (request.getRequestBody()).c_str(), request.getRequestBody().size());
-    close(fd);
+    if (S_ISDIR(buf.st_mode))
+    {
+        if (path.find_last_of('/') != path.size() - 1)
+            path = path + "/";
+    }
+    return 1;
 }
