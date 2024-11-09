@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 01:13:19 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 12:12:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,16 +50,7 @@ class HttpResponse
         std::string getHeader();
         std::string getContent();
         
-        //no location found
         void writeContent(std::string path, t_info &info);
-        void handleDataDeletion(std::string path, HttpRequest &request, t_info &info);
-        
-        //location found
-        void writeContent(std::string path, Location *location);
-        void handleDataUpload(std::string path, HttpRequest &request, Location *location);
-        void handleDataDeletion(std::string path, HttpRequest &request, Location *location);
-
-        int definePathType(std::string &path, t_info &info);
 };
 
 

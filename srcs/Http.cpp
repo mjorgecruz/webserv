@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 02:26:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 12:16:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,11 +288,13 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 response->setStatus(Info._status);
                 response->setLength(0);
                 response->setPostHeader();
-                std::cout << "HEADER\n" << response->getHeader();
             }
             else
             {
-                response->handleDataDeletion(path, *received, Info);
+                DeleteHandler handleDelete;
+                handleDelete.handleDataDeletion(path, *received, Info);
+                response->setStatus(Info._status);
+                response->setLength(0);
                 response->setDeleteHeader();
             }
             break;
