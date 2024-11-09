@@ -49,9 +49,12 @@ $(ODIR)/%.o: $(INCDIR)/%.cpp | $(ODIR)
 	@printf "$(BOLD_GREEN): $$(echo "$(shell find $(ODIR) -name "*.o" | wc -l) $(TOTAL_FILES)" | awk '{printf "%.2f", $$1/$$2 * 100}')%%$(RES)\r"
 	@$(CC) $(CFLAGS) -c -o $@ $<
 
+test:
+	./run_tests.sh
+
 fclean: clean
 	@$(RM) $(NAME)
-	@echo "${RED} cpp is no more...${END}"
+	@echo "${RED} webserver is no more...${END}"
 
 clean:
 	@$(RM) $(OBJ)
@@ -206,3 +209,5 @@ defaults:
 	@echo "</html>" >> $(HOME)/html/504.html
 
 re: fclean all
+
+.PHONY: all clean fclean defaults re tests

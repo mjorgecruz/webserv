@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 19:14:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 02:17:49 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,11 +125,12 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
 
     if (remaining == "{")
     {
-        //jumps, all good
+        //jumps
     }
     else
     {
-        while (std::getline(file, line)) {
+        while (std::getline(file, line))
+        {
             line.erase(0, line.find_first_not_of(" \t"));
             if (line.empty() || line.find_first_not_of(" \t") == std::string::npos) {
                 continue;

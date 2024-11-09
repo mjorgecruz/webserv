@@ -139,10 +139,12 @@ void Server::addLocations(std::string path, Location *locations)
 void Server::serverChecker(std::string &line, std::ifstream &file)
 {
     bool serverBracket = false;
+    std::map<std::string, int> keyword_counter;
     std::istringstream iss(line);
     std::string firstWord;
     iss >> firstWord;
 
+    initKeywordCounter(keyword_counter);
     if  (firstWord != "server")
     {
         std::cout << "Expected 'server' keyword at the beginning of the server block\n";
@@ -204,7 +206,6 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             {
                 location->parseLocation(line, file);
                 _locations[location->getPath()] = location;
-                //addLocations(location->getPath(), location);
             }
             catch (std::exception &e)
             {
@@ -215,8 +216,10 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         }
         else
         {
+            incrementKeywordCount(keyword_counter, keyword);
             serverKeywords(keyword, line);
         }
+        checkForDuplicateKeywords(keyword_counter);
     }
     this->setDefaultProperties();
 }
@@ -268,78 +271,10 @@ void Server::serverKeywords(std::string key, std::string &line)
     else if (key == "error_page")
     {
         keywordErrorPages(line);
-    //     std::map<int, std::string> errorPages = _errorPages;
-    //     std::string token, temp;
-    //     std::istringstream iss(line);
-    //     iss >> temp;
-
-    //     std::vector<int> errorCodes;
-    //     std::string errorPage;
-
-    //     while (iss >> token)
-    //     {
-    //         if (isNumeric(token))
-    //         {
-    //             int errorCode = std::atoi(token.c_str());
-    //             if (errorCode < 400 || errorCode > 599)
-    //             {
-    //                 std::cout << "Invalid error code: " << errorCode << "\n";
-    //                 throw std::exception();
-    //             }
-    //             errorCodes.push_back(errorCode);
-    //         }
-    //         else
-    //         {
-    //             errorPage = token;
-    //             break;
-    //         }
-    //     }
-    //     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-    //     {
-    //         std::cout << "Invalid error page path: " << errorPage << "\n";
-    //         throw std::exception();
-    //     }
-    //     if (errorCodes.empty())
-    //     {
-    //         std::cout << "Invalid error: " << errorPage << "\n";
-    //         throw std::exception();
-    //     }
-    //     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
-    //     {
-    //         errorPages[*it] = errorPage;
-    //     }
-    //     setErrorPages(errorPages);
     }
     else if (key == "max_body_size")
     {
-    //     std::string sizeValue, temp;
-    //     std::istringstream iss(line);
-    //     iss >> temp >> sizeValue;
-
-    //     char* end;
-    //     errno = 0;
-    //     long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
-
-    //     if (errno == ERANGE || maxBodySize < 0)
-    //     {
-    //         std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
-    //         throw std::exception();
-    //     }
-    //     if (*end == 'M' && *(end + 1) == '\0')
-    //     {
-    //         maxBodySize *= 1024 * 1024;
-    //     }
-    //     else if (*end != '\0') 
-    //     {
-    //         std::cout << "Invalid max_body_size: " << sizeValue << "\n";
-    //         throw std::exception();
-    //     }
-    //     if (maxBodySize <= 0)
-    //     {
-    //         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
-    //         throw std::exception();
-    //     }
-    //     _maxBodySize = maxBodySize;
+        keywordMaxBodySize(line);
     }
     else
     {
@@ -450,7 +385,6 @@ void Server::setDefaultProperties( void )
     if (this->_maxBodySize == 0)
         _maxBodySize = 1024 * 1024;
 
-
     for (std::map<int,std::string>::iterator it = _errorPages.begin(); it != _errorPages.end(); it++)
     {
         if ((it->second)[0] != '/')
@@ -460,13 +394,6 @@ void Server::setDefaultProperties( void )
     }
 }
 
-
-/////////////////new shit below here and deleted from above ///////////////////////////////////////////////////////
-
-
-
-
-
 void Server::keywordListen(std::string &line)
 {
     std::string address;
@@ -475,6 +402,7 @@ void Server::keywordListen(std::string &line)
     iss >> address >> address;
     int port;
     size_t colonPos = address.find(':');
+
     if (colonPos != std::string::npos)
     {
         host = address.substr(0, colonPos);
@@ -504,6 +432,7 @@ void Server::keywordListen(std::string &line)
         char* end;
         errno = 0;
         long portValue = std::strtol(portStr.c_str(), &end, 10);
+
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
         {
             std::cout << "Invalid port number: " << portStr << "\n";
@@ -523,7 +452,16 @@ void Server::keywordListen(std::string &line)
         }
         port = static_cast<int>(portValue);
     }
+    std::string extraStuffinLine;
+    iss >> extraStuffinLine;
+
+    if(!extraStuffinLine.empty())
+    {
+        std::cout << "ERROR: Listen has invalid parameters";
+        throw std::exception();
+    }
     setPorts(port);
+
 }
 
 void Server::keywordServerName(std::string &line)
@@ -533,6 +471,20 @@ void Server::keywordServerName(std::string &line)
     std::string temp;
     std::istringstream iss(line);
     iss >> temp;
+    iss >> hostname;
+    if (hostname.empty())
+    {
+        std::cout << "Error: server_name keyword no assigned value\n";
+        throw std::exception();
+    }
+
+    if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
+    {
+        std::cout << "Invalid server_name: " << hostname << "\n";
+        throw std::exception();
+    }
+    hostnames.push_back(hostname);
+
     while (iss >> hostname)
     {
         if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
@@ -548,10 +500,18 @@ void Server::keywordServerName(std::string &line)
 void Server::keywordIndex(std::string &line)
 {
     std::vector<std::string> index = _index;
-    std::string indexName;
-    std::string temp;
+    std::string indexName, temp;
     std::istringstream iss(line);
     iss >> temp;
+    iss >> indexName;
+
+    if(indexName.empty())
+    {
+        std::cout << "Invalid index format: " << indexName << "\n";
+        throw std::exception();
+    }
+    index.push_back(indexName);
+
     while (iss >> indexName)
     {
         if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
@@ -564,8 +524,8 @@ void Server::keywordIndex(std::string &line)
     setIndex(index);
 }
 
-
-void Server::keywordRoot(std::string &line) // prone to errors
+// prone to errors
+void Server::keywordRoot(std::string &line) 
 {
     //check how is the location rooot being done
     std::istringstream iss(line);
@@ -623,7 +583,7 @@ void Server::keywordErrorPages(std::string &line)
 
 void Server::keywordMaxBodySize(std::string &line)
 {
-    std::string sizeValue, temp;
+    std::string sizeValue, temp, extra;
     std::istringstream iss(line);
     iss >> temp >> sizeValue;
     char* end;
@@ -638,7 +598,7 @@ void Server::keywordMaxBodySize(std::string &line)
     {
         maxBodySize *= 1024 * 1024;
     }
-    else if (*end != '\0') 
+    else if (*end != '\0')
     {
         std::cout << "Invalid max_body_size: " << sizeValue << "\n";
         throw std::exception();
@@ -648,6 +608,51 @@ void Server::keywordMaxBodySize(std::string &line)
         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
         throw std::exception();
     }
+
+    iss >> extra;
+    if(!extra.empty())
+    {
+        std::cout << "Error in max_body_size\n";
+        throw std::exception();
+    }
     _maxBodySize = maxBodySize;
 }
-    
+
+void Server::initKeywordCounter(std::map<std::string, int> &count)
+{
+    count["listen"] = 0;
+    count["max_body_size"] = 0;
+    count["index"] = 0;
+    count["root"] = 0;
+    count["server_name"] = 0;
+}
+
+void Server::incrementKeywordCount(std::map<std::string, int> &count, std::string key)
+{
+    if (count.find(key) != count.end())
+    {
+        count[key] += 1;
+    }
+    else if (key != "error_page")
+    {
+        std::cout << "Invalid keyword in Server Block\n";
+        throw std::exception();
+    }
+}
+
+void Server::checkForDuplicateKeywords(std::map<std::string, int> &count)
+{
+    for(std::map<std::string, int>::const_iterator it = count.begin(); it != count.end(); it++)
+    {
+        if(it->second > 1)
+        {
+            std::cout << "Error Keyword Duplicates Found\n";
+            throw std::exception();
+        }
+    }
+    if (count["listen"] == 0)
+    {
+        std::cout << "Error Keyword Listen Not Found\n";
+        throw std::exception();
+    }
+}
