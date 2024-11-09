@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 00:08:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 00:13:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,9 +298,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
     if (i == (server->getAllowedMethods()).size())
         throw(std::exception());
-    }
-
-    
     send(socket, response->getHeader().c_str(), response->getHeader().size(), 0);
     send(socket, response->getContent().c_str(), response->getContent().size(), 0);
     
@@ -403,4 +400,40 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
         else
             Info._autoIndex = 1;
     }
+}
+
+void Http::sendData(int socket, HttpResponse *response)
+{
+    int maxRetries = 5;
+    for( int i = 0; i < maxRetries; i++ )
+    {
+        ssize_t result = send(socket, response->getHeader().c_str(), response->getHeader().size(), MSG_NOSIGNAL);
+        if (result != -1)
+            break;
+        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+            usleep(1000);
+        else
+        {
+            std::cerr << "Send error: " << strerror(errno) << std::endl;
+            return;
+        }
+        std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
+    }
+    for( int i = 0; i < maxRetries; i++ )
+    {
+        ssize_t result = send(socket, response->getContent().c_str(), response->getContent().size(), MSG_NOSIGNAL);;
+        if (result != -1)
+            return;
+        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+            usleep(1000);
+        else
+        {
+            std::cerr << "Send error: " << strerror(errno) << std::endl;
+            close(socket);
+            return;
+        }
+        std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
+    }
+    
+    
 }
