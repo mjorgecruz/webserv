@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 02:52:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/09 23:41:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void Socket::createSocket(int port, std::string host){
         throw(std::exception());
     int opt = 1;
     setsockopt(socket_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
+    //setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         throw(std::exception());

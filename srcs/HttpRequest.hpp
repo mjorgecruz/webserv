@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 00:10:19 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:45:33 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,11 @@ class HttpRequest
         {
             virtual const char *what() const throw();
         };
+
+        class HttpPageForbiddenException: public std::exception
+        {
+            virtual const char *what() const throw();
+        };        
 };
 
 

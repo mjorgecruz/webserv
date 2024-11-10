@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/06 00:10:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:46:28 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,13 +169,6 @@ void HttpRequest::setClientFd(int fd)
     _clientFd = fd;
 }
 
-//EXCEPTIONS
-
-const char *HttpRequest::HttpPageNotFoundException::what() const throw()
-{
-    return "Error: Page not found";
-}
-
 std::string HttpRequest::getRequest()
 {
     return _request;
@@ -190,3 +183,16 @@ std::string HttpRequest::getHeader( void)
 {
     return _header;
 }
+
+//EXCEPTIONS
+
+const char *HttpRequest::HttpPageNotFoundException::what() const throw()
+{
+    return "Error: Page not found";
+}
+
+const char *HttpRequest::HttpPageForbiddenException::what() const throw()
+{
+    return "Error: Forbidden";
+}
+

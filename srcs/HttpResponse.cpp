@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 12:12:36 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 02:13:39 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,118 +93,187 @@ std::string HttpResponse::getContent()
 }
 
 void HttpResponse::writeContent(std::string path, t_info  &info)
-{
-    std::string content = "";
-    std::fstream file;
-    
+{   
     if (path.find_last_of('/') != path.size() - 1)
     {
         try
         {
-            path = info._root + path;
-            
-            file.open(path.c_str());
-            if (!file.is_open())
-                throw(HttpRequest::HttpPageNotFoundException());
-            std::string line;
-            while (getline(file, line))
-            {
-                content = content + line;
-                content = content + "\n";
-            }
-            _status = 200;
-            setContent(content);
-            setLength(content.size());
+            writeNormalPage(path, info);
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            path = info._errorPages.find(404)->second;
-            _status = 404;
-            std::fstream file;
-            file.open(path.c_str());
-            if (!file.is_open())
-            {
-                _status = 500;
-                throw(std::exception());
-            }
-            std::string line;
-            while (getline(file, line))
-            {
-                content = content + line;
-                content = content + "\n";
-            }
-            setContent(content);
-            setLength(content.size());
+            writePage404(info);
         }
-        catch (std::exception &e)
+        catch (HttpRequest::HttpPageForbiddenException &e)
         {
-            path = info._errorPages.find(403)->second;
-            std::fstream file;
-            file.open(path.c_str());
-            if (!file.is_open())
-            {
-                _status = 500;
-                throw(std::exception());
-            }
-            std::string line;
-            while (getline(file, line))
-            {
-                content = content + line;
-                content = content + "\n";
-            }
-            setContent(content);
-            setLength(content.size());
+            writePage403(info);
         }
     }
     else
     {
         try
         {
-            if (info._index.empty())
-            {
-                std::fstream file;
-                path = info._root + "index.html";
-                file.open(path.c_str());
-                _status = 200;
-                if (!file.is_open())
-                {
-                    if (errno == ENOENT)
-                        throw(HttpRequest::HttpPageNotFoundException());
-                    else if (errno == EACCES)
-                        throw(std::exception());
-                }
-            }
-            else
-            {
-                for (size_t i = 0; i < info._index.size(); i++)
-                {
-                    path = info._root + "/" + info._index[i];
-                    file.open(path.c_str());
-                    _status = 200;
-                    if (file.is_open())
-                        break;
-                }
-                if (!file.is_open())
-                {
-                    if (errno == ENOENT)
-                        throw(std::exception());
-                    else if (errno == EACCES)
-                        throw(std::exception());
-                }
-            }
-            std::string line;
-            while (getline(file, line))
-            {
-                content = content + line;
-                content = content + "\n";
-            }
-            setContent(content);
-            setLength(content.size());
+            writeIndexPage(path, info);
         }
-        catch (std::exception &e)
+        catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            
+            writePage404(info);
+        }
+        catch (HttpRequest::HttpPageForbiddenException &e)
+        {
+            writePage403(info);
         }
     }
     
+}
+
+void HttpResponse::writeNormalPage(std::string path, t_info  &info)
+{
+    std::string content = "";
+    std::fstream file;
+    path = info._root + path;
+    
+    file.open(path.c_str());
+    if (!file.is_open())
+        throw(HttpRequest::HttpPageNotFoundException());
+    std::string line;
+    while (getline(file, line))
+    {
+        content = content + line;
+        content = content + "\n";
+    }
+    _status = 200;
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::writeIndexPage(std::string path, t_info  &info)
+{
+    std::string content = "";
+    std::fstream file;
+    path = info._root + path;
+    if (info._index.empty())
+    {
+        std::fstream file;
+        file.open(((path + "index.html")).c_str());
+        _status = 200;
+        if (!file.is_open())
+        {
+            if (info._autoIndex > 0)
+                writeAutoIndex(path);
+            else if (errno == ENOENT)
+                throw(HttpRequest::HttpPageNotFoundException());
+            else if (errno == EACCES)
+                throw(HttpRequest::HttpPageForbiddenException());
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < info._index.size(); i++)
+        {
+            file.open((path + info._index[i]).c_str());
+            _status = 200;
+            if (file.is_open())
+                break;
+        }
+        if (!file.is_open())
+        {
+            if (info._autoIndex > 0)
+                writeAutoIndex(path);
+            if (errno == ENOENT)
+                throw(HttpRequest::HttpPageNotFoundException());
+            else if (errno == EACCES)
+                throw(HttpRequest::HttpPageForbiddenException());
+        }
+    }
+    std::string line;
+    while (getline(file, line))
+    {
+        content = content + line;
+        content = content + "\n";
+    }
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::writePage404(t_info &info)
+{
+    std::string content = "";
+    std::string path;
+    path = info._errorPages.find(404)->second;
+    _status = 404;
+    std::fstream file;
+    file.open(path.c_str());
+    if (!file.is_open())
+    {
+        _status = 500;
+        writeFailError();
+        return;
+    }
+    std::string line;
+    while (getline(file, line))
+    {
+        content = content + line;
+        content = content + "\n";
+    }
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::writePage403(t_info &info)
+{
+    std::string content = "";
+    std::string path;
+    path = info._errorPages.find(403)->second;
+    std::fstream file;
+    file.open(path.c_str());
+    if (!file.is_open())
+    {
+        _status = 500;
+        writeFailError();
+        return;
+    }
+    std::string line;
+    while (getline(file, line))
+    {
+        content = content + line;
+        content = content + "\n";
+    }
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::writeFailError()
+{
+     std::string response = 
+        "<html><body><h1>500 Internal Server Error</h1><p>Server misconfiguration.</p></body></html>";
+    setContent(response);
+    setLength(response.size());
+}
+
+void HttpResponse::writeAutoIndex(std::string path)
+{
+    DIR * dir;
+    dir = opendir(path.c_str());
+    if (dir)
+    {
+        dirent *directory;
+        std::string content = "<html><body><h1>Index of " + path + "</h1><ul>";
+        while ((directory = readdir(dir)) != NULL) 
+        {
+            std::string name = directory->d_name;
+            if (name != "." && name != "..")
+            {
+                std::string fullPath = path + name;
+                content += "<li><a href=\"" + fullPath + "\">" + name + "</a></li>";
+            }            
+        }
+        content += "</ul></body></html>";
+        setContent(content);
+        setLength(content.size());
+        
+        closedir(dir);
+    }
+    else
+        writeFailError();
 }

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 12:16:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:16:01 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,11 +148,25 @@ void Http::runApplication()
                 std::cout << "Page was hard refreshed" << std::endl;
                 close(events[i].data.fd);
             }
-            else if (events[i].data.fd == this->_listServers[this->_listServers.size() - 1]->getSocketFd())
-                accept_new_connection(this->_listServers[this->_listServers.size() - 1]->getSocketFd(), _epollFd);
             else if ( events[i].events & (EPOLLIN | EPOLLET ))
             {
-                data_transfer(events[i].data.fd);
+                bool isServerSocket = false;
+                for (size_t j = 0; j < _listServers.size(); j++)
+                {
+                    if (events[i].data.fd == _listServers[j]->getSocketFd())
+                    {
+                        accept_new_connection(_listServers[j]->getSocketFd(), _epollFd);
+                        isServerSocket = true;
+                        break;
+                    }
+                }
+                if (!isServerSocket)
+                {
+                    data_transfer(events[i].data.fd);
+                }
+                // else if (events[i].data.fd == this->_listServers[this->_listServers.size() - 1]->getSocketFd())
+                //     accept_new_connection(this->_listServers[this->_listServers.size() - 1]->getSocketFd(), _epollFd);
+                // data_transfer(events[i].data.fd);
             }
 		}
     }
