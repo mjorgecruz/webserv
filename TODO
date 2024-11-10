@@ -2,7 +2,7 @@
 [V] 1. Criar função para autoindex
 [V] 2. Finalizar writeContent
 [ ] 3. Classe DELETE
-[ ] 4. Função de procura de locations
+[V] 4. Função de procura de locations
 [ ] 5. Teste extensivo de preenchimento dos dados no t_info
 [ ] 6. cgi-php classe para tratar disso
 [ ] 7. session management and cookies
