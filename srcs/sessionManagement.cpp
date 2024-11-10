@@ -1,31 +1,14 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   general.hpp                                        :+:      :+:    :+:   */
+/*   sessionManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 15:26:42 by masoares         ###   ########.fr       */
+/*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
+/*   Updated: 2024/11/10 15:28:14 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
-
-#ifndef GENERAL_HPP
-# define GENERAL_HPP
-
-extern int g_signal;
-
-#include "webserv.hpp"
-#include "Socket.hpp"
-#include "Server.hpp"
-#include "InputHandler.hpp"
-#include "DeleteHandler.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
-#include "Http.hpp"
-#include "Location.hpp"
 #include "sessionManagement.hpp"
-
-#endif
 
