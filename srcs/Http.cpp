@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 14:36:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 18:22:53 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -370,7 +370,7 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
             Info._root = server->getRoot();
 
         //Index
-        if (location->getIndex().empty())
+        if (!location->getIndex().empty())
             Info._index = location->getIndex();
         else   
             Info._index = server->getIndex();
