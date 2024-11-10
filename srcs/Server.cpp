@@ -90,7 +90,7 @@ std::map<int, std::string> Server::getErrorPages()
     return _errorPages;
 }
 
-std::map<std::string, Location *> Server::getLocations()
+std::vector< std::pair<std::string, Location *> > Server::getLocations()
 {
     return _locations;   
 }
@@ -135,7 +135,7 @@ void Server::addErrorPage(int errorNum, std::string error)
 
 void Server::addLocations(std::string path, Location *locations)
 {
-    _locations[path] = locations;
+    _locations.push_back(make_pair(path, locations));
 }
 
 void Server::serverChecker(std::string &line, std::ifstream &file)
@@ -207,7 +207,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             try
             {
                 location->parseLocation(line, file);
-                _locations[location->getPath()] = location;
+                _locations.push_back(std::make_pair(location->getPath(), location));
             }
             catch (std::exception &e)
             {
@@ -323,7 +323,7 @@ void Server::printConfig() const
     }
     std::cout << "Max Body Size: " << _maxBodySize << std::endl;
 
-    for (std::map<std::string, Location*>::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
+    for (std::vector < std::pair <std::string, Location*> >::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
     {
         std::cout << "\n--------------------------------[LOCATION BLOCK]" << std::endl;
         std::cout << "Location Path: " << loc->first << std::endl;

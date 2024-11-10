@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 00:16:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 14:36:02 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -265,8 +265,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         throw(std::exception());
 
     //define location
-    std::map<std::string, Location *> possibleLocations = server->getLocations();
-    std::map<std::string, Location *>::iterator it = this->findLocation(possibleLocations, path);
+    std::vector<std::pair <std::string, Location *> > possibleLocations = server->getLocations();
+    std::vector<std::pair <std::string, Location *> >::iterator it = this->findLocation(possibleLocations, path);
 
     //define all properties considering path received
     
@@ -321,33 +321,36 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     
 }
 
-std::map<std::string, Location *>::iterator Http::findLocation(std::map<std::string, Location *> &possibleLocations, std::string path)
+std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string path)
 {
-    std::map<std::string, Location *>::iterator it = possibleLocations.begin();
-    // size_t locationNum = 0;
-    (void) path;
-
-    while (it != possibleLocations.end()) 
+    std::vector<std::pair <std::string, Location *> >::iterator it = possibleLocations.begin();
+    while (it != possibleLocations.end())
     {
-        // if (*(path.cend() - 1) == '/')
-        // {
-        //     DIR * root;
-        //     root = opendir(((it->second)->getRoot() + path).c_str());
-        //     if (root != NULL)
-        //     {
-                
-        //     }
-        //     if (it->second->getAutoIndex())
-        //     {
-        //         dirent *picas = readdir(root);
-        //         picas->d_name;
-        //     }
-            
-        // }    
-            //it is a path to directory
+        //name contains **
+        if (it->second->getPath().find('*') != std::string::npos)
+        {
+            //all input
+            if (it->second->getPath().size() != 1)
+                return it;
+            //prefix + * + suffix
+            std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*') - 1);
+            std::string suf = it->second->getPath().substr(it->second->getPath().find('*') - 1, it->second->getPath().size() - 1 - it->second->getPath().find('*') - 1) ; 
+            if (path.rfind(pre, 0) == 0 && (suf.empty() || path.find(suf, pre.size()) != std::string::npos))
+            {
+                return it;
+            }
+            else if (path.rfind(suf) < path.size() - suf.size())
+                return it;
+        }
+        //if it matches up to the end or up to a "/"
+        else
+        {
+            if (path.rfind(it->second->getPath(), 0) == 0)
+                return it;
+        }
         it++;
     }
-    return it;
+    return possibleLocations.end();
 }
 
 void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
@@ -374,9 +377,12 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
         
         //Error pages
         Info._errorPages = server->getErrorPages();
-        for( std::map<int, std::string>::iterator it = location->getErrorPages().begin(); it != location->getErrorPages().end(); ++it)
+        std::map<int, std::string> pages = location->getErrorPages();
+        std::map<int, std::string>::iterator it = pages.begin();
+        while( it != pages.end())
         {
             Info._errorPages[it->first] = it->second;
+            ++it;
         }
 
         //Allowed Methods

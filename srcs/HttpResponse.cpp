@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 02:13:39 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 15:03:42 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpResponse.hpp"
 
@@ -114,6 +114,7 @@ void HttpResponse::writeContent(std::string path, t_info  &info)
         try
         {
             writeIndexPage(path, info);
+            std::cout << _content << std::endl;
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
@@ -152,15 +153,18 @@ void HttpResponse::writeIndexPage(std::string path, t_info  &info)
     std::string content = "";
     std::fstream file;
     path = info._root + path;
+    std::cout << path << std::endl;
     if (info._index.empty())
     {
-        std::fstream file;
         file.open(((path + "index.html")).c_str());
         _status = 200;
         if (!file.is_open())
         {
             if (info._autoIndex > 0)
-                writeAutoIndex(path);
+            {
+                writeAutoIndex(path, info);
+                return;
+            }
             else if (errno == ENOENT)
                 throw(HttpRequest::HttpPageNotFoundException());
             else if (errno == EACCES)
@@ -179,7 +183,10 @@ void HttpResponse::writeIndexPage(std::string path, t_info  &info)
         if (!file.is_open())
         {
             if (info._autoIndex > 0)
-                writeAutoIndex(path);
+            {
+                writeAutoIndex(path, info);
+                return;
+            }
             if (errno == ENOENT)
                 throw(HttpRequest::HttpPageNotFoundException());
             else if (errno == EACCES)
@@ -251,10 +258,12 @@ void HttpResponse::writeFailError()
     setLength(response.size());
 }
 
-void HttpResponse::writeAutoIndex(std::string path)
+void HttpResponse::writeAutoIndex(std::string path, t_info &info)
 {
     DIR * dir;
     dir = opendir(path.c_str());
+    std::cout << path << std::endl;
+    
     if (dir)
     {
         dirent *directory;
@@ -264,7 +273,7 @@ void HttpResponse::writeAutoIndex(std::string path)
             std::string name = directory->d_name;
             if (name != "." && name != "..")
             {
-                std::string fullPath = path + name;
+                std::string fullPath = info._path + "/" + name;
                 content += "<li><a href=\"" + fullPath + "\">" + name + "</a></li>";
             }            
         }

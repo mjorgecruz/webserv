@@ -16,7 +16,7 @@ class Server : public Socket
         std::vector<std::string> _hostname;
         std::vector<std::string> _index;
         std::map<int, std::string> _errorPages;
-        std::map<std::string, Location *> _locations;
+        std::vector<std::pair<std::string, Location *> > _locations;
         std::vector<std::string> _allowedMethods;
         long _maxBodySize;
         int _autoIndex;
@@ -37,7 +37,7 @@ class Server : public Socket
         std::vector<std::string> getHostname();
         std::vector<std::string> getIndex();
         std::map<int, std::string> getErrorPages();
-        std::map<std::string, Location *> getLocations();
+        std::vector<std::pair<std::string, Location *> > getLocations();
         std::vector<std::string> getAllowedMethods();
         int getMaxBodySize();
         int getAutoIndex();

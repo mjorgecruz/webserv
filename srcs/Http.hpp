@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 22:56:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/10 13:23:56 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
@@ -49,7 +49,7 @@ class Http
 
         void fillStructInfo(t_info &Info, Server *server, Location *location);
         
-        std::map<std::string, Location *>::iterator findLocation(std::map<std::string, Location *> &possibleLocations, std::string path);
+        std::vector<std::pair <std::string, Location *> >::iterator findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string path);
         
         void sendData(int socket, HttpResponse *response);
 };

@@ -11,3 +11,4 @@
 [ ] 10. verificar e criar std::exceptions()
 [ ] 11. Resolver relink do makefile
 [ ] 12. Redirects
+[ ] 13. Limit paths to have just one *
