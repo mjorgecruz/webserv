@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 12:00:58 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 12:15:16 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 00:39:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
 
     if (path.find_last_of('/') != path.size() - 1)
     {
-        std::string filename = info._root + path;
+        std::string filename = path;
         int result = access(filename.c_str(), W_OK);
         if (result == -1)
         {
@@ -46,7 +46,7 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
     }
     else //if it is a folder
     {
-        std::string folder = info._root + path;
+        std::string folder = path;
         if (access(folder.c_str(), W_OK) != 0)
         {
             if (errno == EACCES || errno == EROFS )

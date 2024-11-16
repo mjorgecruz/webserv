@@ -1,11 +1,11 @@
 [V] 0. Fail on reading from ok_serverconfig 
 [V] 1. Criar função para autoindex
 [V] 2. Finalizar writeContent
-[ ] 3. Classe DELETE
+JORGE [ ] 3. Classe DELETE
 [V] 4. Função de procura de locations
 [ ] 5. Teste extensivo de preenchimento dos dados no t_info
-[ ] 6. cgi-php classe para tratar disso
-[ ] 7. session management and cookies
+JORGE [ ] 6. cgi-php classe para tratar disso
+JORGE [ ] 7. session management and cookies
 [ ] 8. verificar codigos de erro
 [V] 9. criar erro de server se não encontrar o ficheiro de erro
 [ ] 10. verificar e criar std::exceptions()

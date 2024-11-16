@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 12:01:32 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 12:18:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 00:49:27 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,13 @@ class DeleteHandler
 
         void handleDataDeletion(std::string path, HttpRequest &request, t_info &info);
         int definePathType(std::string &path, t_info &info);
+
+        class DeleteFileForbidden: public std::exception
+        {
+            const char *what( void ) const throw();
+        }
+        class DeleteFileMissing: public std::exception
+        {
+            const char *what( void ) const throw();
+        }
 };
