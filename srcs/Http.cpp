@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 18:22:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 16:11:42 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,13 @@ void Http::webservInitializer(std::string confPath)
         {
             _listServers[i]->printConfig();
         }
-        
+
+        exit(1);
+        ///////////////////////////////////////////////////
+        //comment this exit to make the program run again//
+        //uncomment it to run the make test command      //
+        ///////////////////////////////////////////////////
+                
         for (size_t i = 0; i < _listServers.size(); i++)
         {
             _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());

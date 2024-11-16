@@ -155,6 +155,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
+    remaining.erase(remaining.find_last_not_of(" \t") + 1);
 
     // after bracket must be empty
     if (remaining != "{")
@@ -164,6 +165,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             if (line.find_first_not_of(" \t") == std::string::npos)
                 continue;
             line.erase(0, line.find_first_not_of(" \t"));
+            line.erase(line.find_last_not_of(" \t") + 1);
             if (line == "{")
             {
                 serverBracket = true;
@@ -193,6 +195,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             continue;
           
         line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
         if (line == "}")
         {
             break;
