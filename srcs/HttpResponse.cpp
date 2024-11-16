@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 15:03:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 14:42:22 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -114,6 +114,8 @@ void HttpResponse::writeContent(std::string path, t_info  &info)
         try
         {
             writeIndexPage(path, info);
+            std::cout << "PATHAAAAAAAA" << std::endl;
+            std::cout << path << std::endl;
             std::cout << _content << std::endl;
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
@@ -133,7 +135,8 @@ void HttpResponse::writeNormalPage(std::string path, t_info  &info)
     std::string content = "";
     std::fstream file;
     path = info._root + path;
-    
+    std::cout << "PATHAAAAAAAA" << std::endl;
+    std::cout << path << std::endl;
     file.open(path.c_str());
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());

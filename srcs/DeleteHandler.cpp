@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   DeleteHandler.cpp                                  :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 12:00:58 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 00:39:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 14:33:20 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "DeleteHandler.hpp"
 
@@ -22,56 +22,32 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
 {
     (void) request;
     int pathExistance = definePathType(path, info);
-    if (pathExistance < 0)
-    {
-        if (pathExistance == -1)
-            throw(std::exception());
-        else if (pathExistance == -2)
-            throw(std::exception());
-        }
+    try{
+        if (pathExistance < 0)
+        {
+            if (pathExistance == -1)
+                throw(std::exception());
+            else if (pathExistance == -2)
+                throw(std::exception());
+            }
 
-    if (path.find_last_of('/') != path.size() - 1)
-    {
-        std::string filename = path;
-        int result = access(filename.c_str(), W_OK);
-        if (result == -1)
+        if (path.find_last_of('/') != path.size() - 1)
         {
-            if (errno == EACCES || errno == EROFS )
-                throw(std::exception());
-            else if (errno == ENOENT)
-                throw(std::exception());
-        }
-        std::remove(filename.c_str());
-        info._status = 204;
-    }
-    else //if it is a folder
-    {
-        std::string folder = path;
-        if (access(folder.c_str(), W_OK) != 0)
-        {
-            if (errno == EACCES || errno == EROFS )
-                throw(std::exception());
-            else if (errno == ENOENT)
-                throw(std::exception());
-        }
-        DIR *delDirectory;
-        dirent *dirfile;
-        delDirectory = opendir(folder.c_str());
-        while ((dirfile = readdir(delDirectory)) != NULL)
-        {
-            if (dirfile->d_name[0] != '.')
-                continue;
-            std::string file = path + dirfile->d_name;
-            
-            //check if any dirfile is a directory
-            struct stat entryInfo;
-            if (stat(file.c_str(), &entryInfo) == 0)
+            std::string filename = path;
+            int result = access(filename.c_str(), W_OK);
+            if (result == -1)
             {
-                if S_ISDIR(entryInfo.st_mode)
+                if (errno == EACCES || errno == EROFS )
+                    throw(std::exception());
+                else if (errno == ENOENT)
                     throw(std::exception());
             }
-            
-            //check if any dirfile is a deletable file
+            std::remove(filename.c_str());
+            info._status = 204;
+        }
+        else //if it is a folder
+        {
+            std::string folder = path;
             if (access(folder.c_str(), W_OK) != 0)
             {
                 if (errno == EACCES || errno == EROFS )
@@ -79,16 +55,52 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
                 else if (errno == ENOENT)
                     throw(std::exception());
             }
+            DIR *delDirectory;
+            dirent *dirfile;
+            delDirectory = opendir(folder.c_str());
+            while ((dirfile = readdir(delDirectory)) != NULL)
+            {
+                if (dirfile->d_name[0] != '.')
+                    continue;
+                std::string file = path + dirfile->d_name;
+                
+                //check if any dirfile is a directory
+                struct stat entryInfo;
+                if (stat(file.c_str(), &entryInfo) == 0)
+                {
+                    if S_ISDIR(entryInfo.st_mode)
+                        throw(std::exception());
+                }
+                
+                //check if any dirfile is a deletable file
+                if (access(folder.c_str(), W_OK) != 0)
+                {
+                    if (errno == EACCES || errno == EROFS )
+                        throw(std::exception());
+                    else if (errno == ENOENT)
+                        throw(std::exception());
+                }
+            }
+            while ((dirfile = readdir(delDirectory)) != NULL)
+            {
+                if (dirfile->d_name[0] != '.')
+                    continue;
+                std::string file = path + dirfile->d_name;
+                remove(file.c_str());
+            }
+            rmdir(folder.c_str());
+            info._status = 204;
         }
-        while ((dirfile = readdir(delDirectory)) != NULL)
-        {
-            if (dirfile->d_name[0] != '.')
-                continue;
-            std::string file = path + dirfile->d_name;
-            remove(file.c_str());
-        }
-        rmdir(folder.c_str());
-        info._status = 204;
+    }
+    catch(DeleteHandler::DeleteFileForbiddenException &e) 
+    {
+        std::cerr << e.what() << std::endl;
+        info._status = 405;
+    }
+    catch(DeleteHandler::DeleteFileMissingException &e)
+    {
+        std::cerr << e.what() << std::endl;
+        info._status = 405;
     }
 }
 
@@ -110,4 +122,14 @@ int DeleteHandler::definePathType(std::string &path, t_info &info)
             path = path + "/";
     }
     return 1;
+}
+
+const char *DeleteHandler::DeleteFileForbiddenException::what( void ) const throw()
+{
+    return "Not enough permissions to delete";
+}
+
+const char *DeleteHandler::DeleteFileMissingException::what( void ) const throw()
+{
+    return "File does not exist";
 }

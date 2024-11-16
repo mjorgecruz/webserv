@@ -14,7 +14,7 @@
     </div>
 
     <h2>Send a POST Request</h2>
-    <form action="/submit/" method="POST">
+    <form action="/files/submit/" method="POST">
         <label for="userInput">Enter your text:</label><br>
         <textarea id="userInput" name="userInput" rows="4" cols="50"></textarea><br><br>
         <button type="submit">Send</button>
@@ -23,7 +23,7 @@
     <h1>Upload Files</h1>
 
     <!-- Hidden File Input -->
-    <form id="uploadForm" action="/submit/" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" action="/files/submit/" method="post" enctype="multipart/form-data">
         <input type="file" id="fileInput" name="file" style="display: none;" onchange="submitForm()">
         <button type="button" class="button" onclick="triggerFileUpload()">Choose File to Upload</button>
     </form>  
@@ -38,7 +38,7 @@
     <script>
         function sendDeleteRequest() {
             const fileName = document.getElementById('fileName').value;
-            fetch(`/submit/${encodeURIComponent(fileName)}`, {
+            fetch(`/files/submit/${encodeURIComponent(fileName)}`, {
                 method: 'DELETE'
             })
             .then(response => {
