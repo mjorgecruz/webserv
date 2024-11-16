@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 02:17:49 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 18:12:27 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,11 +118,27 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         std::cout << "Error: 'location' must be followed by a path.\n";
         throw std::exception();
     }
+    
+    int starCount = 0;
+    
+    for(size_t i = 0; i < locationPath.size(); i++)
+    {
+        if (locationPath[i] == '*')
+            starCount++;
+        
+        if (starCount > 1)
+        {
+            std::cout << "Too many ***** in location\n";
+            throw std::exception();
+        }
+    }
+    
     _path = locationPath;
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
-
+    remaining.erase(remaining.find_last_not_of(" \t") + 1);
+    
     if (remaining == "{")
     {
         //jumps
@@ -132,12 +148,18 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         while (std::getline(file, line))
         {
             line.erase(0, line.find_first_not_of(" \t"));
-            if (line.empty() || line.find_first_not_of(" \t") == std::string::npos) {
+            line.erase(line.find_last_not_of(" \t") + 1);
+            
+            if (line.empty() || line.find_first_not_of(" \t") == std::string::npos)
+            {
                 continue;
             }
-            if (line == "{") {
+            if (line == "{")
+            {
                 break;
-            } else {
+            }
+            else
+            {
                 std::cout << "Error: Expected '{' after 'location' path.\n";
                 throw std::exception();
             }
@@ -149,6 +171,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         if (line.find_first_not_of(" \t") == std::string::npos)
             continue;
         line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
         
         if (line == "}")
             break;
@@ -216,7 +239,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             if (!remaining.empty())
             {
                 std::cout << "ERROR: KEYWORD: [autoindex]" << std::endl;
-                throw(std::exception());
+                throw std::exception();
             }
         }
         else
@@ -384,16 +407,17 @@ void Location::keywordReturn(std::istringstream &iss)
     {
         std::cout << "expected value after return" << std::endl;
         throw(std::exception());
-    }
+    } 
     iss >> remaining;
     if (!remaining.empty())
     {
-        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 1 variable" << std::endl;
+        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 2 variable" << std::endl;
         throw(std::exception());
     }
 }
 
 /*Funtion to print all the configurations of each location class*/
+
 void Location::printLocationConfig() const {
     std::cout << "  Root: " << _root << std::endl;
     std::cout << "  Index Files: ";

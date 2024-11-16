@@ -157,7 +157,6 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     remaining.erase(0, remaining.find_first_not_of(" \t"));
     remaining.erase(remaining.find_last_not_of(" \t") + 1);
 
-    // after bracket must be empty
     if (remaining != "{")
     {
         while (std::getline(file, line))
