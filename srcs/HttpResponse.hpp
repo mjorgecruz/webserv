@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 15:02:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 19:56:10 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -58,6 +58,9 @@ class HttpResponse
         void writePage403(t_info &info);
         void writeFailError();
         void writeAutoIndex(std::string path, t_info &info);
+
+        void writeRedirectContent(t_info &Info);
+        void setGetRedirectHeader(t_info &Info);
         
 };
 

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 20:20:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 15:30:00 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "general.hpp"
 
@@ -32,6 +32,8 @@ int main (int ac, char **av)
         std::cerr << "Error while starting server: No config file" << std::endl;
         std::cerr << "Default configuration used" << std::endl;
         std::cerr << std::endl;
+        if (ac > 2)
+            return 1;
     }
     signal(SIGINT, sigint_handler);
 
@@ -54,7 +56,11 @@ int main (int ac, char **av)
             }
         }
         else
-            http.webservInitializer("");
+        {
+            std::string root = (std::getenv("HOME"));
+            root = root + "/html/" + "default.conf";
+            http.webservInitializer(root);
+        }
     }
     catch(std::exception &e)
     {

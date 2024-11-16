@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/webserv",
-            "args": ["${workspaceFolder}/webserv.conf"],
+            "args": ["${workspaceFolder}/test_redirect.conf"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

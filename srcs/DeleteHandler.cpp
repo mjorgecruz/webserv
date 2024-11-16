@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 12:00:58 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 14:33:20 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 15:28:31 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -26,9 +26,9 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
         if (pathExistance < 0)
         {
             if (pathExistance == -1)
-                throw(std::exception());
+                throw(DeleteHandler::DeleteFileMissingException());
             else if (pathExistance == -2)
-                throw(std::exception());
+                throw(DeleteHandler::DeleteFileForbiddenException());
             }
 
         if (path.find_last_of('/') != path.size() - 1)
@@ -38,9 +38,9 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
             if (result == -1)
             {
                 if (errno == EACCES || errno == EROFS )
-                    throw(std::exception());
+                    throw(DeleteHandler::DeleteFileForbiddenException());
                 else if (errno == ENOENT)
-                    throw(std::exception());
+                    throw(DeleteHandler::DeleteFileMissingException());
             }
             std::remove(filename.c_str());
             info._status = 204;
@@ -51,9 +51,9 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
             if (access(folder.c_str(), W_OK) != 0)
             {
                 if (errno == EACCES || errno == EROFS )
-                    throw(std::exception());
+                    throw(DeleteHandler::DeleteFileMissingException());
                 else if (errno == ENOENT)
-                    throw(std::exception());
+                    throw(DeleteHandler::DeleteFileForbiddenException());
             }
             DIR *delDirectory;
             dirent *dirfile;
@@ -69,16 +69,16 @@ void DeleteHandler::handleDataDeletion(std::string path, HttpRequest &request, t
                 if (stat(file.c_str(), &entryInfo) == 0)
                 {
                     if S_ISDIR(entryInfo.st_mode)
-                        throw(std::exception());
+                        throw(DeleteHandler::DeleteFileForbiddenException());
                 }
                 
                 //check if any dirfile is a deletable file
                 if (access(folder.c_str(), W_OK) != 0)
                 {
                     if (errno == EACCES || errno == EROFS )
-                        throw(std::exception());
+                        throw(DeleteHandler::DeleteFileForbiddenException());
                     else if (errno == ENOENT)
-                        throw(std::exception());
+                        throw(DeleteHandler::DeleteFileMissingException());
                 }
             }
             while ((dirfile = readdir(delDirectory)) != NULL)

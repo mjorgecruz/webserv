@@ -1,15 +1,21 @@
 [V] 0. Fail on reading from ok_serverconfig 
 [V] 1. Criar função para autoindex
 [V] 2. Finalizar writeContent
-JORGE [ ] 3. Classe DELETE
+[V] 3. Classe DELETE
 [V] 4. Função de procura de locations
-[ ] 5. Teste extensivo de preenchimento dos dados no t_info
+LUIS [ ] 5. Teste extensivo de preenchimento dos dados no t_info
 JORGE [ ] 6. cgi-php classe para tratar disso
 JORGE [ ] 7. session management and cookies
 [ ] 8. verificar codigos de erro
 [V] 9. criar erro de server se não encontrar o ficheiro de erro
 [ ] 10. verificar e criar std::exceptions()
 [ ] 11. Resolver relink do makefile
-[ ] 12. Redirects
-[ ] 13. Limit paths to have just one * on conf file
+JORGE [ ] 12. Redirects
+LUIS [ ] 13. Limit paths to have just one * on conf file
 [V] 14. formato do pedido - se for request para index tem que vir 
+LUIS [ ] 15. verificar e criar std::exceptions() no parser
+JORGE [ ] 16. Garantir que o servidor 'e escolhido em funcao do serverName , m vez de so pela porta e address
+JORGE [ ] 17. If no conf file, default conf should be searched for and used.
+[V] 18. If path does not exists, path with "/" at the end should be used.
+JORGE [ ] 19. Consider the return full string
+[ ] 20. Introduce return in info and logic to not render anything if there is a return for that location

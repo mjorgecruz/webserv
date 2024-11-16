@@ -67,15 +67,15 @@ $(DEFAULT_DIR)/default.conf: defaults
 defaults:
 	@mkdir -p $(DEFAULT_DIR)
 	@echo "This is a test page" > $(DEFAULT_DIR)/index.html
-	@echo "Server { " >> $(DEFAULT_DIR)/default.conf
-	@echo "	listen 127.0.0.1:8080; " >> $(DEFAULT_DIR)/default.conf
-	@echo "	server_name example.com;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	allow_methods GET POST DELETE;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	index index.html;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	location / {" >> $(DEFAULT_DIR)/default.conf
-	@echo "		index index.html" >> $(DEFAULT_DIR)/default.conf
-	@echo "	}" >> $(DEFAULT_DIR)/default.conf
-	@echo "} \n" >> $(DEFAULT_DIR)/default.conf
+	@echo "server {\t" > $(DEFAULT_DIR)/default.conf
+	@echo "	listen 127.0.0.1:8080; \t" >> $(DEFAULT_DIR)/default.conf
+	@echo "	server_name example.com;\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "	allow_methods GET POST DELETE;\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "	index index.html;\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "	location / {\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "		index index.html\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "	}\t" >> $(DEFAULT_DIR)/default.conf
+	@echo "} \t\n" >> $(DEFAULT_DIR)/default.conf
 	
 	
 204: defaults

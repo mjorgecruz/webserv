@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 14:42:22 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 20:04:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -114,9 +114,6 @@ void HttpResponse::writeContent(std::string path, t_info  &info)
         try
         {
             writeIndexPage(path, info);
-            std::cout << "PATHAAAAAAAA" << std::endl;
-            std::cout << path << std::endl;
-            std::cout << _content << std::endl;
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
@@ -135,8 +132,6 @@ void HttpResponse::writeNormalPage(std::string path, t_info  &info)
     std::string content = "";
     std::fstream file;
     path = info._root + path;
-    std::cout << "PATHAAAAAAAA" << std::endl;
-    std::cout << path << std::endl;
     file.open(path.c_str());
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());
@@ -288,4 +283,31 @@ void HttpResponse::writeAutoIndex(std::string path, t_info &info)
     }
     else
         writeFailError();
+}
+
+void HttpResponse::writeRedirectContent(t_info &Info)
+{
+    (void) Info;
+    std::string content = "<html>\n"
+                      "  <head>\n"
+                      "    <title>301 Moved Permanently</title>\n"
+                      "  </head>\n"
+                      "  <body>\n"
+                      "    <h1>Moved Permanently</h1>\n"
+                      "    <p>The resource has been moved to <a href=\"http://localhost:8090\">http://localhost:8090</a>.</p>\n"
+                      "  </body>\n"
+                      "</html>";
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::setGetRedirectHeader(t_info &Info)
+{
+    std::ostringstream bufferM;
+    bufferM << "HTTP/1.1" << _status << "Moved Permanently"
+            << "\r\ncontent-type: " << "text/html"
+            << "\r\nlocation:" << Info._redirect
+            << "\r\ncontent-length: " << _contentLength
+            << "\r\n\r\n";
+    _header = bufferM.str(); 
 }

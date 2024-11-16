@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 18:22:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 19:56:21 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -278,12 +278,25 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         fillStructInfo(Info, server, NULL);
 
     DIR * root;
-    root = opendir(server->getRoot().c_str());
+    root = opendir(Info._root.c_str());
     if (root == NULL)
         throw(std::exception());
     closedir(root);
-        
+    
+    std::string full_path = Info._root + path;
+    struct stat entryInfo;
+    if (stat(full_path.c_str(), &entryInfo) == 0)
+    {
+        if (S_ISDIR(entryInfo.st_mode))
+            path = path + "/";       
+    }
     //check method
+    if (!(Info._redirect.empty()))
+    {
+        response->setStatus(301);
+        response->writeRedirectContent(Info);
+        response->setGetRedirectHeader(Info);
+    }
     size_t i = 0;
     while ( i < (server->getAllowedMethods()).size())
     {
@@ -298,7 +311,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             else if (type == "POST")
             {
                 InputHandler handlePost;
-                handlePost.handleDataUpload(path, *received, Info);
+                if (Info._redirect.empty())
+                    handlePost.handleDataUpload(path, *received, Info);
                 response->setStatus(Info._status);
                 response->setLength(0);
                 response->setPostHeader();
@@ -330,7 +344,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
         if (it->second->getPath().find('*') != std::string::npos)
         {
             //all input
-            if (it->second->getPath().size() != 1)
+            if (it->second->getPath().size() == 1)
                 return it;
             //prefix + * + suffix
             std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*') - 1);
