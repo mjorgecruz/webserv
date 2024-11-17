@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 11:24:35 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/17 14:51:27 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,53 +165,56 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         if (keyword == "index")
         {
             hasValidKeywords = true;
+            //last directive - ok
             keywordIndex(iss);
         }
         else if (keyword == "root")
         {
+            //last directive - ok
             keywordRoot(iss);
             hasValidKeywords = true;
         }
         else if (keyword == "cgi_path")
         {
+            //last directive overrides - ok
             keywordCgiPath(iss);
             hasValidKeywords = true;
         }
         else if (keyword == "allow_methods")
         {
+            //last directive overrides  other - ok
             hasValidKeywords = true;
             keywordMethods(iss);
         }
         else if (keyword == "error_page")
         {
+            //accepts multiple in multiple lines - ok
             hasValidKeywords = true;
             keywordErrorPages(iss);
         }
         else if (keyword == "return")
         {
+            //last directive overrides others - ok
             hasValidKeywords = true;
             keywordReturn(iss);
         }
         else if (keyword == "autoindex")
         {
+            //last directive override - ok
+            
             hasValidKeywords = true;
             std::string autoIndexValue;
             iss >> autoIndexValue;
             if (autoIndexValue == "on")
-            {
                 _autoIndex = 1;
-            }
             else if (autoIndexValue == "off")
-            {
                 _autoIndex = 0;
-            }
             else
                 custtomThrow("ERROR: Location block: autoindex");
             std::string remaining;
             iss >> remaining;
             if (!remaining.empty())
                 custtomThrow("ERROR: Location block: autoindex");
-
         }
         else
             custtomThrow("ERROR: Location block: Invalid Keyword");
@@ -225,6 +228,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
 void Location::keywordIndex(std::istringstream &iss)
 {
     std::string indexFile;
+    _index.clear();
     while (iss >> indexFile)
     {
         if (indexFile.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
@@ -265,6 +269,7 @@ void Location::keywordMethods(std::istringstream &iss)
 {
     int i = 0;
     std::string method;
+    _allowedMethods.clear();
     while (iss >> method)
     {
         if (method != "POST" && method != "GET" && method != "DELETE")
@@ -340,5 +345,6 @@ void Location::keywordReturn(std::istringstream &iss)
     iss >> remaining;
     if (!remaining.empty())
         custtomThrow("ERROR: Location Block: return");
+        
     setRedirect(redir);
 }
