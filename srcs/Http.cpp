@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 14:03:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 15:20:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -223,7 +223,6 @@ void Http::data_transfer(int socket)
     {
         std::cerr << "Bad Request" << std::endl;
     }
-
     delete(response);
     delete(request);
 }
@@ -296,8 +295,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //check method
     if (!(Info._redirect.empty()))
     {
-        response->setStatus(301);
-        response->writeRedirectContent(Info);
+        response->writeRedirectContent(Info, received);
         response->setGetRedirectHeader(Info);
         sendData(socket, response);
         return;

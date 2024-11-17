@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 12:15:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 15:07:42 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -329,29 +329,52 @@ void HttpResponse::writeAutoIndex(std::string path, t_info &info)
         writeFailError();
 }
 
-void HttpResponse::writeRedirectContent(t_info &Info)
+void HttpResponse::writeRedirectContent(t_info &Info, HttpRequest *request)
 {
-    (void) Info;
-    std::string content = "<html>\n"
-                      "  <head>\n"
-                      "    <title>301 Moved Permanently</title>\n"
-                      "  </head>\n"
-                      "  <body>\n"
-                      "    <h1>Moved Permanently</h1>\n"
-                      "    <p>The resource has been moved to <a href=\"http://localhost:8090\">http://localhost:8090</a>.</p>\n"
-                      "  </body>\n"
-                      "</html>";
+    (void) request;
+    std::istringstream ss(Info._redirect);
+    std::string strStatus;
+    std::string addr;
+    ss >> strStatus >> addr;
+    std::string content;
+    if (strStatus == "301")
+    {    
+        content = "<html>\n"
+                "  <head>\n"
+                "    <title>301 Moved Permanently</title>\n"
+                "  </head>\n"
+                "  <body>\n"
+                "    <h1>Moved Permanently</h1>\n"
+                "  </body>\n"
+                "</html>";
+        setStatus(301);
+    }
+    else if (strStatus == "302")
+    {
+        content = "<html>\n"
+                "  <head>\n"
+                "    <title>302 Found</title>\n"
+                "  </head>\n"
+                "  <body>\n"
+                "    <h1>Found</h1>\n"
+                "  </body>\n"
+                "</html>";
+        setStatus(302);
+    }
     setContent(content);
     setLength(content.size());
 }
 
 void HttpResponse::setGetRedirectHeader(t_info &Info)
 {
+    std::istringstream ss(Info._redirect);
+    std::string addr;
+    ss >> addr >> addr;
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1" << _status << "Moved Permanently"
+    bufferM << "HTTP/1.1 " << _status << " Moved Permanently"
             << "\r\ncontent-type: " << "text/html"
-            << "\r\nlocation:" << Info._redirect
-            << "\r\ncontent-length: " << _contentLength
+            << "\r\nLocation: " << "http://" << addr
+            << "\r\ncontent-length: " << 0
             << "\r\n\r\n";
     _header = bufferM.str(); 
 }

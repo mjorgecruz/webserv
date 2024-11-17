@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 01:39:13 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 14:39:06 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
@@ -63,7 +63,7 @@ class HttpResponse
         void writeFailError();
         void writeAutoIndex(std::string path, t_info &info);
 
-        void writeRedirectContent(t_info &Info);
+        void writeRedirectContent(t_info &Info, HttpRequest *request);
         void setGetRedirectHeader(t_info &Info);
         
 };
