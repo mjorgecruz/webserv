@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 19:56:10 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 01:39:13 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
@@ -21,6 +21,8 @@ class Location;
 
 struct t_info_struct;
 typedef struct s_info t_info;
+
+class CgiManagement;
 
 class HttpResponse
 {
@@ -53,6 +55,8 @@ class HttpResponse
         void writeContent(std::string path, t_info &info);
         
         void writeNormalPage(std::string path, t_info  &info);
+        void writeCgiPage(std::string path, t_info  &info);
+        
         void writeIndexPage(std::string path, t_info  &info);
         void writePage404(t_info &info);
         void writePage403(t_info &info);

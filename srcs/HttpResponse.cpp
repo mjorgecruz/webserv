@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 20:04:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 01:45:47 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -98,7 +98,10 @@ void HttpResponse::writeContent(std::string path, t_info  &info)
     {
         try
         {
-            writeNormalPage(path, info);
+            if (info._cgiPath.empty())
+                writeNormalPage(path, info);
+            else
+                writeCgiPage(path, info);
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
@@ -136,11 +139,28 @@ void HttpResponse::writeNormalPage(std::string path, t_info  &info)
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());
     std::string line;
+    
     while (getline(file, line))
     {
         content = content + line;
         content = content + "\n";
     }
+    _status = 200;
+    setContent(content);
+    setLength(content.size());
+}
+
+void HttpResponse::writeCgiPage(std::string path, t_info  &info)
+{
+    std::string content = "";
+    std::fstream file;
+    path = info._root + path;
+    file.open(path.c_str());
+    if (!file.is_open())
+        throw(HttpRequest::HttpPageNotFoundException());
+    
+    CgiManagement pageCreate;
+    pageCreate.solveCgiPhp(path, info, content);
     _status = 200;
     setContent(content);
     setLength(content.size());

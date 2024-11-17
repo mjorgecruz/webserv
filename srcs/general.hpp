@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 18:08:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 01:38:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ extern int g_signal;
 #include "Http.hpp"
 #include "Location.hpp"
 #include "SessionManagement.hpp"
+#include "CgiManagement.hpp"
 
 #endif
 

@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 19:56:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/16 23:47:34 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -157,16 +157,13 @@ void Http::runApplication()
                     {
                         accept_new_connection(_listServers[j]->getSocketFd(), _epollFd);
                         isServerSocket = true;
-                        break;
+                        //break;
                     }
                 }
                 if (!isServerSocket)
                 {
                     data_transfer(events[i].data.fd);
                 }
-                // else if (events[i].data.fd == this->_listServers[this->_listServers.size() - 1]->getSocketFd())
-                //     accept_new_connection(this->_listServers[this->_listServers.size() - 1]->getSocketFd(), _epollFd);
-                // data_transfer(events[i].data.fd);
             }
 		}
     }
@@ -230,6 +227,7 @@ Server *Http::findCorrespondingServer(int socket)
         throw(std::exception());
     int port = ntohs(addr.sin_port);
     std::string address = inet_ntoa(addr.sin_addr);
+    
     std::cout << "ADDRESS : " << address << std::endl;
     std::cout << "PORT : " << port << std::endl;
     while (serverNumber < _listServers.size())
@@ -296,6 +294,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         response->setStatus(301);
         response->writeRedirectContent(Info);
         response->setGetRedirectHeader(Info);
+        sendData(socket, response);
+        return;
     }
     size_t i = 0;
     while ( i < (server->getAllowedMethods()).size())
