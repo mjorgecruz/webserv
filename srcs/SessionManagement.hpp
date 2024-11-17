@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   SessionManagement.hpp                              :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:24:18 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 18:08:54 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:55:42 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #pragma once
 
@@ -17,8 +17,8 @@
 class SessionManagement
 {
     private:
-        std::map<std::string,std::string> userData;
-        std::map<std::string, std::string> sessions;
+        std::map<std::string,std::string> _userData;
+        std::map<std::string, std::string> _sessions;
         
     public:
         SessionManagement();
@@ -34,10 +34,23 @@ class SessionManagement
         
         void handleCookie(HttpRequest &request, HttpResponse &response);
 
-
-        class UserALreadyInUseException: public std::exception
+        class UserAlreadyInUseException: public std::exception
         {
             const char *what() const throw();
         };
         
+        class WrongPasswordException: public std::exception
+        {
+            const char *what() const throw();
+        };
+
+        class WrongNamePassException: public std::exception
+        {
+            const char *what() const throw();
+        };
+
+        class SessionErrorException: public std::exception
+        {
+            const char *what() const throw();
+        };
 };
