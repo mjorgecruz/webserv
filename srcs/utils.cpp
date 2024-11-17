@@ -79,7 +79,16 @@ void Server::printConfig() const
         loc->second->printLocationConfig();
     }
 
-    std::cout << "---------------------------------END SERVER BLOCK\n\n" << std::endl;
+    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _allowedMethods.end())
+        {
+            std::cout << ", ";
+        }
+    }
+
+    std::cout << "\n---------------------------------END SERVER BLOCK\n\n" << std::endl;
 }
 
 /*Funtion to print all the configurations of each location class*/
