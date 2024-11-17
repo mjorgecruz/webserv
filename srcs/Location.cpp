@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 18:12:27 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/17 10:35:40 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,16 +92,16 @@ std::string Location::getPath()
     return _path;
 }
 
-static bool isNumeric(const std::string &str)
-{
-    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-    {
-        if (!std::isdigit(*it)) {
-            return false;
-        }
-    }
-    return true;
-}
+// bool isNumeric(const std::string &str)
+// {
+//     for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+//     {
+//         if (!std::isdigit(*it)) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 void Location::parseLocation(std::string &line, std::ifstream &file)
 {
@@ -132,7 +132,6 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             throw std::exception();
         }
     }
-    
     _path = locationPath;
     std::string remaining;
     std::getline(iss, remaining);
@@ -340,29 +339,19 @@ void Location::keywordErrorPages(std::istringstream &iss)
     std::string token;
     std::vector<int> errorCodes;
     std::string errorPage;
-    int array[] = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417 ,418, 420, 421, 422, 423, 424, 425, 426, 428, 429, 431, 451};
-    std::vector<int> valid;
-    valid.assign(array, array + 60);
-    bool found;
     
     while (iss >> token)
     {
-        found = false;
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            for(size_t i = 0; i < valid.size(); i++)
+            if(isValidError(errorCode))
             {
-                if (valid[i] == errorCode)
-                {
-                    found = true;
-                    errorCodes.push_back(errorCode);
-                    break;
-                }
+                errorCodes.push_back(errorCode);    
             }
-            if (found == false)
+            else
             {
-                std::cout << "Error: Invalid Error Code\n";
+                std::cout << "ERROR: Invalid Code\n";
                 throw std::exception();
             }
         }
@@ -372,6 +361,7 @@ void Location::keywordErrorPages(std::istringstream &iss)
             break;
         }
     }
+    
     if (errorCodes.empty())
     {
         std::cout << "Invalid error: " << errorPage << "\n";
@@ -398,22 +388,48 @@ void Location::keywordErrorPages(std::istringstream &iss)
 
 void Location::keywordReturn(std::istringstream &iss)
 {
-    std::string remaining;
+    std::string firstToken, secondToken;
     std::string redir;
-    iss >> redir;
-    if (!redir.empty())
-        setRedirect(redir);
+    iss >> firstToken;
+    if (firstToken.empty())
+    {
+        std::cout << "ERROR: Expected value after return keyword\n";
+        throw std::exception();
+    }
+    
+    if (isNumeric(firstToken))
+    {
+        int errorCode = std::atoi(firstToken.c_str());
+        if(!isValidError(errorCode))
+        {
+            std::cout << "ERROR: Invalid CODE in return Keyword\n";
+            throw std::exception();
+        }
+    }
     else
     {
-        std::cout << "expected value after return" << std::endl;
-        throw(std::exception());
-    } 
+        std::cout << "ERROR: Non Numeric CODE in return Keyword\n";
+        throw std::exception();
+    }
+    
+    iss >> secondToken;
+    if (!secondToken.empty())
+    {
+        redir = firstToken + " " + secondToken;
+    }
+    else
+    {
+        redir = firstToken;
+    }
+    
+    std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
     {
-        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 2 variable" << std::endl;
+        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 2 variables" << std::endl;
         throw(std::exception());
     }
+    setRedirect(redir);
 }
 
 /*Funtion to print all the configurations of each location class*/

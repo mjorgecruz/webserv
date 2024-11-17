@@ -229,16 +229,16 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     this->setDefaultProperties();
 }
 
-static bool isNumeric(const std::string &str)
-{
-    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-    {
-        if (!std::isdigit(*it)) {
-            return false;
-        }
-    }
-    return true;
-}
+// static bool isNumeric(const std::string &str)
+// {
+//     for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+//     {
+//         if (!std::isdigit(*it)) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
 
 void Server::serverKeywords(std::string key, std::string &line)
 {
