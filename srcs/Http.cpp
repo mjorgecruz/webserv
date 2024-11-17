@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 10:06:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 14:03:29 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -62,7 +62,13 @@ void Http::webservInitializer(std::string confPath)
         {
             _listServers[i]->printConfig();
         }
-        
+
+        //exit(1);
+        ///////////////////////////////////////////////////
+        //comment this exit to make the program run again//
+        //uncomment it to run the make test command      //
+        ///////////////////////////////////////////////////
+                
         for (size_t i = 0; i < _listServers.size(); i++)
         {
             _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());

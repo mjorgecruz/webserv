@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   general.hpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 01:38:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 14:05:56 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 
 #ifndef GENERAL_HPP
@@ -28,5 +28,8 @@ extern int g_signal;
 #include "SessionManagement.hpp"
 #include "CgiManagement.hpp"
 
+bool isValidError(int errorCode);
+bool isNumeric(const std::string &str);
+void custtomThrow(std::string str);
 #endif
 

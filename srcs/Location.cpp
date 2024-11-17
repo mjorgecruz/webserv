@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 02:17:49 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 11:24:35 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,37 +92,35 @@ std::string Location::getPath()
     return _path;
 }
 
-static bool isNumeric(const std::string &str)
-{
-    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-    {
-        if (!std::isdigit(*it)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 void Location::parseLocation(std::string &line, std::ifstream &file)
 {
     std::istringstream iss(line);
     std::string locationKeyword, locationPath;
 
     iss >> locationKeyword;
-    if (locationKeyword != "location") {
-        std::cout << "Error: Expected 'location' keyword.\n";
-        throw std::exception();
-    }
+    if (locationKeyword != "location")
+        custtomThrow("ERROR: Location block");
+    if (!(iss >> locationPath))
+        custtomThrow("ERROR: Location block: path");
 
-    if (!(iss >> locationPath)) {
-        std::cout << "Error: 'location' must be followed by a path.\n";
-        throw std::exception();
+    int starCount = 0;    
+    for(size_t i = 0; i < locationPath.size(); i++)
+    {
+        if (locationPath[i] == '*')
+            starCount++;
+        
+        if (starCount > 1)
+            custtomThrow("Too many ***** in location");
     }
+    if(locationPath[0] != '/' )
+        custtomThrow("ERROR: Invalid Location Path");
     _path = locationPath;
+
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
-
+    remaining.erase(remaining.find_last_not_of(" \t") + 1);
+    
     if (remaining == "{")
     {
         //jumps
@@ -132,15 +130,18 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         while (std::getline(file, line))
         {
             line.erase(0, line.find_first_not_of(" \t"));
-            if (line.empty() || line.find_first_not_of(" \t") == std::string::npos) {
+            line.erase(line.find_last_not_of(" \t") + 1);
+            
+            if (line.empty() || line.find_first_not_of(" \t") == std::string::npos)
+            {
                 continue;
             }
-            if (line == "{") {
+            if (line == "{")
+            {
                 break;
-            } else {
-                std::cout << "Error: Expected '{' after 'location' path.\n";
-                throw std::exception();
             }
+            else
+                custtomThrow("ERROR: Location block: expecting '{'");
         }
     }
     bool hasValidKeywords = false;
@@ -149,15 +150,13 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         if (line.find_first_not_of(" \t") == std::string::npos)
             continue;
         line.erase(0, line.find_first_not_of(" \t"));
+        line.erase(line.find_last_not_of(" \t") + 1);
         
         if (line == "}")
             break;
 
         if (line[line.size() - 1] != ';')
-        {
-            std::cout << "Error: Missing ';' at the end of line for keyword.\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Location block: expecting ';'");
         line = line.substr(0, line.size() - 1);
         std::istringstream iss(line);
         std::string keyword;
@@ -207,34 +206,20 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                 _autoIndex = 0;
             }
             else
-            {
-                std::cout << "Invalid value for autoindex: " << autoIndexValue << "\n";
-                throw std::exception();
-            }
+                custtomThrow("ERROR: Location block: autoindex");
             std::string remaining;
             iss >> remaining;
             if (!remaining.empty())
-            {
-                std::cout << "ERROR: KEYWORD: [autoindex]" << std::endl;
-                throw(std::exception());
-            }
+                custtomThrow("ERROR: Location block: autoindex");
+
         }
         else
-        {
-            std::cout << "Invalid keyword in location block: " << keyword << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Location block: Invalid Keyword");
     }
     if (!hasValidKeywords)
-    {
-        std::cout << "Error: 'location' block must contain at least one valid keyword\n";
-        throw std::exception();
-    }
+         custtomThrow("ERROR: 'location' block must contain at least one valid keyword");
     if (line != "}")
-    {
-        std::cout << "Error: Expected '}' at the end of location block\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Location Block: No closing '}' found.");
 }
 
 void Location::keywordIndex(std::istringstream &iss)
@@ -243,10 +228,7 @@ void Location::keywordIndex(std::istringstream &iss)
     while (iss >> indexFile)
     {
         if (indexFile.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-        {
-            std::cout << "Invalid index format: " << indexFile << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Location Block: index");
         addIndex(indexFile);
     }
 }
@@ -256,17 +238,12 @@ void Location::keywordRoot(std::istringstream &iss)
     std::string newRoot;
     iss >> newRoot;
     if (newRoot[0] != '/')
-    {
-        std::cout << "Invalid root path: " << newRoot << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Location Block: root");
+
     std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-    {
-        std::cout << "ERROR: KEYWORD: [cgi_path]" << std::endl;
-        throw(std::exception());
-    }
+        custtomThrow("ERROR: Location Block: root");
     setRoot(newRoot);
 }
 
@@ -275,18 +252,12 @@ void Location::keywordCgiPath(std::istringstream &iss)
     std::string path;
     iss >> path;
     if (path.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
-    {
-        std::cout << "Invalid CGI path: " << path << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Location Block: CGI PATH");
 
     std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-    {
-        std::cout << "ERROR: KEYWORD: [cgi_path]" << std::endl;
-        throw(std::exception());
-    }
+        custtomThrow("ERROR: Location Block: CGI PATH");
     setCgiPath(path);
 }
 
@@ -297,18 +268,12 @@ void Location::keywordMethods(std::istringstream &iss)
     while (iss >> method)
     {
         if (method != "POST" && method != "GET" && method != "DELETE")
-        {
-            std::cout << "Invalid HTTP method in allow_methods: " << method << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Location Block: allow_methods");
         addAllowedMethods(method);
         i++;
     }
     if  (i > 3 || i == 0)
-    {
-        std::cout << "ERROR: Invalid method count";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Location Block: allow_methods");
 }
 
 void Location::keywordErrorPages(std::istringstream &iss)
@@ -317,31 +282,18 @@ void Location::keywordErrorPages(std::istringstream &iss)
     std::string token;
     std::vector<int> errorCodes;
     std::string errorPage;
-    int array[] = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308, 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, 511, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417 ,418, 420, 421, 422, 423, 424, 425, 426, 428, 429, 431, 451};
-    std::vector<int> valid;
-    valid.assign(array, array + 60);
-    bool found;
     
     while (iss >> token)
     {
-        found = false;
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            for(size_t i = 0; i < valid.size(); i++)
+            if(isValidError(errorCode))
             {
-                if (valid[i] == errorCode)
-                {
-                    found = true;
-                    errorCodes.push_back(errorCode);
-                    break;
-                }
+                errorCodes.push_back(errorCode);    
             }
-            if (found == false)
-            {
-                std::cout << "Error: Invalid Error Code\n";
-                throw std::exception();
-            }
+            else
+                custtomThrow("ERROR: Location Block: error_page");
         }
         else
         {
@@ -350,23 +302,12 @@ void Location::keywordErrorPages(std::istringstream &iss)
         }
     }
     if (errorCodes.empty())
-    {
-        std::cout << "Invalid error: " << errorPage << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Location Block: error_page");
     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-    {
-        std::cout << "Invalid error page path: " << errorPage << "\n";
-        throw std::exception();
-    }
-    
+        custtomThrow("ERROR: Location Block: error_page");
     iss >> remaining;
     if (!remaining.empty())
-    {
-        std::cout << "ERROR: KEYWORD: [erro_pages] cannot accept more than 1 erro_page" << std::endl;
-        throw(std::exception());
-    }
-    
+        custtomThrow("ERROR: Location Block: error_page");
     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
     {
         addErrorPages(*it, errorPage);
@@ -375,48 +316,29 @@ void Location::keywordErrorPages(std::istringstream &iss)
 
 void Location::keywordReturn(std::istringstream &iss)
 {
-    std::string remaining;
+    std::string firstToken, secondToken;
     std::string redir;
-    iss >> redir;
-    if (!redir.empty())
-        setRedirect(redir);
-    else
+    iss >> firstToken;
+    if (firstToken.empty())
+        custtomThrow("ERROR: Location Block: return");
+    if (isNumeric(firstToken))
     {
-        std::cout << "expected value after return" << std::endl;
-        throw(std::exception());
+        int errorCode = std::atoi(firstToken.c_str());
+        if(!isValidError(errorCode))
+            custtomThrow("ERROR: Location Block: return");
     }
+    else
+        custtomThrow("ERROR: Location Block: return");
+
+    iss >> secondToken;
+    if (!secondToken.empty())
+        redir = firstToken + " " + secondToken;
+    else
+        redir = firstToken;
+        
+    std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-    {
-        std::cout << "ERROR: KEYWORD: [return] cannot accept more than 1 variable" << std::endl;
-        throw(std::exception());
-    }
-}
-
-/*Funtion to print all the configurations of each location class*/
-void Location::printLocationConfig() const {
-    std::cout << "  Root: " << _root << std::endl;
-    std::cout << "  Index Files: ";
-    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it) {
-        std::cout << *it;
-        if (it + 1 != _index.end()) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-    std::cout << "  CGI Path: " << _cgiPath << std::endl;
-    std::cout << "  Allowed Methods: ";
-    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it) {
-        std::cout << *it;
-        if (it + 1 != _allowedMethods.end()) {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-    std::cout << "  Error Pages:" << std::endl;
-    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it) {
-        std::cout << "    Error " << it->first << ": " << it->second << std::endl;
-    }
-    std::cout << "  Redirect: " << _redirect << std::endl;
-    std::cout << "  Auto Index: " << _autoIndex << std::endl;
+        custtomThrow("ERROR: Location Block: return");
+    setRedirect(redir);
 }
