@@ -141,12 +141,10 @@ void Server::addLocations(std::string path, Location *locations)
 void Server::serverChecker(std::string &line, std::ifstream &file)
 {
     bool serverBracket = false;
-    std::map<std::string, int> keyword_counter;
     std::istringstream iss(line);
     std::string firstWord;
     iss >> firstWord;
 
-    initKeywordCounter(keyword_counter);
     if  (firstWord != "server")
     {
         std::cout << "Expected 'server' keyword at the beginning of the server block\n";
@@ -196,9 +194,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
         line.erase(0, line.find_first_not_of(" \t"));
         line.erase(line.find_last_not_of(" \t") + 1);
         if (line == "}")
-        {
             break;
-        }
 
         std::istringstream iss(line);
         std::string keyword;
@@ -220,11 +216,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             }
         }
         else
-        {
-            incrementKeywordCount(keyword_counter, keyword);
             serverKeywords(keyword, line);
-        }
-        checkForDuplicateKeywords(keyword_counter);
     }
     this->setDefaultProperties();
 }
@@ -234,18 +226,10 @@ void Server::serverKeywords(std::string key, std::string &line)
     line.erase(line.find_last_not_of(" \t") + 1);
 
     if (line[line.size() -1] != ';')
-    {
-        std::cout << "error: missing ';' for " << key << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Server Block: Expecting ';' .");
     line = line.substr(0, line.size() - 1);
-
     if (line.empty())
-    {
-        std::cout << "error: empty value for " << key << "\n";
-        throw std::exception();
-    }
-
+        custtomThrow("ERROR: Server Block: Expecting ';' .");
     if (key == "listen")
     {
         keywordListen(line);
@@ -271,10 +255,8 @@ void Server::serverKeywords(std::string key, std::string &line)
         keywordMaxBodySize(line);
     }
     else
-    {
-        std::cout << "Invalid keyword: " << key << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Invalid Keyword");
+
 }
 
 void Server::setRoot(std::string root)
@@ -368,20 +350,14 @@ void Server::keywordListen(std::string &line)
             octetCount++;
         }
         if (octetCount != 4 || !validIP)
-        {
-            std::cout << "Invalid IP address format: " << host << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Invalid IP: " + host);
         setHost(host);
         char* end;
         errno = 0;
         long portValue = std::strtol(portStr.c_str(), &end, 10);
 
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-        {
-            std::cout << "Invalid port number: " << portStr << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Invalid Port: " + portStr);
         port = static_cast<int>(portValue);
     }
     else
@@ -390,22 +366,15 @@ void Server::keywordListen(std::string &line)
         errno = 0;
         long portValue = std::strtol(address.c_str(), &end, 10);
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-        {
-            std::cout << "Invalid port number: " << address << "\n";
-            throw std::exception();
-        }
+                    custtomThrow("ERROR: Invalid Port: " + address );
         port = static_cast<int>(portValue);
     }
     std::string extraStuffinLine;
     iss >> extraStuffinLine;
 
     if(!extraStuffinLine.empty())
-    {
-        std::cout << "ERROR: Listen has invalid parameters";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Server Block: Listen");
     setPorts(port);
-
 }
 
 void Server::keywordServerName(std::string &line)
@@ -417,25 +386,15 @@ void Server::keywordServerName(std::string &line)
     iss >> temp;
     iss >> hostname;
     if (hostname.empty())
-    {
-        std::cout << "Error: server_name keyword no assigned value\n";
-        throw std::exception();
-    }
-
+        custtomThrow("ERROR: Server Block: server_name unused.");
     if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-    {
-        std::cout << "Invalid server_name: " << hostname << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Server Block: Invalid server_name: " + hostname);
     hostnames.push_back(hostname);
 
     while (iss >> hostname)
     {
         if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-        {
-            std::cout << "Invalid server_name: " << hostname << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Server Block: Invalid server_name: " + hostname);
         hostnames.push_back(hostname);
     }
     setHostname(hostnames);
@@ -450,19 +409,13 @@ void Server::keywordIndex(std::string &line)
     iss >> indexName;
 
     if(indexName.empty())
-    {
-        std::cout << "Invalid index format: " << indexName << "\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Server Block: Index empty");
     index.push_back(indexName);
 
     while (iss >> indexName)
     {
         if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-        {
-            std::cout << "Invalid index format: " << indexName << "\n";
-            throw std::exception();
-        }
+            custtomThrow("ERROR: Server Block: Index format");
         index.push_back(indexName);
     }
     setIndex(index);
@@ -471,13 +424,19 @@ void Server::keywordIndex(std::string &line)
 void Server::keywordRoot(std::string &line) 
 {
     std::istringstream iss(line);
-    iss >> _root >> _root;
-    std::cout << "root: " << _root << std::endl;
-    if (_root[0] != '/')
-    {
-        std::cout << "Invalid root path: " << _root << "\n";
-        throw std::exception();
-    }
+    std::string temp;
+    std::string root;
+    std::string keyword;
+    iss >> keyword;
+    iss >> root;
+    iss >> temp;
+    if (!temp.empty())
+        custtomThrow("ERROR: Server Block: root invalid");
+    if (root.empty())
+        custtomThrow("ERROR: Server Block: root invalid");
+    if (root[0] != '/')
+        custtomThrow("ERROR: Server Block: root invalid");
+    setRoot(root);
 }
 
 void Server::keywordErrorPages(std::string &line)
@@ -525,6 +484,9 @@ void Server::keywordErrorPages(std::string &line)
 
 void Server::keywordMaxBodySize(std::string &line)
 {
+    if (getMaxBodySize())
+        return ;
+
     std::string sizeValue, temp, extra;
     std::istringstream iss(line);
     iss >> temp >> sizeValue;
@@ -550,51 +512,8 @@ void Server::keywordMaxBodySize(std::string &line)
         std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
         throw std::exception();
     }
-
     iss >> extra;
     if(!extra.empty())
-    {
-        std::cout << "Error in max_body_size\n";
-        throw std::exception();
-    }
+        custtomThrow("ERROR: Server Block: max_body_size");
     _maxBodySize = maxBodySize;
-}
-
-void Server::initKeywordCounter(std::map<std::string, int> &count)
-{
-    count["listen"] = 0;
-    count["max_body_size"] = 0;
-    count["index"] = 0;
-    count["root"] = 0;
-    count["server_name"] = 0;
-}
-
-void Server::incrementKeywordCount(std::map<std::string, int> &count, std::string key)
-{
-    if (count.find(key) != count.end())
-    {
-        count[key] += 1;
-    }
-    else if (key != "error_page")
-    {
-        std::cout << "Invalid keyword in Server Block\n";
-        throw std::exception();
-    }
-}
-
-void Server::checkForDuplicateKeywords(std::map<std::string, int> &count)
-{
-    for(std::map<std::string, int>::const_iterator it = count.begin(); it != count.end(); it++)
-    {
-        if(it->second > 1)
-        {
-            std::cout << "Error Keyword Duplicates Found\n";
-            throw std::exception();
-        }
-    }
-    if (count["listen"] == 0)
-    {
-        std::cout << "Error Keyword Listen Not Found\n";
-        throw std::exception();
-    }
 }
