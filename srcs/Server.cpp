@@ -261,6 +261,11 @@ void Server::serverKeywords(std::string key, std::string &line)
         // using last directive - ok
         keywordMaxBodySize(line);
     }
+    else if (key == "allow_methods")
+    {
+        // using last directive - ok
+        keyAllowMethods(line);
+    }
     else
         custtomThrow("ERROR: Invalid Keyword");
 
@@ -521,4 +526,24 @@ void Server::keywordMaxBodySize(std::string &line)
     if(!extra.empty())
         custtomThrow("ERROR: Server Block: max_body_size");
     _maxBodySize = maxBodySize;
+}
+
+void Server::keyAllowMethods(std::string &line)
+{
+    std::istringstream iss(line);
+    std::string temp;
+    std::string method;
+    iss >> temp;
+    int i = 0;
+
+    _allowedMethods.clear();
+    while (iss >> method)
+    {
+        if (method != "POST" && method != "GET" && method != "DELETE")
+            custtomThrow("ERROR: Server Block: allow_methods");
+        addAllowedMethods(method);
+        i++;
+    }
+    if  (i > 3 || i == 0)
+        custtomThrow("ERROR: Server Block: allow_methods");
 }

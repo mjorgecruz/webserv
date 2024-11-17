@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   general.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 14:05:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:29:14 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 
 #ifndef GENERAL_HPP
@@ -27,6 +27,7 @@ extern int g_signal;
 #include "Location.hpp"
 #include "SessionManagement.hpp"
 #include "CgiManagement.hpp"
+#include "InputHandler.hpp"
 
 bool isValidError(int errorCode);
 bool isNumeric(const std::string &str);
