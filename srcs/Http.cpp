@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/16 23:47:34 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 10:06:29 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -210,8 +210,13 @@ void Http::data_transfer(int socket)
     
     //prepare response
     HttpResponse *response = new HttpResponse(socket, correspondingServer);
-
-    this->reply(socket, request, response, correspondingServer);
+    try{
+        this->reply(socket, request, response, correspondingServer);
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "Bad Request" << std::endl;
+    }
 
     delete(response);
     delete(request);
@@ -274,12 +279,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         fillStructInfo(Info, server, it->second);
     else
         fillStructInfo(Info, server, NULL);
-
-    DIR * root;
-    root = opendir(Info._root.c_str());
-    if (root == NULL)
-        throw(std::exception());
-    closedir(root);
     
     std::string full_path = Info._root + path;
     struct stat entryInfo;
