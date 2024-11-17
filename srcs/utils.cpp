@@ -79,7 +79,16 @@ void Server::printConfig() const
         loc->second->printLocationConfig();
     }
 
-    std::cout << "---------------------------------END SERVER BLOCK\n\n" << std::endl;
+    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _allowedMethods.end())
+        {
+            std::cout << ", ";
+        }
+    }
+
+    std::cout << "\n---------------------------------END SERVER BLOCK\n\n" << std::endl;
 }
 
 /*Funtion to print all the configurations of each location class*/
@@ -109,4 +118,61 @@ void Location::printLocationConfig() const {
     }
     std::cout << "  Redirect: " << _redirect << std::endl;
     std::cout << "  Auto Index: " << _autoIndex << std::endl;
+}
+
+
+void s_info::printInfoConfig() const
+{
+    std::cout << "---------- Printing T_INFO -------" << std::endl;
+    if (!_host.empty())
+        std::cout << "host: " << _host << std::endl;
+    if (_ports)
+        std::cout << "ports: " << _ports << std::endl;
+    if (!_root.empty())
+        std::cout << "root: " << _root << std::endl;
+    if (!_hostname.empty())
+    {
+        std::cout << "Hostnames: ";
+        for (size_t i = 0; i < _hostname.size(); ++i)
+        {
+            std::cout << " " << _hostname[i];
+        }
+        std::cout << ";" << std::endl;
+    }
+
+    if (!_index.empty())
+    {
+        std::cout << "index: ";
+        for (size_t i = 0; i < _index.size(); ++i)
+        {
+            std::cout << " " << _index[i];
+        }
+        std::cout << ";" << std::endl;
+    }
+    std::cout << "autoindex: " << _autoIndex << std::endl;
+
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
+    {
+        std::cout << "error_page: " << it->first << " " << it->second << std::endl;
+    }
+
+    if (!_allowedMethods.empty())
+    {
+        std::cout << "allow_methods: \n";
+        for (size_t i = 0; i < _allowedMethods.size(); ++i)
+        {
+            std::cout << _allowedMethods[i] << std::endl;
+        }
+        std::cout << ";" << std::endl;
+    }
+
+    std::cout << "BodySize: " << _maxBodySize << std::endl;
+    std::cout << "status: " << _status << std::endl;
+    std::cout << "redirect: " << _redirect << std::endl;
+    std::cout << "cgi_path: " << _cgiPath << std::endl;
+
+    for (std::map<std::string, Location *>::const_iterator it = _locations.begin(); it != _locations.end(); ++it)
+    {
+        std::cout << "Locations paths: " << it->first << " " << it->second->getPath() << std::endl;
+    }
 }

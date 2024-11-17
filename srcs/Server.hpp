@@ -68,6 +68,7 @@ class Server : public Socket
         void keywordRoot(std::string &line);
         void keywordErrorPages(std::string &line);
         void keywordMaxBodySize(std::string &line);
+        void keyAllowMethods(std::string &line);
 };
 
 #endif

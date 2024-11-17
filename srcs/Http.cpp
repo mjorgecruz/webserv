@@ -1,14 +1,14 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 15:20:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:31:16 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -284,6 +284,9 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         fillStructInfo(Info, server, it->second);
     else
         fillStructInfo(Info, server, NULL);
+
+    // to print all the fields to console for debuging
+    Info.printInfoConfig();
     
     std::string full_path = Info._root + path;
     struct stat entryInfo;
