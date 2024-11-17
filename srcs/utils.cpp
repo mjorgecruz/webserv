@@ -25,3 +25,88 @@ bool isNumeric(const std::string &str)
     }
     return true;
 }
+
+void custtomThrow(std::string str)
+{
+    std::cout << str << std::endl;
+    throw std::exception();
+}
+
+
+
+void Server::printConfig() const
+{
+    std::cout << "\n\n------------------------Server BLOCK Config start" << std::endl;
+
+    std::cout << "Host: " << _host << std::endl;
+    std::cout << "Port: " << _ports << std::endl;
+    std::cout << "Root: " << _root << std::endl;
+
+    std::cout << "Server Names: ";
+    for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _hostname.end())
+        {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+
+    std::cout << "Index Files: ";
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it)
+    {
+        std::cout << *it;
+        if (it + 1 != _index.end())
+        {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+
+    std::cout << "Error Pages:" << std::endl;
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
+    {
+        std::cout << "  Error " << it->first << ": " << it->second << std::endl;
+    }
+    std::cout << "Max Body Size: " << _maxBodySize << std::endl;
+
+    for (std::vector < std::pair <std::string, Location*> >::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
+    {
+        std::cout << "\n--------------------------------[LOCATION BLOCK]" << std::endl;
+        std::cout << "Location Path: " << loc->first << std::endl;
+        loc->second->printLocationConfig();
+    }
+
+    std::cout << "---------------------------------END SERVER BLOCK\n\n" << std::endl;
+}
+
+/*Funtion to print all the configurations of each location class*/
+
+void Location::printLocationConfig() const {
+    std::cout << "  Root: " << _root << std::endl;
+    std::cout << "  Index Files: ";
+    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _index.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "  CGI Path: " << _cgiPath << std::endl;
+    std::cout << "  Allowed Methods: ";
+    for (std::vector<std::string>::const_iterator it = _allowedMethods.begin(); it != _allowedMethods.end(); ++it) {
+        std::cout << *it;
+        if (it + 1 != _allowedMethods.end()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+    std::cout << "  Error Pages:" << std::endl;
+    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it) {
+        std::cout << "    Error " << it->first << ": " << it->second << std::endl;
+    }
+    std::cout << "  Redirect: " << _redirect << std::endl;
+    std::cout << "  Auto Index: " << _autoIndex << std::endl;
+}

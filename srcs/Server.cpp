@@ -229,17 +229,6 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     this->setDefaultProperties();
 }
 
-// static bool isNumeric(const std::string &str)
-// {
-//     for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-//     {
-//         if (!std::isdigit(*it)) {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
-
 void Server::serverKeywords(std::string key, std::string &line)
 {
     line.erase(line.find_last_not_of(" \t") + 1);
@@ -288,64 +277,14 @@ void Server::serverKeywords(std::string key, std::string &line)
     }
 }
 
-void Server::printConfig() const
+void Server::setRoot(std::string root)
 {
-    std::cout << "\n\n------------------------Server BLOCK Config start" << std::endl;
-
-    std::cout << "Host: " << _host << std::endl;
-    std::cout << "Port: " << _ports << std::endl;
-    std::cout << "Root: " << _root << std::endl;
-
-    std::cout << "Server Names: ";
-    for (std::vector<std::string>::const_iterator it = _hostname.begin(); it != _hostname.end(); ++it)
-    {
-        std::cout << *it;
-        if (it + 1 != _hostname.end())
-        {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-
-
-    std::cout << "Index Files: ";
-    for (std::vector<std::string>::const_iterator it = _index.begin(); it != _index.end(); ++it)
-    {
-        std::cout << *it;
-        if (it + 1 != _index.end())
-        {
-            std::cout << ", ";
-        }
-    }
-    std::cout << std::endl;
-
-    std::cout << "Error Pages:" << std::endl;
-    for (std::map<int, std::string>::const_iterator it = _errorPages.begin(); it != _errorPages.end(); ++it)
-    {
-        std::cout << "  Error " << it->first << ": " << it->second << std::endl;
-    }
-    std::cout << "Max Body Size: " << _maxBodySize << std::endl;
-
-    for (std::vector < std::pair <std::string, Location*> >::const_iterator loc = _locations.begin(); loc != _locations.end(); ++loc)
-    {
-        std::cout << "\n--------------------------------[LOCATION BLOCK]" << std::endl;
-        std::cout << "Location Path: " << loc->first << std::endl;
-        loc->second->printLocationConfig();
-    }
-
-    std::cout << "---------------------------------END SERVER BLOCK\n\n" << std::endl;
+    _root = root;
 }
-
 
 void Server::addAllowedMethods(std::string method)
 {
     _allowedMethods.push_back(method);
-}
-
-
-void Server::setRoot(std::string root)
-{
-    _root = root;
 }
 
 std::string Server::getRoot()
@@ -529,10 +468,8 @@ void Server::keywordIndex(std::string &line)
     setIndex(index);
 }
 
-// prone to errors
 void Server::keywordRoot(std::string &line) 
 {
-    //check how is the location rooot being done
     std::istringstream iss(line);
     iss >> _root >> _root;
     std::cout << "root: " << _root << std::endl;
