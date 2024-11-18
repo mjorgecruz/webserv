@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 13:23:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/18 19:28:33 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
@@ -44,7 +44,8 @@ class Http
         void accept_new_connection(int server_socket, int epoll_fd );
         
         void data_transfer(int socket);
-        Server *findCorrespondingServer(int socket);
+        std::vector<Server *> findCorrespondingServer(int socket);
+        Server * findCorrectServerName(HttpRequest *request, std::vector<Server *> &correspondingServers);
         void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server);
 
         void fillStructInfo(t_info &Info, Server *server, Location *location);

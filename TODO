@@ -14,7 +14,7 @@ JORGE [ ] 7. session management and cookies
 [V] 13. Limit paths to have just one * on conf file
 [V] 14. formato do pedido - se for request para index tem que vir 
 [V] 15. verificar e criar std::exceptions() no parser
-JORGE [ ] 16. Garantir que o servidor 'e escolhido em funcao do serverName , m vez de so pela porta e address
+[V] 16. Garantir que o servidor 'e escolhido em funcao do serverName , m vez de so pela porta e address
 [V] 17. If no conf file, default conf should be searched for and used.
 [V] 18. If path does not exists, path with "/" at the end should be used.
 [V] 19. Consider the return full string

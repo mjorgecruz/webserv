@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 16:31:16 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/18 19:31:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,6 @@ void Http::runApplication()
             }
 		}
     }
-    
 	if (close(_epollFd)) {
 		fprintf(stderr, "Failed to close epoll file descriptor\n");
 		return;
@@ -207,17 +206,19 @@ void Http::data_transfer(int socket)
     int server_fd = 0;
 
     //check for the corresponding server
-    Server *correspondingServer = findCorrespondingServer(socket); 
-    server_fd = correspondingServer->getSocketFd();
+    std::vector<Server *> correspondingServers;
+    correspondingServers = findCorrespondingServer(socket); 
+    request->completeRequest(socket);
+    Server *correctServer = findCorrectServerName(request, correspondingServers);
+    server_fd = correctServer->getSocketFd();
 
     //fill request properties
-    request->completeRequest(socket);
     request->setClientFd(server_fd);
     
     //prepare response
-    HttpResponse *response = new HttpResponse(socket, correspondingServer);
+    HttpResponse *response = new HttpResponse(socket, correctServer);
     try{
-        this->reply(socket, request, response, correspondingServer);
+        this->reply(socket, request, response, correctServer);
     }
     catch (std::exception &e)
     {
@@ -227,11 +228,12 @@ void Http::data_transfer(int socket)
     delete(request);
 }
 
-Server *Http::findCorrespondingServer(int socket)
+std::vector<Server *> Http::findCorrespondingServer(int socket)
 {
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
     size_t serverNumber = 0;
+    std::vector<Server *> correspondingServers;
     
     if (getsockname(socket, (sockaddr *) &addr, &len) == -1)
         throw(std::exception());
@@ -246,15 +248,29 @@ Server *Http::findCorrespondingServer(int socket)
         {
             if (address == _listServers[serverNumber]->getHost())
             {
-                break;
+                correspondingServers.push_back(_listServers[serverNumber]);
             }
         }
         serverNumber++;
     }
-    if (serverNumber == _listServers.size())
+    if (serverNumber == _listServers.size() && correspondingServers.empty())
         throw(std::exception());
-    return (_listServers[serverNumber]);
+    return (correspondingServers);
 }
+
+Server * Http::findCorrectServerName(HttpRequest *request, std::vector<Server *> &correspondingServers)
+{
+    for (size_t i = 0; i < correspondingServers.size(); i++)
+    {
+        for (size_t j = 0; j < (correspondingServers[i]->getHostname()).size(); j++)
+        {
+            if ((correspondingServers[i]->getHostname())[j] == request->searchProperty("Host"))
+                return correspondingServers[i];
+        }
+    }
+    return correspondingServers[0];
+}
+
 
 void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Server* server)
 {
