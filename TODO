@@ -23,3 +23,4 @@ LUIS [ ] 21. renomear e criar exceptions no parser
 [ ] 22. if I add index script.py; it should try cgi first
 [ ] 23. POST cgi
 [ ] 24. Allow methods should work on server as well
+[ ] 25. find the biggest correspondance on locations
