@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 10:04:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 10:28:46 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,6 +212,10 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             if (!remaining.empty())
                 custtomThrow("ERROR: Location block: autoindex");
         }
+        else if (keyword == "max_body_size")
+        {
+            keywordMaxBodySize(iss);
+        }
         else
             custtomThrow("ERROR: Location block: Invalid Keyword");
     }
@@ -343,4 +347,36 @@ void Location::keywordReturn(std::istringstream &iss)
         custtomThrow("ERROR: Location Block: return");
         
     setRedirect(redir);
+}
+
+void Location::keywordMaxBodySize(std::istringstream &iss)
+{
+    std::string sizeValue, temp, extra;
+    iss >> sizeValue;
+    char* end;
+    errno = 0;
+    long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
+    if (errno == ERANGE || maxBodySize < 0)
+    {
+        std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (*end == 'M' && *(end + 1) == '\0')
+    {
+        maxBodySize *= 1024 * 1024;
+    }
+    else if (*end != '\0')
+    {
+        std::cout << "Invalid max_body_size: " << sizeValue << "\n";
+        throw std::exception();
+    }
+    if (maxBodySize <= 0)
+    {
+        std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
+        throw std::exception();
+    }
+    iss >> extra;
+    if(!extra.empty())
+        custtomThrow("ERROR: Server Block: max_body_size");
+    _maxBodySize = maxBodySize;
 }

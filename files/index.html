@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basic Web Page</title>
-    <link rel="stylesheet" href="/files/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="container">
         <h1>Welcome to My Basic Web Page</h1>
         <p>This is a simple web page that includes a PNG image.</p>
-         <img src="/files/image.png" alt="A sample PNG image" class="centered-image"> 
+         <img src="/image.png" alt="A sample PNG image" class="centered-image"> 
     </div>
 
     <h2>Send a POST Request</h2>
-    <form action="/files/submit/" method="POST">
+    <form action="/submit/" method="POST">
         <label for="userInput">Enter your text:</label><br>
         <textarea id="userInput" name="userInput" rows="4" cols="50"></textarea><br><br>
         <button type="submit">Send</button>
@@ -23,7 +23,7 @@
     <h1>Upload Files</h1>
 
     <!-- Hidden File Input -->
-    <form id="uploadForm" action="/files/submit/" method="post" enctype="multipart/form-data">
+    <form id="uploadForm" action="/submit/" method="post" enctype="multipart/form-data">
         <input type="file" id="fileInput" name="file" style="display: none;" onchange="submitForm()">
         <button type="button" class="button" onclick="triggerFileUpload()">Choose File to Upload</button>
     </form>  
@@ -38,7 +38,7 @@
     <script>
         function sendDeleteRequest() {
             const fileName = document.getElementById('fileName').value;
-            fetch(`/files/submit/${encodeURIComponent(fileName)}`, {
+            fetch(`/submit/${encodeURIComponent(fileName)}`, {
                 method: 'DELETE'
             })
             .then(response => {

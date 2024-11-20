@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/08 19:13:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 10:20:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ class Location
         std::string _redirect;
         int _autoIndex;
         std::string _path;
+        long _maxBodySize;
         
     public:
         Location( void );
@@ -55,5 +56,6 @@ class Location
         void keywordMethods(std::istringstream &iss);
         void keywordErrorPages(std::istringstream &iss);
         void keywordReturn(std::istringstream &iss);
+        void keywordMaxBodySize(std::istringstream &iss);
 };
 

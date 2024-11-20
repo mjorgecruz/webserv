@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 00:46:28 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:21:24 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,13 @@ void HttpRequest::fillReqProperties()
 void HttpRequest::setRequestBody()
 {
     size_t header_end = _request.find("\r\n\r\n");
-    _body = _request.substr(header_end + 4, _request.size() - 1 - header_end + 4);
+    if (header_end == std::string::npos)
+    {
+        header_end = _request.size() - 1;
+        _body = "";
+    }
+    else
+        _body = _request.substr(header_end + 4, _request.size() - 1 - header_end + 4);
 }
 
 void HttpRequest::setHeader()

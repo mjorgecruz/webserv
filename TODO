@@ -22,7 +22,9 @@ JORGE [ ] 7. session management and cookies
 LUIS [ ] 21. renomear e criar exceptions no parser
 [ ] 22. if I add index script.py; it should try cgi first
 [ ] 23. POST cgi
-[ ] 24. Allow methods should work on server as well
+[V] 24. Allow methods should work on server as well
 [ ] 25. find the biggest correspondance on locations
-[ ] 26. Define max_body_size for locations
+[V] 26. Define max_body_size for locations
 [ ] 27. Change the name max_body_size to the actual nginx name
+[ ] 28. Tirar os custtomthrow
+[ ] 29. Test POST http://localhost:8080/ with a size of 0

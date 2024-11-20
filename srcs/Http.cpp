@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/19 16:14:36 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 13:55:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,10 @@ void Http::data_transfer(int socket)
     catch (std::exception &e)
     {
         std::cerr << "Bad Request" << std::endl;
+        response->setStatus(400);
+        response->setLength(0);
+        response->setPostHeader();
+        sendData(socket, response);
     }
     delete(response);
     delete(request);
@@ -320,39 +324,45 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         return;
     }
     size_t i = 0;
-    while ( i < (server->getAllowedMethods()).size())
-    {
-        if ((server->getAllowedMethods())[i] == type)
+        while ( i < Info._allowedMethods.size())
         {
-            if (type == "GET")
+            if (Info._allowedMethods[i] == type)
             {
-                response->setContentType(received->getMimeType());
-                response->writeContent(path, Info);
-                response->setGetHeader();
+
+                if (type == "GET")
+                {
+                    response->setContentType(received->getMimeType());
+                    response->writeContent(path, Info);
+                    response->setGetHeader();
+                }
+                else if (type == "POST")
+                {
+                    InputHandler handlePost;
+                    if (Info._redirect.empty())
+                        handlePost.handleDataUpload(path, *received, Info);
+                    // if(!Info._cgiPath.empty())
+                    // {
+                    //     postCgiPage(path, info);
+                    // }
+                    response->setStatus(Info._status);
+                    response->setLength(0);
+                    response->setPostHeader();
+                }
+                else
+                {
+                    DeleteHandler handleDelete;
+                    handleDelete.handleDataDeletion(path, *received, Info);
+                    response->setStatus(Info._status);
+                    response->setLength(0);
+                    response->setDeleteHeader();
+                }
+                break;
             }
-            else if (type == "POST")
-            {
-                InputHandler handlePost;
-                if (Info._redirect.empty())
-                    handlePost.handleDataUpload(path, *received, Info);
-                response->setStatus(Info._status);
-                response->setLength(0);
-                response->setPostHeader();
-            }
-            else
-            {
-                DeleteHandler handleDelete;
-                handleDelete.handleDataDeletion(path, *received, Info);
-                response->setStatus(Info._status);
-                response->setLength(0);
-                response->setDeleteHeader();
-            }
-            break;
+            i++;
         }
-        i++;
-    }
-    if (i == (server->getAllowedMethods()).size())
-        throw(std::exception());
+        if (i == Info._allowedMethods.size())
+            throw(std::exception());
+
     sendData(socket, response);
     
 }
@@ -473,20 +483,23 @@ void Http::sendData(int socket, HttpResponse *response)
         }
         std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
     }
-    for( int i = 0; i < maxRetries; i++ )
+    if (response->getLength() != 0)
     {
-        ssize_t result = send(socket, response->getContent().c_str(), response->getContent().size(), MSG_NOSIGNAL);;
-        if (result != -1)
-            return;
-        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-            usleep(1000);
-        else
+        for( int i = 0; i < maxRetries; i++ )
         {
-            std::cerr << "Send error: " << strerror(errno) << std::endl;
-            close(socket);
-            return;
+            ssize_t result = send(socket, response->getContent().c_str(), response->getContent().size(), MSG_NOSIGNAL);;
+            if (result != -1)
+                return;
+            if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                usleep(1000);
+            else
+            {
+                std::cerr << "Send error: " << strerror(errno) << std::endl;
+                close(socket);
+                return;
+            }
+            std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
         }
-        std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
     }
     
     

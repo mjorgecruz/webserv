@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 15:07:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 14:04:04 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -47,11 +47,23 @@ void HttpResponse::setGetHeader()
 void HttpResponse::setPostHeader()
 {
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1 " << _status
-            << "\r\ncontent-type: " << _contentType
-            << "\r\nserver: " << _host
-            << "\r\ncontent-length: " << _contentLength
-            << "\r\n\r\n" << std::endl;
+    if (_status == 400)
+    {
+        bufferM << "HTTP/1.1 " << _status << " Bad Request"
+                << "\r\nContent-type: " << _contentType
+                << "\r\nServer: " << _host
+                << "\r\nContent-length: " << _contentLength
+                << "\r\n\r" << std::endl;
+    }
+    else
+    {
+        bufferM << "HTTP/1.1 " << _status
+                << "\r\ncontent-type: " << _contentType
+                << "\r\nserver: " << _host
+                << "\r\ncontent-length: " << _contentLength
+                << "\r\n\r" << std::endl;
+        
+    }
     _header = bufferM.str(); 
 }
 
@@ -62,7 +74,7 @@ void HttpResponse::setDeleteHeader()
             << "\r\ncontent-type: " << _contentType
             << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
-            << "\r\n\r\n";
+            << "\r\n";
     _header = bufferM.str(); 
 }
 
@@ -90,6 +102,11 @@ std::string HttpResponse::getHeader()
 std::string HttpResponse::getContent()
 {
     return _content;
+}
+
+int HttpResponse::getLength()
+{
+    return _contentLength;
 }
 
 void HttpResponse::writeContent(std::string path, t_info  &info)
