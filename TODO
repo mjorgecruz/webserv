@@ -24,3 +24,5 @@ LUIS [ ] 21. renomear e criar exceptions no parser
 [ ] 23. POST cgi
 [ ] 24. Allow methods should work on server as well
 [ ] 25. find the biggest correspondance on locations
+[ ] 26. Define max_body_size for locations
+[ ] 27. Change the name max_body_size to the actual nginx name

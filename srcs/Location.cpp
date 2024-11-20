@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 14:51:27 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/20 10:04:44 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,11 +121,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     remaining.erase(0, remaining.find_first_not_of(" \t"));
     remaining.erase(remaining.find_last_not_of(" \t") + 1);
     
-    if (remaining == "{")
-    {
-        //jumps
-    }
-    else
+    if (remaining != "{")
     {
         while (std::getline(file, line))
         {
