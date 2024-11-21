@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
@@ -6,19 +6,21 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 22:36:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/21 10:47:32 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpRequest.hpp"
 
 HttpRequest::HttpRequest()
-{}
+{
+    _request = "";
+}
 
 HttpRequest::~HttpRequest()
 {}
 
-void HttpRequest::completeRequest(int socket)
+bool HttpRequest::completeRequest(int socket)
 {
     std::string remainder = "";
     char buffer[BUFSIZ];
@@ -51,20 +53,20 @@ void HttpRequest::completeRequest(int socket)
             std::string input(buffer, buffer + bytes_read);
             input = remainder + input;
             remainder = input;
-            // if (bytes_read < BUFSIZ)
-            //     break;
         }
     }
     remainder = remainder + "\0";
     this->setRequest(remainder);
-    this->fillReqProperties();
-    this->defineMimeType();
-
+    if (checkRequestEnd())
+    {
+        return true;
+    }
+    return false;
 }        
 
 void HttpRequest::setRequest(std::string req)
 {
-    _request = req;
+    _request = _request + req;
 }
 
 void HttpRequest::fillReqProperties()
@@ -216,3 +218,28 @@ const char *HttpRequest::HttpPageForbiddenException::what() const throw()
     return "Error: Forbidden";
 }
 
+bool HttpRequest::checkRequestEnd()
+{
+    size_t init_pos = _request.find("Transfer-Encoding: ");
+    if (init_pos == std::string::npos)
+    {
+        if(_request.find("\r\n\r\n") != std::string::npos)
+            return true;
+        else
+            return false;
+    }
+    else
+    {
+        size_t final_pos = _request.find("chunked", init_pos);
+        if (final_pos != std::string::npos)
+        {
+            if(_request.find("0\r\n\r\n") != std::string::npos)
+                return true;
+            else
+                return false;
+        }
+        else
+            return true;
+    }
+    return true;
+}

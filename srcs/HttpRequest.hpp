@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.hpp                                    :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/10 00:45:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/21 10:18:09 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
@@ -30,7 +30,7 @@ class HttpRequest
     public:
         HttpRequest();
         ~HttpRequest();
-        void completeRequest(int socket);
+        bool completeRequest(int socket);
         void setRequest(std::string req);
         void setClientFd(int fd);
         void fillReqProperties();
@@ -43,6 +43,8 @@ class HttpRequest
         std::string getRequest();
         std::string getRequestBody();
         std::string getHeader();
+
+        bool checkRequestEnd();
 
         
         class HttpPageNotFoundException: public std::exception

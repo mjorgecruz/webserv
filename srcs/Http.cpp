@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 23:18:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/21 10:43:15 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -202,7 +202,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
     event.data.fd = client_fd;
-    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
+    event.events = EPOLLIN | EPOLLET;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
     {
         std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
@@ -220,28 +220,34 @@ void Http::data_transfer(int socket)
     //check for the corresponding server
     std::vector<Server *> correspondingServers;
     correspondingServers = findCorrespondingServer(socket); 
-    request->completeRequest(socket);
-    Server *correctServer = findCorrectServerName(request, correspondingServers);
-    server_fd = correctServer->getSocketFd();
-
-    //fill request properties
-    request->setClientFd(server_fd);
-    
-    //prepare response
-    HttpResponse *response = new HttpResponse(socket, correctServer);
-    try{
-        this->reply(socket, request, response, correctServer);
-    }
-    catch (std::exception &e)
+    bool completed = request->completeRequest(socket);
+    if (completed)
     {
-        std::cerr << "Bad Request" << std::endl;
-        response->setStatus(403);
-        response->setLength(0);
-        response->setPostHeader();
-        sendData(socket, response);
+        request->fillReqProperties();
+        request->defineMimeType();
+        Server *correctServer = findCorrectServerName(request, correspondingServers);
+        server_fd = correctServer->getSocketFd();
+
+        //fill request properties
+        request->setClientFd(server_fd);
+        
+        //prepare response
+        HttpResponse *response = new HttpResponse(socket, correctServer);
+        try{
+            this->reply(socket, request, response, correctServer);
+        }
+        catch (std::exception &e)
+        {
+            std::cerr << "Bad Request" << std::endl;
+            response->setStatus(403);
+            response->setLength(0);
+            response->setPostHeader();
+            sendData(socket, response);
+        }
+        delete(response);
+        delete(request);    
     }
-    delete(response);
-    delete(request);
+    
 }
 
 std::vector<Server *> Http::findCorrespondingServer(int socket)
