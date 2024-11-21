@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 14:04:04 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 22:21:50 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void HttpResponse::setGetHeader()
 void HttpResponse::setPostHeader()
 {
     std::ostringstream bufferM;
-    if (_status == 400)
+    if (_status == 403)
     {
-        bufferM << "HTTP/1.1 " << _status << " Bad Request"
+        bufferM << "HTTP/1.1 " << _status << " Forbidden"
                 << "\r\nContent-type: " << _contentType
                 << "\r\nServer: " << _host
                 << "\r\nContent-length: " << _contentLength

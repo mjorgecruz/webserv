@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 13:21:24 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 22:36:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,20 @@ void HttpRequest::completeRequest(int socket)
         bytes_read = recv(socket, buffer, BUFSIZ, 0);
         if (bytes_read < 0)
         {
+            if (errno == EAGAIN || errno == EWOULDBLOCK)
+            {
+                break;
+            } 
+            else
+            {
+                std::cerr << "Error reading from socket: " << strerror(errno) << std::endl;
+                close(socket);
+                break;
+            }
+        }
+        else if (bytes_read == 0)
+        {
+            close(socket);
             break;
         }
         else
@@ -37,8 +51,8 @@ void HttpRequest::completeRequest(int socket)
             std::string input(buffer, buffer + bytes_read);
             input = remainder + input;
             remainder = input;
-            if (bytes_read < BUFSIZ)
-                break;
+            // if (bytes_read < BUFSIZ)
+            //     break;
         }
     }
     remainder = remainder + "\0";

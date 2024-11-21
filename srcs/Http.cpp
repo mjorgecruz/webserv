@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 13:55:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/20 23:18:50 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,7 @@ void Http::runApplication()
                     {
                         accept_new_connection(_listServers[j]->getSocketFd(), _epollFd);
                         isServerSocket = true;
-                        //break;
+                        break;
                     }
                 }
                 if (!isServerSocket)
@@ -193,9 +193,21 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cout<< "fd negativo" << std::endl;
         return;
     }
+    int flags = fcntl(client_fd, F_GETFL, 0);
+    if (flags == -1) {
+        std::cerr << "Error getting socket flags: " << strerror(errno) << std::endl;
+        return;
+    }
+    if (fcntl(client_fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
+    }
     event.data.fd = client_fd;
     event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
-    epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event);
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
+    {
+        std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
+        close(client_fd);
+    }
     std::cout<< "Added: " << client_fd << std::endl;
 }
 
@@ -223,7 +235,7 @@ void Http::data_transfer(int socket)
     catch (std::exception &e)
     {
         std::cerr << "Bad Request" << std::endl;
-        response->setStatus(400);
+        response->setStatus(403);
         response->setLength(0);
         response->setPostHeader();
         sendData(socket, response);
@@ -284,7 +296,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::string content;
 
     //analyze request
-    std::cout << received->getRequestType() << std::endl;
     std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
     
