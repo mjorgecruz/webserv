@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/21 10:43:15 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/22 12:17:16 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -142,10 +142,13 @@ void Http::runApplication()
 {
     struct epoll_event events[MAX_EVENTS];
     int event_count;
-
+    HttpRequest *request = NULL;
+    
     while (g_signal == 0)
     {
         event_count = epoll_wait(_epollFd, events, MAX_EVENTS, 30000);
+        if (request == NULL)
+            request = new HttpRequest();
         
         for (int i = 0; i < event_count; i++) 
         {
@@ -168,7 +171,12 @@ void Http::runApplication()
                 }
                 if (!isServerSocket)
                 {
-                    data_transfer(events[i].data.fd);
+                    data_transfer(events[i].data.fd, events[i].events, request);
+                    if (request->completed)
+                    {
+                        delete request;
+                        request = NULL;
+                    }
                 }
             }
 		}
@@ -211,18 +219,19 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
     std::cout<< "Added: " << client_fd << std::endl;
 }
 
-void Http::data_transfer(int socket)
+void Http::data_transfer(int socket, uint32_t &event, HttpRequest * request)
 {
-    HttpRequest *request = new HttpRequest();
-
     int server_fd = 0;
 
     //check for the corresponding server
     std::vector<Server *> correspondingServers;
     correspondingServers = findCorrespondingServer(socket); 
-    bool completed = request->completeRequest(socket);
-    if (completed)
+
+    request->completed = request->completeRequest(socket);
+
+    if (request->completed)
     {
+        event = EPOLLOUT | EPOLLET;
         request->fillReqProperties();
         request->defineMimeType();
         Server *correctServer = findCorrectServerName(request, correspondingServers);
@@ -244,8 +253,7 @@ void Http::data_transfer(int socket)
             response->setPostHeader();
             sendData(socket, response);
         }
-        delete(response);
-        delete(request);    
+        delete(response); 
     }
     
 }
@@ -303,6 +311,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     //analyze request
     std::istringstream request(received->getRequestType());
+    std::cout << "MANDA_ME O RECEIVED___________" << std::endl;
+    std::cout << received->getRequest() << std::endl;
     request >> type >> path >> httpVersion;
     
     //check version
@@ -323,7 +333,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         fillStructInfo(Info, server, NULL);
 
     // to print all the fields to console for debuging
-    Info.printInfoConfig();
+    //Info.printInfoConfig();
     
     std::string full_path = Info._root + path;
     struct stat entryInfo;

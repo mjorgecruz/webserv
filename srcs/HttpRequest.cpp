@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/21 10:47:32 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/22 12:12:52 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -15,6 +15,7 @@
 HttpRequest::HttpRequest()
 {
     _request = "";
+    completed = false;
 }
 
 HttpRequest::~HttpRequest()
@@ -34,29 +35,33 @@ bool HttpRequest::completeRequest(int socket)
         {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
             {
+                std::cout << "EAGAIN or EWOULDBLOCK encountered, breaking loop" << std::endl;
                 break;
             } 
             else
             {
                 std::cerr << "Error reading from socket: " << strerror(errno) << std::endl;
                 close(socket);
-                break;
+                return false;
             }
         }
         else if (bytes_read == 0)
         {
+            std::cout << "Connection closed by client" << std::endl;
             close(socket);
-            break;
+            return false;
         }
         else
         {
             std::string input(buffer, buffer + bytes_read);
             input = remainder + input;
             remainder = input;
+            std::cout << "Read " << bytes_read << " bytes: " << input << std::endl;
         }
     }
-    remainder = remainder + "\0";
-    this->setRequest(remainder);
+    _request += remainder;
+    std::cout << "REMAINDER____ \n" << getRequest() << std::endl;
+    std::cout << "\n____REMAINDER " << std::endl;
     if (checkRequestEnd())
     {
         return true;

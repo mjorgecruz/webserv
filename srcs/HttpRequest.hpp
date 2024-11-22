@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/21 10:18:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/22 12:12:38 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,6 +28,7 @@ class HttpRequest
         std::string _mimeType;
         
     public:
+        bool completed;
         HttpRequest();
         ~HttpRequest();
         bool completeRequest(int socket);
@@ -46,7 +47,6 @@ class HttpRequest
 
         bool checkRequestEnd();
 
-        
         class HttpPageNotFoundException: public std::exception
         {
             virtual const char *what() const throw();
