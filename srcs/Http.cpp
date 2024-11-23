@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/22 12:17:16 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/23 23:43:01 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -171,7 +171,7 @@ void Http::runApplication()
                 }
                 if (!isServerSocket)
                 {
-                    data_transfer(events[i].data.fd, events[i].events, request);
+                    data_transfer(events[i].data.fd, events[i], request);
                     if (request->completed)
                     {
                         delete request;
@@ -219,7 +219,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
     std::cout<< "Added: " << client_fd << std::endl;
 }
 
-void Http::data_transfer(int socket, uint32_t &event, HttpRequest * request)
+void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * request)
 {
     int server_fd = 0;
 
@@ -231,7 +231,7 @@ void Http::data_transfer(int socket, uint32_t &event, HttpRequest * request)
 
     if (request->completed)
     {
-        event = EPOLLOUT | EPOLLET;
+        event.events = EPOLLOUT | EPOLLET;
         request->fillReqProperties();
         request->defineMimeType();
         Server *correctServer = findCorrectServerName(request, correspondingServers);
@@ -248,7 +248,7 @@ void Http::data_transfer(int socket, uint32_t &event, HttpRequest * request)
         catch (std::exception &e)
         {
             std::cerr << "Bad Request" << std::endl;
-            response->setStatus(403);
+            response->setStatus(405);
             response->setLength(0);
             response->setPostHeader();
             sendData(socket, response);
@@ -335,7 +335,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     // to print all the fields to console for debuging
     //Info.printInfoConfig();
     
-    std::string full_path = Info._root + path;
+    std::string full_path = Info._root ;//+ path;
     struct stat entryInfo;
     if (stat(full_path.c_str(), &entryInfo) == 0)
     {
@@ -365,12 +365,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 else if (type == "POST")
                 {
                     InputHandler handlePost;
-                    if (Info._redirect.empty())
-                        handlePost.handleDataUpload(path, *received, Info);
-                    // if(!Info._cgiPath.empty())
-                    // {
-                    //     postCgiPage(path, info);
-                    // }
                     response->setStatus(Info._status);
                     response->setLength(0);
                     response->setPostHeader();
@@ -396,6 +390,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
 std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string path)
 {
+
+    std::map<std::string, std::vector<std::pair <std::string, Location *> >::iterator> locations;
     std::vector<std::pair <std::string, Location *> >::iterator it = possibleLocations.begin();
     while (it != possibleLocations.end())
     {
@@ -404,26 +400,39 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
         {
             //all input
             if (it->second->getPath().size() == 1)
-                return it;
+                locations.push_back(it);
             //prefix + * + suffix
             std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*') - 1);
-            std::string suf = it->second->getPath().substr(it->second->getPath().find('*') - 1, it->second->getPath().size() - 1 - it->second->getPath().find('*') - 1) ; 
+            std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*') - 1) ; 
             if (path.rfind(pre, 0) == 0 && (suf.empty() || path.find(suf, pre.size()) != std::string::npos))
             {
-                return it;
+                if (!suf.empty())
+                    std::string name = path.substr(0, path.find(suf, pre.size()) + suf.size() - 1);
+                else
+                {
+                    if (path.find("/", pre.size()) != std::string::npos)
+                        std::string name = path.substr(0, path.find("/", pre.size()));
+                    else
+                        std::string name = path; 
+                }
+                locations[name] = it;
             }
             else if (path.rfind(suf) < path.size() - suf.size())
-                return it;
+                locations.push_back(it);
         }
         //if it matches up to the end or up to a "/"
         else
         {
             if (path.rfind(it->second->getPath(), 0) == 0)
-                return it;
+                locations.push_back(it);
         }
         it++;
     }
-    return possibleLocations.end();
+    if (locations.size() == 0)
+        return possibleLocations.end();
+    else
+        
+    
 }
 
 void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
