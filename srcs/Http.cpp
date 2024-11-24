@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/23 23:43:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/24 19:25:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -388,7 +388,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     
 }
 
-std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string path)
+std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string &path)
 {
 
     std::map<std::string, std::vector<std::pair <std::string, Location *> >::iterator> locations;
@@ -396,43 +396,65 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
     while (it != possibleLocations.end())
     {
         //name contains **
+        std::string name;
         if (it->second->getPath().find('*') != std::string::npos)
         {
             //all input
             if (it->second->getPath().size() == 1)
-                locations.push_back(it);
+                locations[path] = it;
             //prefix + * + suffix
             std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*') - 1);
-            std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*') - 1) ; 
+            std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*')) ; 
             if (path.rfind(pre, 0) == 0 && (suf.empty() || path.find(suf, pre.size()) != std::string::npos))
             {
                 if (!suf.empty())
-                    std::string name = path.substr(0, path.find(suf, pre.size()) + suf.size() - 1);
+                    name = path.substr(0, path.find(suf, pre.size()) + suf.size());
                 else
                 {
                     if (path.find("/", pre.size()) != std::string::npos)
-                        std::string name = path.substr(0, path.find("/", pre.size()));
+                        name = path.substr(0, path.find("/", pre.size()));
                     else
-                        std::string name = path; 
+                        name = path; 
                 }
                 locations[name] = it;
             }
             else if (path.rfind(suf) < path.size() - suf.size())
-                locations.push_back(it);
+            {
+                name = path.substr(0, path.rfind(suf) + suf.size() );
+                locations[name] = it;
+            }
         }
         //if it matches up to the end or up to a "/"
         else
         {
             if (path.rfind(it->second->getPath(), 0) == 0)
-                locations.push_back(it);
+            {
+                name = it->second->getPath();
+                locations[path] = it;
+            }
         }
         it++;
     }
     if (locations.size() == 0)
         return possibleLocations.end();
     else
-        
-    
+    {
+        std::map<std::string, std::vector<std::pair <std::string, Location *> >::iterator>::iterator iter = locations.begin();
+        size_t max = 0;
+        std::string pathToRemove;
+        while (iter != locations.end())
+        {
+            if (iter->first.size() > max)
+            {
+                max = iter->first.size();
+                it = iter->second;
+                pathToRemove = iter->first;
+            }
+            iter++;
+        }
+        path = path.substr(pathToRemove.size(), path.size());
+        return it;
+    }
 }
 
 void Http::fillStructInfo(t_info &Info, Server *server, Location *location)

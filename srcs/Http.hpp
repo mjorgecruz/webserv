@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/23 21:29:22 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/24 19:16:42 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class Http
 
         void fillStructInfo(t_info &Info, Server *server, Location *location);
         
-        std::vector<std::pair <std::string, Location *> >::iterator findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string path);
+        std::vector<std::pair <std::string, Location *> >::iterator findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string &path);
         
         void sendData(int socket, HttpResponse *response);
 };
