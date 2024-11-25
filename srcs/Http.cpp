@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/24 19:25:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/25 10:26:12 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -311,8 +311,10 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     //analyze request
     std::istringstream request(received->getRequestType());
-    std::cout << "MANDA_ME O RECEIVED___________" << std::endl;
+    std::cout << "RECEIVED___________" << std::endl;
     std::cout << received->getRequest() << std::endl;
+    std::cout << std::endl;
+    std::cout << "___________________" << std::endl;
     request >> type >> path >> httpVersion;
     
     //check version
@@ -351,38 +353,37 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         return;
     }
     size_t i = 0;
-        while ( i < Info._allowedMethods.size())
+    while ( i < Info._allowedMethods.size())
+    {
+        if (Info._allowedMethods[i] == type)
         {
-            if (Info._allowedMethods[i] == type)
+            if (type == "GET")
             {
-
-                if (type == "GET")
-                {
-                    response->setContentType(received->getMimeType());
-                    response->writeContent(path, Info);
-                    response->setGetHeader();
-                }
-                else if (type == "POST")
-                {
-                    InputHandler handlePost;
-                    response->setStatus(Info._status);
-                    response->setLength(0);
-                    response->setPostHeader();
-                }
-                else
-                {
-                    DeleteHandler handleDelete;
-                    handleDelete.handleDataDeletion(path, *received, Info);
-                    response->setStatus(Info._status);
-                    response->setLength(0);
-                    response->setDeleteHeader();
-                }
-                break;
+                response->setContentType(received->getMimeType());
+                response->writeContent(path, Info);
+                response->setGetHeader();
             }
-            i++;
+            else if (type == "POST")
+            {
+                InputHandler handlePost;
+                response->setStatus(Info._status);
+                response->setLength(0);
+                response->setPostHeader();
+            }
+            else
+            {
+                DeleteHandler handleDelete;
+                handleDelete.handleDataDeletion(path, *received, Info);
+                response->setStatus(Info._status);
+                response->setLength(0);
+                response->setDeleteHeader();
+            }
+            break;
         }
-        if (i == Info._allowedMethods.size())
-            throw(std::exception());
+        i++;
+    }
+    if (i == Info._allowedMethods.size())
+        throw(std::exception());
 
     sendData(socket, response);
     
@@ -397,6 +398,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
     {
         //name contains **
         std::string name;
+        std::cout << it->second->getPath() << std::endl;
         if (it->second->getPath().find('*') != std::string::npos)
         {
             //all input
@@ -414,15 +416,17 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
                     if (path.find("/", pre.size()) != std::string::npos)
                         name = path.substr(0, path.find("/", pre.size()));
                     else
-                        name = path; 
+                        name = path;
                 }
                 locations[name] = it;
             }
             else if (path.rfind(suf) < path.size() - suf.size())
             {
                 name = path.substr(0, path.rfind(suf) + suf.size() );
+                std::cout << name << std::endl;
                 locations[name] = it;
             }
+            std::cout << name << std::endl;
         }
         //if it matches up to the end or up to a "/"
         else
@@ -430,7 +434,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             if (path.rfind(it->second->getPath(), 0) == 0)
             {
                 name = it->second->getPath();
-                locations[path] = it;
+                locations[it->second->getPath()] = it;
             }
         }
         it++;
@@ -449,10 +453,16 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
                 max = iter->first.size();
                 it = iter->second;
                 pathToRemove = iter->first;
+                std::cout << "____________" << std::endl;
+                std::cout << pathToRemove << std::endl;
+                std::cout << "____________" << std::endl;
             }
             iter++;
         }
         path = path.substr(pathToRemove.size(), path.size());
+        std::cout << "____________" << std::endl;
+        std::cout << path << std::endl;
+        std::cout << "____________" << std::endl;
         return it;
     }
 }
