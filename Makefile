@@ -1,9 +1,8 @@
 
 
-RED = \033[31m
+RED = \033[1;31m
 GREEN = \033[32m
 YELLOW = \033[33m
-END_COLOR = \033[0m
 BOLD_GREEN = \033[1;32m
 BOLD_YELLOW = \033[1;33m
 END = \033[0m
@@ -34,12 +33,13 @@ COMPILED_FILES := $(shell if [ -d "$(ODIR)" ]; then find $(ODIR) -name "*.o" | w
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(DEFAULT_DIR)/default.conf $(ERROR_FILES)
-	@mkdir -p $(dir $@) 
+$(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBFLAGS)
 	@printf "$(BOLD_GREEN)...calm champions: $$(echo "$(shell find $(ODIR) -name "*.o" | wc -l) $(TOTAL_FILES)" | awk '{printf "%.2f", $$1/$$2 * 100}')%%$(RES)\r"
 	@printf "\n"
-	@echo "${BOLD_GREEN}Compilation completed${END}"
+	@printf "Compilation completed ${END}"
+	@printf "\n"
+
 
 $(ODIR):
 	@mkdir -p $@
@@ -54,11 +54,14 @@ test:
 
 fclean: clean
 	@$(RM) $(NAME)
-	@echo "${RED} webserver is no more...${END}"
+	@printf "$(RED)webserver is no more...$(END)"
+	@printf "\n"
 
 clean:
 	@$(RM) $(OBJ)
 	@$(RM) $(ODIR)
+	@printf "$(BOLD_YELLOW)...cleaned$(END)"
+	@printf "\n"
 
 $(ERROR_FILES): $(ERRORS)
 
