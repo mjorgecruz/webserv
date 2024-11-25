@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/25 10:12:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/25 10:51:44 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -46,7 +46,6 @@ bool HttpRequest::completeRequest(int socket)
             std::string input(buffer, buffer + bytes_read);
             input = remainder + input;
             remainder = input;
-            std::cout << "Read " << bytes_read << " bytes: " << input << std::endl;
         }
     }
     _request += remainder;

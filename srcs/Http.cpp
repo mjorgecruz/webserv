@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/25 10:26:12 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/25 12:13:08 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -337,12 +337,15 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     // to print all the fields to console for debuging
     //Info.printInfoConfig();
     
-    std::string full_path = Info._root ;//+ path;
+    std::string full_path = Info._root + path;
+    std::cout << "FULL_PATH_____________"<< std::endl;
+    std::cout << full_path << std::endl;
+    std::cout << "______________________"<< std::endl;
     struct stat entryInfo;
     if (stat(full_path.c_str(), &entryInfo) == 0)
     {
-        if (S_ISDIR(entryInfo.st_mode))
-            path = path + "/";       
+         if (S_ISDIR(entryInfo.st_mode))
+            path = path + "/";
     }
     //check method
     if (!(Info._redirect.empty()))
@@ -394,6 +397,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
 
     std::map<std::string, std::vector<std::pair <std::string, Location *> >::iterator> locations;
     std::vector<std::pair <std::string, Location *> >::iterator it = possibleLocations.begin();
+    std::string temp = path;
     while (it != possibleLocations.end())
     {
         //name contains **
@@ -405,16 +409,18 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             if (it->second->getPath().size() == 1)
                 locations[path] = it;
             //prefix + * + suffix
-            std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*') - 1);
+            std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*'));
+            std::cout << "PRE - " << pre << std::endl;
             std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*')) ; 
-            if (path.rfind(pre, 0) == 0 && (suf.empty() || path.find(suf, pre.size()) != std::string::npos))
+            std::cout << "SUF - " << suf << std::endl;
+            if (path.rfind(pre, 0) == 0)
             {
                 if (!suf.empty())
                     name = path.substr(0, path.find(suf, pre.size()) + suf.size());
                 else
                 {
                     if (path.find("/", pre.size()) != std::string::npos)
-                        name = path.substr(0, path.find("/", pre.size()));
+                        name = path.substr(0, path.find("/", suf.size()));
                     else
                         name = path;
                 }
