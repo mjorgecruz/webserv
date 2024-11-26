@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/25 12:20:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:10:07 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -314,6 +314,10 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::cout << "RECEIVED___________" << std::endl;
     std::cout << received->getRequest() << std::endl;
     std::cout << std::endl;
+    std::cout << "RECEIVED___________" << std::endl;
+    std::cout << received->getRequest().size() << std::endl;
+    std::cout << std::endl;
+    
     std::cout << "___________________" << std::endl;
     request >> type >> path >> httpVersion;
     
@@ -397,7 +401,9 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
 
     std::map<std::string, std::vector<std::pair <std::string, Location *> >::iterator> locations;
     std::vector<std::pair <std::string, Location *> >::iterator it = possibleLocations.begin();
-    std::string temp = path + "/";
+    std::string temp = path;
+    if (temp.find_last_of('/') != temp.size() - 1)
+        temp = path + "/";
     while (it != possibleLocations.end())
     {
         //name contains **
@@ -413,16 +419,15 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             std::cout << "PRE - " << pre << std::endl;
             std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*')) ; 
             std::cout << "SUF - " << suf << std::endl;
-            if (path.rfind(pre, 0) == 0 && path.find(suf, pre.size()))
+            if (temp.rfind(pre, 0) == 0)
             {
-                if (!suf.empty())
-                    name = path.substr(0, path.find(suf, pre.size()) + suf.size());
+                if (!suf.empty() && temp.find(suf, pre.size()) != std::string::npos)
+                {
+                    name = temp.substr(0, temp.find(suf, pre.size()) + suf.size() - 1);
+                }
                 else
                 {
-                    if (path.find("/", pre.size()) != std::string::npos)
-                        name = path.substr(0, path.find("/", pre.size()));
-                    else
-                        name = path;
+                    name = path;
                 }
                 locations[name] = it;
             }
@@ -437,7 +442,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
         //if it matches up to the end or up to a "/"
         else
         {
-            if (path.rfind(it->second->getPath(), 0) == 0)
+            if (temp.rfind(it->second->getPath(), 0) == 0)
             {
                 name = it->second->getPath();
                 locations[it->second->getPath()] = it;
@@ -465,10 +470,11 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             }
             iter++;
         }
-        path = path.substr(pathToRemove.size(), path.size());
+        temp = temp.substr(pathToRemove.size(), temp.size());
         std::cout << "____________" << std::endl;
-        std::cout << path << std::endl;
+        std::cout << temp << std::endl;
         std::cout << "____________" << std::endl;
+        path = temp;
         return it;
     }
 }

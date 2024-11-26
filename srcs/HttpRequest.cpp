@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/25 10:51:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 12:09:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -23,13 +23,13 @@ HttpRequest::~HttpRequest()
 
 bool HttpRequest::completeRequest(int socket)
 {
-    std::string remainder = "";
+    std::string remainder = _request;
     char buffer[BUFSIZ];
     int bytes_read;
     
     while (1)
     {    
-        memset(&buffer, 0, sizeof buffer);
+        memset(&buffer, 0, BUFSIZ);
         bytes_read = recv(socket, buffer, BUFSIZ, 0);
         if (bytes_read < 0)
         {
@@ -43,16 +43,25 @@ bool HttpRequest::completeRequest(int socket)
         }
         else
         {
-            std::string input(buffer, buffer + bytes_read);
-            input = remainder + input;
-            remainder = input;
+            remainder.append(buffer, bytes_read);
+            if (bytes_read < BUFSIZ)
+            {
+                size_t final_pos = remainder.find("chunked", 0);
+                size_t header_end = remainder.find("\r\n\r\n");
+                if (header_end != std::string::npos && final_pos != std::string::npos)
+                {
+                    if(remainder.find("0\r\n\r\n", header_end + 4) != std::string::npos)
+                        return true;
+                }
+            }
         }
     }
-    _request += remainder;
+    _request = remainder;
     if (checkRequestEnd())
     {
         return true;
     }
+
     return false;
 }        
 
