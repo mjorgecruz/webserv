@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   InputHandler.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 23:32:41 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 16:37:23 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/26 22:56:37 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,12 @@ class InputHandler
     public:
         InputHandler();
         ~InputHandler();
+
         
         void handleDataUpload(std::string path, HttpRequest &request, t_info &info);
+        
+        void writePostCgiPage(std::string path, t_info  &info, HttpRequest *request);
+        
         int definePathType(std::string &path, t_info &info);
         void writeToFilename(HttpRequest request, std::string filename);
         void logFileCreation(std::string &path, HttpRequest &request);

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/09 01:53:13 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 23:14:12 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@ InputHandler::~InputHandler()
 void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_info &info)
 {
     
+    if (!info._cgiPath.empty())
+    {
+        //function to do this
+        
+        
+        return;
+    }
     int pathExistance = definePathType(path, info);
     
     //check if path is folder or file
@@ -53,6 +60,46 @@ void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_in
     }
     info._status = 204; 
 }
+
+// void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest *request)
+// {
+//     std::string content = "";
+//     std::fstream file;
+//     path = info._root + path;
+//     std::cout << path << std::endl;
+//     file.open(path.c_str());
+//     if (!file.is_open())
+//         throw(HttpRequest::HttpPageNotFoundException());
+//     file.close();
+//     CgiManagement pageCreate;
+//     pageCreate.solveCgiPhp(path, info, content);
+//     _status = 200;
+//     std::cout << content << std::endl;
+    
+//     //find type of response
+//     size_t h1 = content.find("Content-type: ");
+//     if (h1 == std::string::npos)
+//         h1 = content.find("Content-Type: ");
+//     size_t h2 = content.find("\r\n", h1 + 14);
+//     if (h2 == std::string::npos)
+//         h2 = content.find("\n", h1 + 14);
+//     std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
+//     std::cout << type << std::endl;
+    
+//     //write content
+//     size_t header_end = content.find("\r\n\r\n");
+//     if (header_end == std::string::npos)
+//     {
+//         header_end = content.find("\n\n", h2 + 1);
+//         content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
+//     }
+//     else
+//         content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
+//     std::cout << content << std::endl;
+//     setContentType(type);
+//     setContent(content);
+//     setLength(content.size());
+// }
 
 int InputHandler::definePathType(std::string &path, t_info &info)
 {

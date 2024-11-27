@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CgiManagement.cpp                                  :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 12:00:11 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 23:15:35 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "CgiManagement.hpp"
 
@@ -34,11 +34,19 @@ void CgiManagement::solveCgiPhp(std::string file, t_info &info, std::string &con
     }
     if (pid == 0)
     {
+        std::vector<char*> envp;
+        std::string envVar = "REQUEST_METHOD";
+        envVar += "=";
+        envVar += "GET" ;
+        char* envVarCStr = new char[envVar.size() + 1];
+        std::strcpy(envVarCStr, envVar.c_str());
+        envp.push_back(envVarCStr);
+        envp.push_back(NULL);
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
         const char * args[3] = {info._cgiPath.c_str(),  file.c_str(), NULL};
-        if(execve(args[0], const_cast<char* const*>(args), 0) == -1)
+        if(execve(args[0], const_cast<char* const*>(args), envp.data()) == -1)
         {
             exit(EXIT_FAILURE);
         }

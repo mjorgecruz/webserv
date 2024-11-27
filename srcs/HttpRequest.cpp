@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 12:09:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 21:33:37 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 
@@ -51,7 +51,7 @@ bool HttpRequest::completeRequest(int socket)
                 if (header_end != std::string::npos && final_pos != std::string::npos)
                 {
                     if(remainder.find("0\r\n\r\n", header_end + 4) != std::string::npos)
-                        return true;
+                        break;
                 }
             }
         }

@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 12:10:07 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/27 00:16:59 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -312,12 +312,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //analyze request
     std::istringstream request(received->getRequestType());
     std::cout << "RECEIVED___________" << std::endl;
-    std::cout << received->getRequest() << std::endl;
-    std::cout << std::endl;
-    std::cout << "RECEIVED___________" << std::endl;
     std::cout << received->getRequest().size() << std::endl;
     std::cout << std::endl;
-    
     std::cout << "___________________" << std::endl;
     request >> type >> path >> httpVersion;
     
@@ -373,6 +369,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             else if (type == "POST")
             {
                 InputHandler handlePost;
+                handlePost.handleDataUpload(path, *received, Info);
                 response->setStatus(Info._status);
                 response->setLength(0);
                 response->setPostHeader();
@@ -423,19 +420,30 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             {
                 if (!suf.empty() && temp.find(suf, pre.size()) != std::string::npos)
                 {
-                    name = temp.substr(0, temp.find(suf, pre.size()) + suf.size() - 1);
+                    name = temp.substr(0, temp.find(suf, pre.size()) + suf.size());
+                    if (name.find_last_of("/") == name.size() - 1)
+                        name = name.substr(0, name.size() - 1);
+                    else
+                        name = name.substr(0, name.find_last_of("/"));
+                }
+                else if (!suf.empty())
+                {
+                    it++;
+                    continue;
                 }
                 else
                 {
                     name = path;
                 }
-                locations[name] = it;
+                if(locations.find(name) == locations.end())
+                    locations[name] = it;
             }
             else if (path.rfind(suf) < path.size() - suf.size())
             {
                 name = path.substr(0, path.rfind(suf) + suf.size() );
                 std::cout << name << std::endl;
-                locations[name] = it;
+                if(locations.find(name) == locations.end())
+                    locations[name] = it;
             }
             std::cout << name << std::endl;
         }
@@ -445,7 +453,8 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             if (temp.rfind(it->second->getPath(), 0) == 0)
             {
                 name = it->second->getPath();
-                locations[it->second->getPath()] = it;
+                if(locations.find(name) == locations.end())
+                    locations[name] = it;
             }
         }
         it++;

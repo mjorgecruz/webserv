@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 22:21:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/26 22:55:58 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info)
     setContent(content);
     setLength(content.size());
 }
+
 
 void HttpResponse::writeIndexPage(std::string path, t_info  &info)
 {
