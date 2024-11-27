@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 22:55:58 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/27 11:05:57 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,16 @@ int HttpResponse::getLength()
 
 void HttpResponse::writeContent(std::string path, t_info  &info)
 {   
+    struct stat file;
+    std::string full_path;
+    full_path = info._root + path;
+    full_path = full_path.substr(0, full_path.size() - 1 );
+    if (stat(full_path.c_str(), &file) == 0)
+    {
+        if (S_ISREG(file.st_mode))
+            path = path.substr(0, path.size() - 1);
+    }
+    
     if (path.find_last_of('/') != path.size() - 1)
     {
         try
