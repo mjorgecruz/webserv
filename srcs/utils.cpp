@@ -28,14 +28,14 @@ bool isNumeric(const std::string &str)
 
 void custtomServerThrow(std::string str)
 {
-    std::cout << "ERROR: Server: ";
+    std::cout << "\033[1;31mERROR -> Server: \033[0m";
     std::cout << str << std::endl;
     throw Server::exceptionAtServer();
 }
 
 void custtomLocationThrow(std::string str)
 {
-    std::cout << "ERROR: Location: ";
+    std::cout << "\033[1;31mERROR: -> Location: \033[0m";
     std::cout << str << std::endl;
     throw Location::exceptionAtLocation();
 }

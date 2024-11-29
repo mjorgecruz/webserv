@@ -412,6 +412,9 @@ void Server::keywordIndex(std::string &line)
         custtomServerThrow("Server Block: Index empty");
 
     index.clear();
+    
+    if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
+            custtomServerThrow("Index format");
     index.push_back(indexName);
     while (iss >> indexName)
     {
@@ -448,14 +451,16 @@ void Server::keywordErrorPages(std::string &line)
     iss >> temp;
     std::vector<int> errorCodes;
     std::string errorPage;
+
     while (iss >> token)
     {
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            if (errorCode < 400 || errorCode > 599)
+            if (isValidError(errorCode))
+                errorCodes.push_back(errorCode);
+            else
                 custtomServerThrow("Invalid error code.");
-            errorCodes.push_back(errorCode);
         }
         else
         {
