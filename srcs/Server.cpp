@@ -146,10 +146,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     iss >> firstWord;
 
     if  (firstWord != "server")
-    {
-        std::cout << "Expected 'server' keyword at the beginning of the server block\n";
-        throw(std::exception());
-    }
+        custtomServerThrow("Expected 'server' keyword at the beginning of the server block");
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
@@ -169,10 +166,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
                 break;
             }
             else if (!line.empty())
-            {
-                std::cout << "Expected '{' after 'server' keyword\n";
-                throw (std::exception());
-            }
+                custtomServerThrow("Expected '{' after 'server' keyword\n");
         }
     }
     else
@@ -181,11 +175,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     }
 
     if (!serverBracket)
-    {
-        std::cout << "Missing opening '{' in block\n";
-        throw (std::exception());
-    }
-
+        custtomServerThrow("Missing opening '{' in block");
     while (std::getline(file, line))
     {
         if (line.find_first_not_of(" \t") == std::string::npos)
@@ -208,11 +198,10 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
                 location->parseLocation(line, file);
                 _locations.push_back(std::make_pair(location->getPath(), location));
             }
-            catch (std::exception &e)
+            catch (Location::exceptionAtLocation &e) 
             {
                 delete location;
-                std::cout << "Location Creation Error in ServerChecker @ WebservInitializer" << std::endl;
-                throw(std::exception());
+                custtomServerThrow("Location Creation Error @ ServerChecker");
             }
         }
         else
@@ -226,10 +215,10 @@ void Server::serverKeywords(std::string key, std::string &line)
     line.erase(line.find_last_not_of(" \t") + 1);
 
     if (line[line.size() -1] != ';')
-        custtomThrow("ERROR: Server Block: Expecting ';' .");
+        custtomServerThrow("Expecting ';' .");
     line = line.substr(0, line.size() - 1);
     if (line.empty())
-        custtomThrow("ERROR: Server Block: Expecting ';' .");
+        custtomServerThrow("Expecting ';' .");
     if (key == "listen")
     {
         //would use all ports/ip configurations as long as no duplicate combination found. 
@@ -256,7 +245,7 @@ void Server::serverKeywords(std::string key, std::string &line)
         //adding multiple - ok
         keywordErrorPages(line);
     }
-    else if (key == "max_body_size")
+    else if (key == "client_max_body_size")
     {
         // using last directive - ok
         keywordMaxBodySize(line);
@@ -267,8 +256,7 @@ void Server::serverKeywords(std::string key, std::string &line)
         keyAllowMethods(line);
     }
     else
-        custtomThrow("ERROR: Invalid Keyword");
-
+        custtomServerThrow("Invalid Keyword");
 }
 
 void Server::setRoot(std::string root)
@@ -362,14 +350,14 @@ void Server::keywordListen(std::string &line)
             octetCount++;
         }
         if (octetCount != 4 || !validIP)
-            custtomThrow("ERROR: Invalid IP: " + host);
+            custtomServerThrow("Invalid IP: " + host);
         setHost(host);
         char* end;
         errno = 0;
         long portValue = std::strtol(portStr.c_str(), &end, 10);
 
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-            custtomThrow("ERROR: Invalid Port: " + portStr);
+            custtomServerThrow("Invalid Port: " + portStr);
         port = static_cast<int>(portValue);
     }
     else
@@ -378,14 +366,14 @@ void Server::keywordListen(std::string &line)
         errno = 0;
         long portValue = std::strtol(address.c_str(), &end, 10);
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-                    custtomThrow("ERROR: Invalid Port: " + address );
+                    custtomServerThrow("Invalid Port: " + address );
         port = static_cast<int>(portValue);
     }
     std::string extraStuffinLine;
     iss >> extraStuffinLine;
 
     if(!extraStuffinLine.empty())
-        custtomThrow("ERROR: Server Block: Listen");
+        custtomServerThrow("Listen.");
     setPorts(port);
 }
 
@@ -398,15 +386,15 @@ void Server::keywordServerName(std::string &line)
     iss >> temp;
     iss >> hostname;
     if (hostname.empty())
-        custtomThrow("ERROR: Server Block: server_name unused.");
+        custtomServerThrow("server_name unused.");
     if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-        custtomThrow("ERROR: Server Block: Invalid server_name: " + hostname);
+        custtomServerThrow("Invalid server_name: " + hostname);
     hostnames.push_back(hostname);
 
     while (iss >> hostname)
     {
         if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-            custtomThrow("ERROR: Server Block: Invalid server_name: " + hostname);
+            custtomServerThrow("Invalid server_name: " + hostname);
         hostnames.push_back(hostname);
     }
     setHostname(hostnames);
@@ -421,14 +409,14 @@ void Server::keywordIndex(std::string &line)
     iss >> indexName;
 
     if(indexName.empty())
-        custtomThrow("ERROR: Server Block: Index empty");
+        custtomServerThrow("Server Block: Index empty");
 
     index.clear();
     index.push_back(indexName);
     while (iss >> indexName)
     {
         if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-            custtomThrow("ERROR: Server Block: Index format");
+            custtomServerThrow("Index format");
         index.push_back(indexName);
     }
     setIndex(index);
@@ -444,11 +432,11 @@ void Server::keywordRoot(std::string &line)
     iss >> root;
     iss >> temp;
     if (!temp.empty())
-        custtomThrow("ERROR: Server Block: root invalid");
+        custtomServerThrow("root invalid");
     if (root.empty())
-        custtomThrow("ERROR: Server Block: root invalid");
+        custtomServerThrow("root invalid");
     if (root[0] != '/')
-        custtomThrow("ERROR: Server Block: root invalid");
+        custtomServerThrow("root invalid");
     setRoot(root);
 }
 
@@ -466,10 +454,7 @@ void Server::keywordErrorPages(std::string &line)
         {
             int errorCode = std::atoi(token.c_str());
             if (errorCode < 400 || errorCode > 599)
-            {
-                std::cout << "Invalid error code: " << errorCode << "\n";
-                throw std::exception();
-            }
+                custtomServerThrow("Invalid error code.");
             errorCodes.push_back(errorCode);
         }
         else
@@ -479,15 +464,9 @@ void Server::keywordErrorPages(std::string &line)
         }
     }
     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-    {
-        std::cout << "Invalid error page path: " << errorPage << "\n";
-        throw std::exception();
-    }
+        custtomServerThrow("Invalid error page path.");
     if (errorCodes.empty())
-    {
-        std::cout << "Invalid error: " << errorPage << "\n";
-        throw std::exception();
-    }
+        custtomServerThrow("Invalid error page.");
     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
     {
         errorPages[*it] = errorPage;
@@ -504,27 +483,19 @@ void Server::keywordMaxBodySize(std::string &line)
     errno = 0;
     long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
     if (errno == ERANGE || maxBodySize < 0)
-    {
-        std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomServerThrow("Invalid max_body_size (overflow or negative value)");
     if (*end == 'M' && *(end + 1) == '\0')
     {
         maxBodySize *= 1024 * 1024;
     }
     else if (*end != '\0')
-    {
-        std::cout << "Invalid max_body_size: " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomServerThrow("Invalid max_body_size");
+
     if (maxBodySize <= 0)
-    {
-        std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomServerThrow("Invalid max_body_size (overflow or negative value)");
     iss >> extra;
     if(!extra.empty())
-        custtomThrow("ERROR: Server Block: max_body_size");
+        custtomServerThrow("max_body_size");
     _maxBodySize = maxBodySize;
 }
 
@@ -540,10 +511,15 @@ void Server::keyAllowMethods(std::string &line)
     while (iss >> method)
     {
         if (method != "POST" && method != "GET" && method != "DELETE")
-            custtomThrow("ERROR: Server Block: allow_methods");
+            custtomServerThrow("allow_methods");
         addAllowedMethods(method);
         i++;
     }
     if  (i > 3 || i == 0)
-        custtomThrow("ERROR: Server Block: allow_methods");
+        custtomServerThrow("allow_methods");
 }
+
+const char *Server::exceptionAtServer::what(void) const throw()
+{
+    return ("Error: At Parsing Server");
+};

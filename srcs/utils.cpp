@@ -26,13 +26,19 @@ bool isNumeric(const std::string &str)
     return true;
 }
 
-void custtomThrow(std::string str)
+void custtomServerThrow(std::string str)
 {
+    std::cout << "ERROR: Server: ";
     std::cout << str << std::endl;
-    throw std::exception();
+    throw Server::exceptionAtServer();
 }
 
-
+void custtomLocationThrow(std::string str)
+{
+    std::cout << "ERROR: Location: ";
+    std::cout << str << std::endl;
+    throw Location::exceptionAtLocation();
+}
 
 void Server::printConfig() const
 {

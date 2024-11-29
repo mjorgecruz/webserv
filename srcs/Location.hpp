@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 10:20:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:36:21 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,12 @@ class Location
         void keywordErrorPages(std::istringstream &iss);
         void keywordReturn(std::istringstream &iss);
         void keywordMaxBodySize(std::istringstream &iss);
+
+    class exceptionAtLocation : public std::exception
+	{
+	    public:
+		    virtual const char *what() const throw();
+	};
+
 };
 

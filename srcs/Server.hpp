@@ -69,6 +69,12 @@ class Server : public Socket
         void keywordErrorPages(std::string &line);
         void keywordMaxBodySize(std::string &line);
         void keyAllowMethods(std::string &line);
+
+        class exceptionAtServer : public std::exception
+        {
+            public:
+                virtual const char *what() const throw();
+        };
 };
 
 #endif

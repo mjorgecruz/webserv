@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/27 00:16:59 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/29 10:28:04 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@ void Http::webservInitializer(std::string confPath)
                 {
                     server->serverChecker(line, file);
                 }
-                catch (std::exception &e)
+                catch (Server::exceptionAtServer &e)
                 {
                     delete server;
-                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    std::cout << "ERROR @ WebservInitializer ->  HTTP.cpp throws std::exception \n did catch a server::exceptionAtServer" << std::endl;
                     throw(std::exception());
                 }
                 
@@ -51,7 +51,7 @@ void Http::webservInitializer(std::string confPath)
                     addServerToList(server);
                 else
                 {
-                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    std::cout << "ERROR @ addServerToList throws std::excepion" << std::endl;
                     throw(std::exception());
                 }
             }

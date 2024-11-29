@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/17 16:29:14 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/11/29 09:54:18 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@ extern int g_signal;
 #include "CgiManagement.hpp"
 #include "InputHandler.hpp"
 
+
 bool isValidError(int errorCode);
 bool isNumeric(const std::string &str);
-void custtomThrow(std::string str);
+void custtomServerThrow(std::string str);
+void custtomLocationThrow(std::string str);
 #endif
 
