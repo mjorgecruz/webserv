@@ -36,3 +36,7 @@ LUIS [ ] 33. Verify that two files can be sent at the same time (2 multipart)
 [ ] 35. Cant find the cgi path
 [ ] 36. Confirm size of content to close recv. Gifs sometimes send /r/n/r/n in the middle
 [ ] 37. Query strings (paths com ?)
+[ ] 38. /post_body location, what happens if I send a request to /post_body1 
+[ ] 39. * are only usable for files
+[ ] 40. case of wrong http version
+[ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
