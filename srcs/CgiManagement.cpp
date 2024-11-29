@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/27 12:00:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/29 10:27:36 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,11 @@ CgiManagement::CgiManagement()
 CgiManagement::~CgiManagement()
 {}
 
-void CgiManagement::solveCgiPhp(std::string file, t_info &info, std::string &content)
+void CgiManagement::solveCgiPhp(std::string file, t_info &info, std::string &content, HttpRequest &request)
 {
     (void) info;
     (void) content;
+    (void) request;
     int fd[2];
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) == -1)
     {
@@ -34,39 +35,47 @@ void CgiManagement::solveCgiPhp(std::string file, t_info &info, std::string &con
     }
     if (pid == 0)
     {
-        // std::vector<char*> envp;
-        // std::string envVar = "REQUEST_METHOD=GET";
-        // std::string envVar1 = "SERVER_PROTOCOL=HTTP/1.1";
-        // std::string envVar2 = "PATH_INFO=";
-        // envVar2 += file;
+        std::vector<char*> envp;
+        std::istringstream req(request.getRequestType());
+        std::string type;
+        std::string requ = "REQUEST_METHOD=";
+        req >> type;
+        requ+=type;
+        envp.push_back(const_cast <char *> ( requ.c_str()));
+        std::string protocol = "SERVER_PROTOCOL=HTTP/1.1";
+        envp.push_back(const_cast <char *> ( protocol.c_str()));
+        std::string length = "CONTENT_LENGTH=" + (request.getRequestBody().size());
+        envp.push_back(const_cast <char *> ( length.c_str()));
+        req >> type;
+        std::string pathInfo = "PATH_INFO=" + type;
+        envp.push_back(const_cast <char *> ( pathInfo.c_str()));
+
         
         
-        // envp.push_back(const_cast <char *> ( envVar.c_str()));
         // envp.push_back(const_cast <char *>(envVar1.c_str()));
         // envp.push_back(const_cast <char *>(envVar2.c_str()));
-        // envp.push_back(NULL);
-            std::map<std::string, std::string> env;
-        env["CONTENT_LENGTH"] = std::to_string(request->getBody().size());
-        env["CONTENT_TYPE"] = request->getHeader("Content-Type");
-        env["GATEWAY_INTERFACE"] = "CGI/1.1";
-        env["PATH_INFO"] = request->getPath();
+        //envp.push_back(NULL);
+        //env["CONTENT_TYPE"] = request->getHeader("Content-Type");
+        //env["GATEWAY_INTERFACE"] = "CGI/1.1";
+        //env["REQUEST_METHOD"] = type;
         //env["QUERY_STRING"] = request->getQueryString();
         //env["REMOTE_ADDR"] = request->getRemoteAddr();
-        env["REQUEST_METHOD"] = request->getRequestType();
-        env["SCRIPT_NAME"] = cgiScriptPath;
-        env["SERVER_NAME"] = request->getServerName();
-        env["SERVER_PORT"] = std::to_string(request->getServerPort());
-        env["SERVER_PROTOCOL"] = "HTTP/1.1";
-        env["SERVER_SOFTWARE"] = "webserv/1.0";
-    
+        // std::cout << "REQUEST - " << type << std::endl;
+        //env["SCRIPT_NAME"] = cgiScriptPath;
+        //env["SERVER_NAME"] = request->getServerName();
+        //env["SERVER_PORT"] = (std::string)(request->getServerPort());
+        //env["SERVER_PROTOCOL"] = "HTTP/1.1";
+        //env["SERVER_SOFTWARE"] = "webserv/1.0";
+        //std::cout << envVar << std::endl;
         // Convert environment variables to char* array
-        std::vector<char*> envp;
-        for (c : env) {
-            std::string envVar = e.first;
-            envVar += "=";
-            envVar += e.second;
-            envp.push_back(const_cast <char *> ( envVar.c_str()));
-        }
+        //std::vector<char*> envp;
+        // for (std::map<std::string, std::string>::iterator it = env.begin(); it != env.end(); it++) {
+        //     std::string envVar = it->first;
+        //     envVar += "=";
+        //     envVar += it->second;
+        //     envp.push_back(const_cast <char *> ( envVar.c_str()));
+        //     std::cout << envVar << std::endl;
+        // }
         envp.push_back(NULL);
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/27 11:05:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/28 09:26:52 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int HttpResponse::getLength()
     return _contentLength;
 }
 
-void HttpResponse::writeContent(std::string path, t_info  &info)
+void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &request)
 {   
     struct stat file;
     std::string full_path;
@@ -128,7 +128,7 @@ void HttpResponse::writeContent(std::string path, t_info  &info)
             if (info._cgiPath.empty())
                 writeNormalPage(path, info);
             else
-                writeCgiPage(path, info);
+                writeCgiPage(path, info, request);
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
@@ -177,7 +177,7 @@ void HttpResponse::writeNormalPage(std::string path, t_info  &info)
     setLength(content.size());
 }
 
-void HttpResponse::writeCgiPage(std::string path, t_info  &info)
+void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &request)
 {
     std::string content = "";
     std::fstream file;
@@ -188,7 +188,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info)
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
     CgiManagement pageCreate;
-    pageCreate.solveCgiPhp(path, info, content);
+    pageCreate.solveCgiPhp(path, info, content, request);
     _status = 200;
     std::cout << content << std::endl;
     
