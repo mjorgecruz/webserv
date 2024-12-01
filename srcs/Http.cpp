@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/28 12:00:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/01 14:32:30 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,7 +312,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //analyze request
     std::istringstream request(received->getRequestType());
     std::cout << "RECEIVED___________" << std::endl;
-    std::cout << received->getRequest().size() << std::endl;
+    std::cout << received->getRequestBody().size() << std::endl;
     std::cout << std::endl;
     std::cout << "___________________" << std::endl;
     request >> type >> path >> httpVersion;
@@ -369,7 +369,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             else if (type == "POST")
             {
                 InputHandler handlePost;
-                handlePost.handleDataUpload(path, *received, Info);
+                handlePost.handleDataUpload(path, *received, Info, *response);
                 response->setStatus(Info._status);
                 response->setLength(0);
                 response->setPostHeader();

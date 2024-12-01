@@ -21,16 +21,16 @@ LUIS [ ] 5. Teste extensivo de preenchimento dos dados no t_info
 [V] 20. Introduce return in info and logic to not render anything if there is a return for that location
 [V] 21. renomear e criar exceptions no parser
 [ ] 22. if I add index script.py; it should try cgi first
-[ ] 23. POST cgi
+[V] 23. POST cgi
 [V] 24. Allow methods should work on server as well
-[ ] 25. find the biggest correspondance on locations
+[V] 25. find the biggest correspondance on locations
 [V] 26. Define max_body_size for locations
 LUIS [ ] 27. Change the name max_body_size to the actual nginx name
 [ ] 28. Tirar os custtomthrow
 [V] 29. Test POST http://localhost:8080/ with a size of 0
 [V] 30. Paths to locations are wrongly configured
-LUIS [ ] 31. having multiple location blocks with the exact same path is not allowed and will result in a configuration error when starting
-[ ] 32. Define how to clean the request sent in chunks
+[ ] 31. having multiple location blocks with the exact same path is not allowed and will result in a configuration error when starting
+[V] 32. Define how to clean the request sent in chunks
 LUIS [ ] 33. Verify that two files can be sent at the same time (2 multipart)
 [ ] 34. POST error 100000000
 [ ] 35. Cant find the cgi path
@@ -40,3 +40,4 @@ LUIS [ ] 33. Verify that two files can be sent at the same time (2 multipart)
 [ ] 39. * are only usable for files
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
+[ ] 42. CGI for high sizes, we need a fork inside a fork

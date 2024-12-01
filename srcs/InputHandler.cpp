@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 23:14:12 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/01 14:32:05 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@ InputHandler::InputHandler()
 InputHandler::~InputHandler()
 {}
 
-void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_info &info)
+void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_info &info, HttpResponse &response)
 {
     
     if (!info._cgiPath.empty())
     {
         //function to do this
-        
+        writePostCgiPage(path, info, request, response);
         
         return;
     }
@@ -61,45 +61,74 @@ void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_in
     info._status = 204; 
 }
 
-// void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest *request)
-// {
-//     std::string content = "";
-//     std::fstream file;
-//     path = info._root + path;
-//     std::cout << path << std::endl;
-//     file.open(path.c_str());
-//     if (!file.is_open())
-//         throw(HttpRequest::HttpPageNotFoundException());
-//     file.close();
-//     CgiManagement pageCreate;
-//     pageCreate.solveCgiPhp(path, info, content);
-//     _status = 200;
-//     std::cout << content << std::endl;
+void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest &request, HttpResponse &response)
+{
+    std::string content = "";
+    struct stat test;
+    std::fstream file;
+    path = info._root + path;
+    std::string full_path = path;
+    full_path = full_path.substr(0, full_path.size() - 1 );
+    if (stat(full_path.c_str(), &test) == 0)
+    {
+        if (S_ISREG(test.st_mode))
+            path = path.substr(0, path.size() - 1);
+    }
+    std::cout << path << std::endl;
+    file.open(path.c_str());
+    if (!file.is_open())
+        throw(HttpRequest::HttpPageNotFoundException());
+    file.close();
+    CgiManagement pageCreate;
+    if (info._cgiPath.find("ubuntu_cgi_tester"))
+        pageCreate.solveCgiTester(path, info, content, request);
+    else
+        pageCreate.solveCgiPhp(path, info, content, request);
+    info._status = 200;
+    std::cout << content << std::endl;
     
-//     //find type of response
-//     size_t h1 = content.find("Content-type: ");
-//     if (h1 == std::string::npos)
-//         h1 = content.find("Content-Type: ");
-//     size_t h2 = content.find("\r\n", h1 + 14);
-//     if (h2 == std::string::npos)
-//         h2 = content.find("\n", h1 + 14);
-//     std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
-//     std::cout << type << std::endl;
+    //find type of response
+    size_t h1 = content.find("Content-type: ");
+    if (h1 == std::string::npos)
+        h1 = content.find("Content-Type: ");
+    size_t h2 = content.find("\r\n", h1 + 14);
+    if (h2 == std::string::npos)
+        h2 = content.find("\n", h1 + 14);
+    std::string type = "*/*";
+    if (h1 != std::string::npos)
+    {
+        std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
+        std::cout << type << std::endl;
+    }
     
-//     //write content
-//     size_t header_end = content.find("\r\n\r\n");
-//     if (header_end == std::string::npos)
-//     {
-//         header_end = content.find("\n\n", h2 + 1);
-//         content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
-//     }
-//     else
-//         content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
-//     std::cout << content << std::endl;
-//     setContentType(type);
-//     setContent(content);
-//     setLength(content.size());
-// }
+    //find status of response
+    h1 = content.find("Status: ");
+    h2 = content.find("\r\n", h1 + 8);
+    if (h2 == std::string::npos)
+        h2 = content.find("\n", h1 + 8);
+    if (h1 != std::string::npos)
+    {
+        std::string status = content.substr(h1 + 8, h2 - h1 - 8);
+        std::cout << status << std::endl;
+        std::stringstream X(status);
+        std::string line;
+        getline(X, line, ' ');
+        info._status = strtol(line.c_str(), NULL, 10);
+    }
+
+    //write content
+    size_t header_end = content.find("\r\n\r\n");
+    if (header_end == std::string::npos)
+    {
+        header_end = content.find("\n\n", h2 + 1);
+        if (header_end != std::string::npos)
+            content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
+    }
+    else
+        content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
+    response.setContent(content);
+}
+
 
 int InputHandler::definePathType(std::string &path, t_info &info)
 {

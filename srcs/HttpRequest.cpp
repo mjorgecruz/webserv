@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 21:33:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/30 23:11:35 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,18 +80,18 @@ void HttpRequest::fillReqProperties()
 
     std::stringstream X(_header);
     
-    getline(X, partial_line);
+    std::getline(X, partial_line);
     _requestType = partial_line;
     std::cout << _requestType <<std::endl;
 
-    while (getline(X, partial_line, ':'))
+    while (std::getline(X, partial_line, ':'))
     {
         if (partial_line.empty())
             break;
         if (_reqProperties.find(partial_line) == _reqProperties.end())
         {
             prop = partial_line;
-            if (!getline(X, partial_line))
+            if (!std::getline(X, partial_line))
                 break;
             partial_line.erase(std::remove_if(partial_line.begin(), partial_line.end(), isspace), partial_line.end());
             std::pair<std::string, std::string> properties = std::make_pair(prop, partial_line);
@@ -109,7 +109,39 @@ void HttpRequest::setRequestBody()
         _body = "";
     }
     else
-        _body = _request.substr(header_end + 4, _request.size() - 1 - header_end + 4);
+    {
+        if (_request.find("chunked") < header_end)
+            _body = chunkCleaning(_request.substr(header_end + 4, _request.size() - 1 - header_end + 4));
+        else
+            _body = _request.substr(header_end + 4, _request.size() - 1 - header_end + 4);
+    }
+}
+
+std::string HttpRequest::chunkCleaning(std::string completeBody)
+{
+    std::stringstream chunks(completeBody.c_str());
+    std::string line;
+    std::string chunk;
+    std::string body;
+    getline(chunks, line);
+    while (true)
+    {
+        long num = strtol(line.substr(0, line.size() - 1).c_str(), NULL, 10);
+        if (num == 0)
+            break;
+        getline(chunks, line);
+        chunk = "";
+        while (line != "0\r" &&  chunk.size() < (size_t) num)
+        {
+            if (line[line.size() -1] == '\r')
+                chunk += line.substr(0, line.size() - 1);
+            else
+                chunk += line;
+            getline(chunks, line);
+        }
+        body += chunk;
+    }
+    return body;
 }
 
 void HttpRequest::setHeader()

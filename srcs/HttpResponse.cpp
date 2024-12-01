@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/28 09:26:52 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/01 13:07:29 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
         }
     }
     
-}
+    }
 
 void HttpResponse::writeNormalPage(std::string path, t_info  &info)
 {
@@ -188,8 +188,11 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
     CgiManagement pageCreate;
-    pageCreate.solveCgiPhp(path, info, content, request);
-    _status = 200;
+    if (info._cgiPath.find("ubuntu_cgi_tester"))
+        pageCreate.solveCgiTester(path, info, content, request);
+    else
+        pageCreate.solveCgiPhp(path, info, content, request);
+
     std::cout << content << std::endl;
     
     //find type of response
@@ -199,15 +202,34 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     size_t h2 = content.find("\r\n", h1 + 14);
     if (h2 == std::string::npos)
         h2 = content.find("\n", h1 + 14);
-    std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
-    std::cout << type << std::endl;
+    std::string type = "*/*";
+    if (h1 != std::string::npos)
+    {
+        std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
+        std::cout << type << std::endl;
+    }
+    //find status of response
+    h1 = content.find("Status: ");
+    h2 = content.find("\r\n", h1 + 8);
+    if (h2 == std::string::npos)
+        h2 = content.find("\n", h1 + 8);
+    if (h1 != std::string::npos)
+    {
+        std::string status = content.substr(h1 + 8, h2 - h1 - 8);
+        std::cout << status << std::endl;
+        std::stringstream X(status);
+        std::string line;
+        getline(X, line, ' ');
+        _status = strtol(line.c_str(), NULL, 10);
+    }
     
     //write content
     size_t header_end = content.find("\r\n\r\n");
     if (header_end == std::string::npos)
     {
         header_end = content.find("\n\n", h2 + 1);
-        content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
+        if (header_end != std::string::npos)
+            content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
     }
     else
         content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);

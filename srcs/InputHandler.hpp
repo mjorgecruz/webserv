@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 23:32:41 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/26 22:56:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/11/30 19:02:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@ class InputHandler
         ~InputHandler();
 
         
-        void handleDataUpload(std::string path, HttpRequest &request, t_info &info);
+        void handleDataUpload(std::string path, HttpRequest &request, t_info &info, HttpResponse &response);
         
-        void writePostCgiPage(std::string path, t_info  &info, HttpRequest *request);
+        void writePostCgiPage(std::string path, t_info  &info, HttpRequest &request, HttpResponse &response);
         
         int definePathType(std::string &path, t_info &info);
         void writeToFilename(HttpRequest request, std::string filename);
