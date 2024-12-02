@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/02 12:19:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/02 22:34:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,18 @@ void CgiManagement::solveCgiTester(std::string file, t_info &info, std::string &
 
 void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &info, std::string &content, HttpRequest &request)
 {
+    (void) info;
+    (void) content;
+    (void) request;
+    std::vector<char*> envp;
+
+    envp.push_back(const_cast <char *> ( requ.c_str()));
+    std::string protocol = "SERVER_PROTOCOL=HTTP/1.1";
+    envp.push_back(const_cast <char *> ( protocol.c_str()));
+    std::string pathInfo = "PATH_INFO=" + file;
+    envp.push_back(const_cast <char *> ( pathInfo.c_str()));
+    envp.push_back(NULL);
+
     int fdout[2];
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, fdout) == -1)
     {
@@ -154,42 +166,16 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         dup2(fdout[1], STDOUT_FILENO);
         close(fdout[1]);
         
-        std::vector<char*> envp;
-
-        envp.push_back(const_cast <char *> ( requ.c_str()));
-        std::string protocol = "SERVER_PROTOCOL=HTTP/1.1";
-        std::string contentType = "CONTENT_TYPE=" + request.searchProperty("Content-Type");
-        envp.push_back(const_cast<char*>(contentType.c_str()));
-        std::string gatewayInterface = "GATEWAY_INTERFACE=CGI/1.1";
-        envp.push_back(const_cast<char*>(gatewayInterface.c_str()));
-        envp.push_back(const_cast <char *> ( protocol.c_str()));
-        std::string length = "CONTENT_LENGTH=" + (request.getRequestBody().size());
-        envp.push_back(const_cast <char *> ( length.c_str()));
-        std::string pathInfo = "PATH_INFO=" + file;
-        envp.push_back(const_cast <char *> ( pathInfo.c_str()));
-        std::string pathTran = "PATH_TRANSLATED=" + info._cgiPath;
-        envp.push_back(const_cast <char *> ( pathTran.c_str()));
-        std::string queryString = "QUERY_STRING=";
-        envp.push_back(const_cast<char*>(queryString.c_str()));
-        std::string script_name = "SCRIPT_NAME=" + info._cgiPath;
-        envp.push_back(const_cast <char *> ( script_name.c_str()));
-        std::string request_uri = "REQUEST_URI=" + file;
-        envp.push_back(const_cast <char *> ( request_uri.c_str()));
-        std::string script_file = "SCRIPT_FILENAME=" + file;
-        envp.push_back(const_cast <char *> ( script_file.c_str()));
-        envp.push_back(NULL);
-        
-        for(int i = 0; envp[i] != NULL; i++)
-            std::cout << envp[i] << std::endl;
-        
-
         char **args = (char **) malloc( sizeof(char *) * 3);
         args[0] = strdup(info._cgiPath.c_str());
-        args[0] = strdup(file.c_str());
-        args[1] = NULL;
+        args[1] = strdup(file.c_str());
+        args[2] = NULL;
         if(execve(args[0], args, envp.data()) == -1)
         {
             std::cout << "execve error" << std::endl;
+            free(args[0]);
+            free(args[1]);
+            free(args);
             exit(EXIT_FAILURE);
         }
     }
@@ -226,11 +212,11 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     envp.push_back(NULL);
     
     int fdin[2];
-
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, fdin) == -1)
     {
         std::exception();
     }
+    
     int pid = fork();
     if (pid == -1)
     {
@@ -244,10 +230,8 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         if (fileFd < 0)
             throw(std::exception());
         dup2(fileFd, STDOUT_FILENO);
-        close(fdin[0]); 
-        
-        for(int i = 0; envp[i] != NULL; i++)
-            std::cout << envp[i] << std::endl;
+        close(fdin[0]);
+        close(fileFd);
         
         char **args = (char **) malloc( sizeof(char *) * 3);
         args[0] = strdup(info._cgiPath.c_str());
@@ -256,6 +240,9 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         if(execve(args[0], args, envp.data()) == -1)
         {
             std::cout << "execve error" << std::endl;
+            free(args[0]);
+            free(args[1]);
+            free(args);
             exit(EXIT_FAILURE);
         }
     }
@@ -292,10 +279,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
                 //throw std::exception();
             buffer[bytes_read] = '\0';
             content += buffer;
-            if (content.find("\r\n\r\n") != std::string::npos)
-                content.substr(0, content.find("\r\n\r\n"));
         }
         close(fileFd);
-        
     }
 }

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/02 11:07:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/02 22:36:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,8 +194,6 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     else
         pageCreate.solveCgiPhp(path, info, content, request);
 
-    std::cout << content << std::endl;
-    
     //find type of response
     size_t h1 = content.find("Content-type: ");
     if (h1 == std::string::npos)
@@ -223,6 +221,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
         getline(X, line, ' ');
         _status = strtol(line.c_str(), NULL, 10);
     }
+    
     
     //write content
     size_t header_end = content.find("\r\n\r\n");

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/01 14:32:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/02 23:00:03 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     else
         pageCreate.solveCgiPhp(path, info, content, request);
     info._status = 200;
-    std::cout << content << std::endl;
     
     //find type of response
     size_t h1 = content.find("Content-type: ");
@@ -126,6 +125,8 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     }
     else
         content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
+
+    content += "Successfull POST request";
     response.setContent(content);
 }
 
