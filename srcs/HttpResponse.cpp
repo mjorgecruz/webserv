@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/01 13:07:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/02 11:07:50 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,7 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
             if (info._cgiPath.empty())
                 writeNormalPage(path, info);
             else
+
                 writeCgiPage(path, info, request);
         }
         catch (HttpRequest::HttpPageNotFoundException &e)

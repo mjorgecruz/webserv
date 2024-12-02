@@ -1,4 +1,6 @@
+REQUEST_METHOD=POST
+SERVER_PROTOCOL=HTTP/1.1
+PATH_INFO=/home/masoares/webserv/YoupiBanane/youpi.bla
 Status: 200 OK
 Content-Type: text/html; charset=utf-8
 
-GAITA
