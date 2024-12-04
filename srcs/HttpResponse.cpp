@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/02 22:36:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/04 11:54:25 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "HttpResponse.hpp"
 
@@ -115,6 +115,7 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
     std::string full_path;
     full_path = info._root + path;
     full_path = full_path.substr(0, full_path.size() - 1 );
+    std::cout << full_path << std::endl;
     if (stat(full_path.c_str(), &file) == 0)
     {
         if (S_ISREG(file.st_mode))
@@ -233,7 +234,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     }
     else
         content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
-    std::cout << content << std::endl;
+
     setContentType(type);
     setContent(content);
     setLength(content.size());

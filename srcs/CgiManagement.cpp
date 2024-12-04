@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CgiManagement.cpp                                  :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/02 22:34:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/04 11:53:29 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "CgiManagement.hpp"
 
@@ -61,7 +61,8 @@ void CgiManagement::solveCgiPhp(std::string file, t_info &info, std::string &con
         std::string gatewayInterface = "GATEWAY_INTERFACE=CGI/1.1";
         envp.push_back(const_cast<char*>(gatewayInterface.c_str()));
         envp.push_back(const_cast <char *> ( protocol.c_str()));
-        std::string length = "CONTENT_LENGTH=" + (request.getRequestBody().size());
+        std::string length = "CONTENT_LENGTH=";
+        length += (request.getRequestBody().size());
         envp.push_back(const_cast <char *> ( length.c_str()));
         req >> type;
         std::string pathInfo = "PATH_INFO=" + file;
@@ -132,8 +133,6 @@ void CgiManagement::solveCgiTester(std::string file, t_info &info, std::string &
 
 void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &info, std::string &content, HttpRequest &request)
 {
-    (void) info;
-    (void) content;
     (void) request;
     std::vector<char*> envp;
 
@@ -144,27 +143,26 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
     envp.push_back(const_cast <char *> ( pathInfo.c_str()));
     envp.push_back(NULL);
 
-    int fdout[2];
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fdout) == -1)
-    {
-        std::exception();
-    }
+    char outputTemplate[] = "/tmp/cgi_output_XXXXXX";
+    int outputFd = mkstemp(outputTemplate);
+    if (outputFd == -1)
+        throw std::exception();
+
     int pid = fork();
     if (pid == -1)
     {
-        std::exception();
+        close(outputFd);
+        throw std::exception();
     }
     if (pid == 0)
     {
-        int fileFd = open(file.c_str(), O_RDONLY);
-        if (fileFd > 0)
-        {
-            dup2(fileFd, STDIN_FILENO);
-        }
-        close(fileFd);
-        close(fdout[0]);
-        dup2(fdout[1], STDOUT_FILENO);
-        close(fdout[1]);
+
+        int inputFd = open(file.c_str(), O_RDONLY);
+        dup2(inputFd, STDIN_FILENO);
+        dup2 (outputFd, STDOUT_FILENO);
+    
+        close(inputFd);
+        close(outputFd);
         
         char **args = (char **) malloc( sizeof(char *) * 3);
         args[0] = strdup(info._cgiPath.c_str());
@@ -179,29 +177,26 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
             exit(EXIT_FAILURE);
         }
     }
-    close(fdout[1]);
     int status;
+    waitpid(pid, &status, 0);
+
     char buffer[1024];
     ssize_t bytes_read;
-    while ((bytes_read = read(fdout[0], buffer, sizeof(buffer) - 1)) != 0)
+    lseek(outputFd, 0, SEEK_SET);
+    while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
     {
         if (bytes_read == -1)
             break;
-            //throw std::exception();
         buffer[bytes_read] = '\0';
         content += buffer;
     }
-    close(fdout[0]);
-    std::cout << content << std::endl;
-    waitpid(pid, &status, 0);
+    close(outputFd);
+    unlink(outputTemplate);
 }
 
 void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &info, std::string &content, HttpRequest &request)
-{
-    (void) info;
-    (void) content;
-    (void) request;
-        
+{   
+    (void) request;  
     std::vector<char*> envp;
 
     envp.push_back(const_cast <char *> ( requ.c_str()));
@@ -211,27 +206,36 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     envp.push_back(const_cast <char *> ( pathInfo.c_str()));
     envp.push_back(NULL);
     
-    int fdin[2];
-    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fdin) == -1)
+    char inputTemplate[] = "/tmp/cgi_input_XXXXXX";
+    char outputTemplate[] = "/tmp/cgi_input_XXXXXX";
+    int inputFd = mkstemp(inputTemplate);
+    int outputFd = mkstemp(outputTemplate);
+    if (inputFd == -1 || outputFd == -1)
     {
-        std::exception();
+        throw std::exception();
     }
+    std::string body = request.getRequestBody();
+    if(write(inputFd, body.c_str(), body.size()) == -1)
+    {
+        close(inputFd);
+        close(outputFd);
+        throw std::exception();
+    }
+    lseek(inputFd, 0, SEEK_SET);
     
     int pid = fork();
     if (pid == -1)
     {
-        std::exception();
+        close(inputFd);
+        close(outputFd);
+        throw std::exception();
     }
     if (pid == 0)
     {
-        close(fdin[1]);
-        dup2(fdin[0], STDIN_FILENO);
-        int fileFd = open(file.c_str(), O_RDWR);
-        if (fileFd < 0)
-            throw(std::exception());
-        dup2(fileFd, STDOUT_FILENO);
-        close(fdin[0]);
-        close(fileFd);
+        dup2(inputFd, STDIN_FILENO);
+        dup2(outputFd, STDOUT_FILENO);
+        close(inputFd);
+        close(outputFd);
         
         char **args = (char **) malloc( sizeof(char *) * 3);
         args[0] = strdup(info._cgiPath.c_str());
@@ -242,6 +246,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
             std::cout << "execve error" << std::endl;
             free(args[0]);
             free(args[1]);
+            free(args[2]);
             free(args);
             exit(EXIT_FAILURE);
         }
@@ -249,37 +254,23 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     else
     {
         int status;
-        close(fdin[0]);
-        int total_written = 0;
-        int body_size = request.getRequestBody().size();
-
-        int chunk_size = 10000; // 64 KB
-        const char *body_data = request.getRequestBody().c_str();
-        while (total_written < body_size)
-        {
-            int to_write = std::min(chunk_size, body_size - total_written);
-            int written = write(fdin[1], body_data + total_written, to_write);
-            total_written += written;
-            std::cout << total_written << std::endl;
-        }
-        close(fdin[1]);
+        close(inputFd);
+        close(outputFd);
         waitpid(pid, &status, 0);
         
         char buffer[1024];
         ssize_t bytes_read;
-        
 
-        int fileFd = open(file.c_str(), O_RDWR);
-        if (fileFd < 0)
-            throw(std::exception());
-        while ((bytes_read = read(fileFd, buffer, sizeof(buffer) - 1)) != 0)
+        lseek(outputFd, 0, SEEK_SET);
+        while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
         {
             if (bytes_read == -1)
                 break;
-                //throw std::exception();
             buffer[bytes_read] = '\0';
             content += buffer;
         }
-        close(fileFd);
+        close(outputFd);
+        unlink(inputTemplate);
+        unlink(outputTemplate);
     }
 }
