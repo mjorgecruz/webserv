@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/02 23:00:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/04 12:15:05 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "InputHandler.hpp"
 
@@ -84,7 +84,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
         pageCreate.solveCgiTester(path, info, content, request);
     else
         pageCreate.solveCgiPhp(path, info, content, request);
-    info._status = 200;
     
     //find type of response
     size_t h1 = content.find("Content-type: ");

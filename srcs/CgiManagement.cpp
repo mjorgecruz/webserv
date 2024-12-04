@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/04 11:53:29 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/04 12:14:59 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -272,5 +272,6 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         close(outputFd);
         unlink(inputTemplate);
         unlink(outputTemplate);
+        info._status = 200;
     }
 }
