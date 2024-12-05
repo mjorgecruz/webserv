@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/webserv",
-            "args": ["${workspaceFolder}/exemple2.conf"],
+            "args": ["${workspaceFolder}/exemple.conf"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

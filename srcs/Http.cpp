@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/01 14:32:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 01:27:21 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,7 +371,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 InputHandler handlePost;
                 handlePost.handleDataUpload(path, *received, Info, *response);
                 response->setStatus(Info._status);
-                response->setLength(0);
+                response->setLength(response->getContent().size());
                 response->setPostHeader();
             }
             else
@@ -574,20 +574,30 @@ void Http::sendData(int socket, HttpResponse *response)
     }
     if (response->getLength() != 0)
     {
-        for( int i = 0; i < maxRetries; i++ )
+        size_t dataSize = response->getLength();
+        size_t totalSent = 0;
+        size_t chunkSize = 100000;
+        while (totalSent < dataSize)
         {
-            ssize_t result = send(socket, response->getContent().c_str(), response->getContent().size(), MSG_NOSIGNAL);;
-            if (result != -1)
-                return;
-            if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-                usleep(1000);
-            else
-            {
-                std::cerr << "Send error: " << strerror(errno) << std::endl;
-                close(socket);
-                return;
-            }
-            std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
+            size_t toSend = std::min(chunkSize, dataSize - totalSent);
+            const char *data = response->getContent().substr(totalSent, toSend).c_str();
+            // for( int i = 0; i < maxRetries; i++ )
+            // {
+                ssize_t result = send(socket, data, toSend, MSG_NOSIGNAL);;
+                if (result != -1)
+                {
+                    totalSent += result;
+                }
+                if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                    usleep(1000);
+                // else
+                // {
+                //     std::cerr << "Send error: " << strerror(errno) << std::endl;
+                //     close(socket);
+                //     return;
+                // }
+            // }
+            // std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
         }
     }
     

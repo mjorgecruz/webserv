@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/04 12:15:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 01:54:57 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "InputHandler.hpp"
 
@@ -74,8 +74,10 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
         if (S_ISREG(test.st_mode))
             path = path.substr(0, path.size() - 1);
     }
+    else
+        path = path.substr(0, path.size() - 1);
     std::cout << path << std::endl;
-    file.open(path.c_str());
+    file.open(path.c_str(), std::ios::out);
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
@@ -95,7 +97,7 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     std::string type = "*/*";
     if (h1 != std::string::npos)
     {
-        std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
+        type = content.substr(h1 + 14 , h2 - h1 - 14);
         std::cout << type << std::endl;
     }
     
@@ -120,12 +122,12 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     {
         header_end = content.find("\n\n", h2 + 1);
         if (header_end != std::string::npos)
-            content = content.substr(header_end + 2, content.size() - 1 - header_end - 2);
+            content = content.substr(header_end + 2, content.size() - header_end - 2);
     }
     else
-        content = content.substr(header_end + 4, content.size() - 1 - header_end - 4);
+        content = content.substr(header_end + 4, content.size() - header_end - 4);
 
-    content += "Successfull POST request";
+
     response.setContent(content);
 }
 
