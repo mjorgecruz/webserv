@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 00:50:32 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:53:56 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ void HttpRequest::fillReqProperties()
     
     std::getline(X, partial_line);
     _requestType = partial_line;
-    std::cout << _requestType <<std::endl;
 
     while (std::getline(X, partial_line, ':'))
     {

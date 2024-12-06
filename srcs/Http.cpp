@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 09:42:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 11:01:03 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void Http::runApplication()
     
     while (g_signal == 0)
     {
-        event_count = epoll_wait(_epollFd, events, MAX_EVENTS, 30000);
+        event_count = epoll_wait(_epollFd, events, 1024, 1000);
         
         for (int i = 0; i < event_count; i++) 
         {
@@ -184,9 +184,7 @@ void Http::runApplication()
                     {
                         requests[fd] = new HttpRequest();
                     }
-                    std::cout << "-------------------------------------------------------------" << std::endl;
                     std::cout << "TRANSFERRING-------------------------------------------------" << std::endl;
-                    std::cout << "-------------------------------------------------------------" << std::endl;
 
                     data_transfer(fd, events[i], requests[fd]);
                     if (requests[fd]->completed)
@@ -362,9 +360,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
     else
         full_path = Info._root + path;
-    std::cout << "FULL_PATH-------------"<< std::endl;
-    std::cout << full_path << std::endl;
-    std::cout << "----------------------"<< std::endl;
     struct stat entryInfo;
     if (stat(full_path.c_str(), &entryInfo) == 0)
     {
@@ -439,7 +434,6 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
     {
         //name contains **
         std::string name;
-        std::cout << it->second->getPath() << std::endl;
         if (it->second->getPath().find('*') != std::string::npos)
         {
             //all input
@@ -447,9 +441,7 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
                 locations[path] = it;
             //prefix + * + suffix
             std::string pre = it->second->getPath().substr(0, it->second->getPath().find('*'));
-            std::cout << "PRE - " << pre << std::endl;
             std::string suf = it->second->getPath().substr(it->second->getPath().find('*') + 1, it->second->getPath().size() - 1 - it->second->getPath().find('*')) ; 
-            std::cout << "SUF - " << suf << std::endl;
             if (temp.rfind(pre, 0) == 0)
             {
                 if (!suf.empty() && temp.find(suf, pre.size()) != std::string::npos)
@@ -475,7 +467,6 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             else if (path.rfind(suf) < path.size() - suf.size())
             {
                 name = path.substr(0, path.rfind(suf) + suf.size() );
-                std::cout << name << std::endl;
                 if(locations.find(name) == locations.end())
                     locations[name] = it;
             }
@@ -507,16 +498,10 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
                 max = iter->first.size();
                 it = iter->second;
                 pathToRemove = iter->first;
-                std::cout << "____________" << std::endl;
-                std::cout << pathToRemove << std::endl;
-                std::cout << "____________" << std::endl;
             }
             iter++;
         }
         temp = temp.substr(pathToRemove.size(), temp.size());
-        std::cout << "____________" << std::endl;
-        std::cout << temp << std::endl;
-        std::cout << "____________" << std::endl;
         path = temp;
         return it;
     }

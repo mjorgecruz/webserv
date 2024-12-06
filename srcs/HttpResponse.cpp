@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 02:05:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:58:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,6 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     if (h1 != std::string::npos)
     {
         std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
-        std::cout << type << std::endl;
     }
     //find status of response
     h1 = content.find("Status: ");
