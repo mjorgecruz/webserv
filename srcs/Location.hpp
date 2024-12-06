@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 10:20:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 11:37:58 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ class Location
         std::map<int, std::string> getErrorPages();
         std::string getRedirect();
         int getAutoIndex();
+        long getMaxBodySize();
         
         void parseLocation(std::string &line, std::ifstream &file);
         void printLocationConfig() const;

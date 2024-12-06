@@ -6,14 +6,16 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/20 10:28:46 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 11:42:20 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Location.hpp"
 
 Location::Location( void )
-{}
+{
+    _maxBodySize = 0;
+}
 
 Location::~Location( void )
 {}
@@ -90,6 +92,11 @@ int Location::getAutoIndex()
 std::string Location::getPath()
 {
     return _path;
+}
+
+long Location::getMaxBodySize()
+{
+    return _maxBodySize;
 }
 
 void Location::parseLocation(std::string &line, std::ifstream &file)

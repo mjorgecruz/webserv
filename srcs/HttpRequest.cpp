@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/30 23:11:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 00:50:32 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,20 +126,38 @@ std::string HttpRequest::chunkCleaning(std::string completeBody)
     getline(chunks, line);
     while (true)
     {
-        long num = strtol(line.substr(0, line.size() - 1).c_str(), NULL, 10);
-        if (num == 0)
+        if (line.empty())
             break;
-        getline(chunks, line);
-        chunk = "";
-        while (line != "0\r" &&  chunk.size() < (size_t) num)
+        long num = strtol(line.substr(0, line.size() - 1).c_str(), NULL, 10);
+        if (num == 0 && line.find('0') == 0)
+            break;
+        else if (num == 0)
         {
-            if (line[line.size() -1] == '\r')
-                chunk += line.substr(0, line.size() - 1);
-            else
-                chunk += line;
-            getline(chunks, line);
+            chunk = "";
+            while (!line.empty() && line != "0\r")
+            {
+                if (line[line.size() -1] == '\r')
+                    chunk += line.substr(0, line.size() - 1);
+                else
+                    chunk += line;
+                getline(chunks, line);
+            }
+            body += chunk;
         }
-        body += chunk;
+        else
+        {
+            getline(chunks, line);
+            chunk = "";
+            while (line != "0\r" &&  chunk.size() < (size_t) num)
+            {
+                if (line[line.size() -1] == '\r')
+                    chunk += line.substr(0, line.size() - 1);
+                else
+                    chunk += line;
+                getline(chunks, line);
+            }
+            body += chunk;
+        }
     }
     return body;
 }

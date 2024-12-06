@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/24 19:16:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 13:21:41 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,13 @@ class Http
         std::vector<std::pair <std::string, Location *> >::iterator findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string &path);
         
         void sendData(int socket, HttpResponse *response);
+
+        
+        class MaxBodySizeException: public std::exception
+        {
+            public:
+                const char *what( void ) const throw();
+        };
 };
 
 #endif

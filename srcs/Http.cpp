@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 01:27:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 01:58:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,27 +142,36 @@ void Http::runApplication()
 {
     struct epoll_event events[MAX_EVENTS];
     int event_count;
-    HttpRequest *request = NULL;
+    std::map<int, HttpRequest*> requests;
     
     while (g_signal == 0)
     {
         event_count = epoll_wait(_epollFd, events, MAX_EVENTS, 30000);
-        if (request == NULL)
-            request = new HttpRequest();
         
         for (int i = 0; i < event_count; i++) 
         {
+            int fd = events[i].data.fd;
+
             if (events[i].events  & (EPOLLRDHUP | EPOLLERR | EPOLLHUP))
             {
                 std::cout << "Page was hard refreshed" << std::endl;
-                close(events[i].data.fd);
+                if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, events[i].data.fd, NULL) == -1)
+                {
+                    std::cerr << "Failed to remove file descriptor from epoll instance: " << strerror(errno) << std::endl;
+                }
+                close(fd);
+                if (requests.find(fd) != requests.end())
+                {
+                    delete requests[fd];
+                    requests.erase(fd);
+                }
             }
             else if ( events[i].events & (EPOLLIN | EPOLLET ))
             {
                 bool isServerSocket = false;
                 for (size_t j = 0; j < _listServers.size(); j++)
                 {
-                    if (events[i].data.fd == _listServers[j]->getSocketFd())
+                    if (fd == _listServers[j]->getSocketFd())
                     {
                         accept_new_connection(_listServers[j]->getSocketFd(), _epollFd);
                         isServerSocket = true;
@@ -171,16 +180,29 @@ void Http::runApplication()
                 }
                 if (!isServerSocket)
                 {
-                    data_transfer(events[i].data.fd, events[i], request);
-                    if (request->completed)
+                    if (requests.find(fd) == requests.end())
                     {
-                        delete request;
-                        request = NULL;
+                        requests[fd] = new HttpRequest();
+                    }
+                    std::cout << "-------------------------------------------------------------" << std::endl;
+                    std::cout << "TRANSFERRING-------------------------------------------------" << std::endl;
+                    std::cout << "-------------------------------------------------------------" << std::endl;
+
+                    data_transfer(fd, events[i], requests[fd]);
+                    if (requests[fd]->completed)
+                    {
+                        delete requests[fd];
+                        requests.erase(fd);
                     }
                 }
             }
 		}
     }
+    for (std::map<int, HttpRequest*>::iterator it = requests.begin(); it != requests.end(); ++it)
+    {
+        delete it->second;
+    }
+    requests.clear();
 	if (close(_epollFd)) {
 		fprintf(stderr, "Failed to close epoll file descriptor\n");
 		return;
@@ -210,7 +232,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
     event.data.fd = client_fd;
-    event.events = EPOLLIN | EPOLLET;
+    event.events = EPOLLIN; //| EPOLLET;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
     {
         std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
@@ -222,6 +244,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
 void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * request)
 {
     int server_fd = 0;
+    (void) event;
 
     //check for the corresponding server
     std::vector<Server *> correspondingServers;
@@ -231,7 +254,7 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
 
     if (request->completed)
     {
-        event.events = EPOLLOUT | EPOLLET;
+        //event.events = EPOLLOUT | EPOLLET;
         request->fillReqProperties();
         request->defineMimeType();
         Server *correctServer = findCorrectServerName(request, correspondingServers);
@@ -270,8 +293,6 @@ std::vector<Server *> Http::findCorrespondingServer(int socket)
     int port = ntohs(addr.sin_port);
     std::string address = inet_ntoa(addr.sin_addr);
     
-    std::cout << "ADDRESS : " << address << std::endl;
-    std::cout << "PORT : " << port << std::endl;
     while (serverNumber < _listServers.size())
     {
         if (port == _listServers[serverNumber]->getPorts())
@@ -311,10 +332,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     //analyze request
     std::istringstream request(received->getRequestType());
-    std::cout << "RECEIVED___________" << std::endl;
-    std::cout << received->getRequestBody().size() << std::endl;
-    std::cout << std::endl;
-    std::cout << "___________________" << std::endl;
     request >> type >> path >> httpVersion;
     
     //check version
@@ -329,6 +346,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     
     t_info Info;
     Info._status = 0;
+    Info._maxBodySize = 0;
     if(it != possibleLocations.end())
         fillStructInfo(Info, server, it->second);
     else
@@ -336,11 +354,17 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     // to print all the fields to console for debuging
     //Info.printInfoConfig();
-    
-    std::string full_path = Info._root + path;
-    std::cout << "FULL_PATH_____________"<< std::endl;
+    std::string  full_path;
+    if (path.find("/") != 0 && Info._root.find_last_of("/") != Info._root.size() - 1)
+    { 
+        full_path = Info._root + "/";
+        full_path += path;
+    }
+    else
+        full_path = Info._root + path;
+    std::cout << "FULL_PATH-------------"<< std::endl;
     std::cout << full_path << std::endl;
-    std::cout << "______________________"<< std::endl;
+    std::cout << "----------------------"<< std::endl;
     struct stat entryInfo;
     if (stat(full_path.c_str(), &entryInfo) == 0)
     {
@@ -368,11 +392,21 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             }
             else if (type == "POST")
             {
-                InputHandler handlePost;
-                handlePost.handleDataUpload(path, *received, Info, *response);
-                response->setStatus(Info._status);
-                response->setLength(response->getContent().size());
-                response->setPostHeader();
+                if ( (long) received->getRequestBody().size() > Info._maxBodySize && Info._maxBodySize > 0)
+                {
+                    response->setLength(0);
+                    response->setStatus(413);
+                    response->writePage413(Info);
+                    response->setPostHeader();
+                }
+                else
+                {
+                    InputHandler handlePost;
+                    handlePost.handleDataUpload(path, *received, Info, *response);
+                    response->setLength(response->getContent().size());
+                    response->setStatus(Info._status);
+                    response->setPostHeader();
+                }
             }
             else
             {
@@ -498,6 +532,12 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
     
     if (location != NULL)
     {
+        //Max body size
+        if (location->getMaxBodySize() != 0)
+            Info._maxBodySize = location->getMaxBodySize();
+        else
+            Info._maxBodySize = server->getMaxBodySize();
+            
         //Root
         if (!location->getRoot().empty())
             Info._root = location->getRoot();
@@ -602,4 +642,9 @@ void Http::sendData(int socket, HttpResponse *response)
     }
     
     
+}
+
+const char *Http::MaxBodySizeException::what( void ) const throw()
+{
+    return "Max body size reached";
 }

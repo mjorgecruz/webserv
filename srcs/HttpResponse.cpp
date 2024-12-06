@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/04 11:54:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 02:05:56 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpResponse.hpp"
 
@@ -113,9 +113,15 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
 {   
     struct stat file;
     std::string full_path;
-    full_path = info._root + path;
+    if (path.find("/") != 0 && info._root.find_last_of("/") != info._root.size() - 1)
+    { 
+        full_path = info._root + "/";
+        full_path += path;
+        info._root += "/";
+    }
+    else
+        full_path = info._root + path;
     full_path = full_path.substr(0, full_path.size() - 1 );
-    std::cout << full_path << std::endl;
     if (stat(full_path.c_str(), &file) == 0)
     {
         if (S_ISREG(file.st_mode))
@@ -342,6 +348,30 @@ void HttpResponse::writePage403(t_info &info)
     setContent(content);
     setLength(content.size());
 }
+
+void HttpResponse::writePage413(t_info &info)
+{
+    std::string content = "";
+    std::string path;
+    path = info._errorPages.find(413)->second;
+    std::fstream file;
+    file.open(path.c_str());
+    if (!file.is_open())
+    {
+        _status = 500;
+        writeFailError();
+        return;
+    }
+    std::string line;
+    while (getline(file, line))
+    {
+        content = content + line;
+        content = content + "\n";
+    }
+    setContent(content);
+    setLength(content.size());
+}
+
 
 void HttpResponse::writeFailError()
 {

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 00:00:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/05 10:11:38 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,12 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     envp.push_back(const_cast <char *> ( protocol.c_str()));
     std::string pathInfo = "PATH_INFO=" + file;
     envp.push_back(const_cast <char *> ( pathInfo.c_str()));
+    std::string special = "";
+    if (request.searchProperty("X-Secret-Header-For-Test") != "undefined")
+    {
+        special = "HTTP_X_SECRET_HEADER_FOR_TEST=" + request.searchProperty("X-Secret-Header-For-Test");
+        envp.push_back(const_cast <char *> ( special.c_str()));
+    }
     envp.push_back(NULL);
     
     char inputTemplate[] = "/tmp/cgi_input_XXXXXX";

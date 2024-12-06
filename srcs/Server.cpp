@@ -321,7 +321,7 @@ void Server::setDefaultProperties( void )
         _index.push_back("index.html");
 
     if (this->_maxBodySize == 0)
-        _maxBodySize = 1024 * 1024;
+        _maxBodySize = 0;
 
     for (std::map<int,std::string>::iterator it = _errorPages.begin(); it != _errorPages.end(); it++)
     {
