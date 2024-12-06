@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 01:58:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 09:42:00 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ Http::~Http( void )
 void Http::addEpollServer( Server *server )
 {
     struct epoll_event event;
-    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP | EPOLLHUP;
+    event.events = EPOLLIN ;
 	event.data.fd = server->getSocketFd();
     
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server->getSocketFd(), &event) == -1)
@@ -166,7 +166,7 @@ void Http::runApplication()
                     requests.erase(fd);
                 }
             }
-            else if ( events[i].events & (EPOLLIN | EPOLLET ))
+            else if ( events[i].events & (EPOLLIN))
             {
                 bool isServerSocket = false;
                 for (size_t j = 0; j < _listServers.size(); j++)
@@ -232,7 +232,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
     event.data.fd = client_fd;
-    event.events = EPOLLIN; //| EPOLLET;
+    event.events = EPOLLIN | EPOLLET;
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1)
     {
         std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
