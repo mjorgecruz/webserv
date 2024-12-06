@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 01:54:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 11:57:02 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "InputHandler.hpp"
 
@@ -23,9 +23,7 @@ void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_in
     
     if (!info._cgiPath.empty())
     {
-        //function to do this
-        writePostCgiPage(path, info, request, response);
-        
+        writePostCgiPage(path, info, request, response);   
         return;
     }
     int pathExistance = definePathType(path, info);

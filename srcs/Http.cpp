@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 11:01:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/06 14:04:57 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -140,7 +140,7 @@ int Http::listServersSize() const
 
 void Http::runApplication()
 {
-    struct epoll_event events[MAX_EVENTS];
+    struct epoll_event events[1024];
     int event_count;
     std::map<int, HttpRequest*> requests;
     
@@ -417,7 +417,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
     if (i == Info._allowedMethods.size())
         throw(std::exception());
-
+    std::cout << response->getHeader()<< std::endl;
     sendData(socket, response);
     
 }
@@ -582,39 +582,40 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
 
 void Http::sendData(int socket, HttpResponse *response)
 {
-    int maxRetries = 5;
-    for( int i = 0; i < maxRetries; i++ )
-    {
-        ssize_t result = send(socket, response->getHeader().c_str(), response->getHeader().size(), MSG_NOSIGNAL);
-        if (result != -1)
-            break;
-        if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-            usleep(1000);
-        else
-        {
-            std::cerr << "Send error: " << strerror(errno) << std::endl;
-            return;
-        }
-        std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
-    }
-    if (response->getLength() != 0)
-    {
-        size_t dataSize = response->getLength();
+    std::string total = response->getHeader() + response->getContent(); 
+    // int maxRetries = 5;
+    // for( int i = 0; i < maxRetries; i++ )
+    // {
+    //     ssize_t result = send(socket, response->getHeader().c_str(), response->getHeader().size(), MSG_NOSIGNAL);
+    //     if (result != -1)
+    //         break;
+    //     if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+    //         usleep(1000);
+    //     else
+    //     {
+    //         std::cerr << "Send error: " << strerror(errno) << std::endl;
+    //         return;
+    //     }
+    //     std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
+    // }
+    // if (total.size() != 0)
+    // {
+        size_t dataSize = total.size();
         size_t totalSent = 0;
-        size_t chunkSize = 100000;
+        const char *data;
         while (totalSent < dataSize)
         {
-            size_t toSend = std::min(chunkSize, dataSize - totalSent);
-            const char *data = response->getContent().substr(totalSent, toSend).c_str();
+            data = total.c_str() + totalSent;
             // for( int i = 0; i < maxRetries; i++ )
             // {
-                ssize_t result = send(socket, data, toSend, MSG_NOSIGNAL);;
-                if (result != -1)
-                {
-                    totalSent += result;
-                }
-                if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-                    usleep(1000);
+            ssize_t result = send(socket, data, dataSize - totalSent, 0);
+            if (result != -1)
+            {
+                totalSent += result;
+                std::cout << "SENDING----------------------------------------" << std::endl;
+            }
+                // if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+                //     usleep(1000);
                 // else
                 // {
                 //     std::cerr << "Send error: " << strerror(errno) << std::endl;
@@ -626,8 +627,7 @@ void Http::sendData(int socket, HttpResponse *response)
         }
     }
     
-    
-}
+
 
 const char *Http::MaxBodySizeException::what( void ) const throw()
 {
