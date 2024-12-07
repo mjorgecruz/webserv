@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 14:04:57 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/07 00:38:40 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -252,7 +252,6 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
 
     if (request->completed)
     {
-        //event.events = EPOLLOUT | EPOLLET;
         request->fillReqProperties();
         request->defineMimeType();
         Server *correctServer = findCorrectServerName(request, correspondingServers);

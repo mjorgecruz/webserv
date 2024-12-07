@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 10:53:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/07 00:44:29 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,9 @@ bool HttpRequest::completeRequest(int socket)
             remainder.append(buffer, bytes_read);
             if (bytes_read < BUFSIZ)
             {
-                size_t final_pos = remainder.find("chunked", 0);
-                size_t header_end = remainder.find("\r\n\r\n");
-                if (header_end != std::string::npos && final_pos != std::string::npos)
-                {
-                    if(remainder.find("0\r\n\r\n", header_end + 4) != std::string::npos)
-                        break;
-                }
+                break;
             }
+            // }
         }
     }
     _request = remainder;
