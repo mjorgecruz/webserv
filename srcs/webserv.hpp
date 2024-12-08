@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   webserv.hpp                                        :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:46:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/04 11:50:27 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:50:29 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
@@ -39,6 +39,10 @@
 #include <sys/stat.h>
 #include <cstdio>
 
+bool isValidError(int errorCode);
+bool isNumeric(const std::string &str);
+void custtomServerThrow(std::string str);
+void custtomLocationThrow(std::string str);
 
 #define PORT 8080
 #define MAX_EVENTS 128
