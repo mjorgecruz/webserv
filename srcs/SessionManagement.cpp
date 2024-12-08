@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 03:29:31 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 18:58:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,25 @@ std::string SessionManagement::sessionConfig(HttpRequest &request)
     return sessionId;
 }
 
+void SessionManagement::sessionControl(std::string fullPath, std::string sessionId, httpResponse &response, t_info &info)
+{
+    std::ifstream login_form(fullPath);
+    std::string line;
+    getline(login_form, line);
+    
+    std::string user = line.substr(line.find("user=") + 5, line.find("&&password=") - 1 - line.find("user=") - 5);
+    std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
+    try{
+        handleLogin(user, password, sessionId);
+        response.setRedirectSession(info);
+    }
+    catch(SessionManagement::WrongNamePassException &e)
+    {
+        response.writePage401(info);
+    }
+    
+}
+
 void SessionManagement::addUser(std::string user, std::string password)
 {
     std::map<std::string,std::string>::iterator it = _userData.find(user);
@@ -65,14 +84,14 @@ void SessionManagement::deleteUser(std::string user, std::string password)
     }
 }
 
-void SessionManagement::handleLogin(const std::string &user, const std::string &password, HttpResponse &response)
+void SessionManagement::handleLogin(const std::string &user, const std::string &password, std::string sessionId)
 {
     (void) response;
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it != _userData.end())
     {
         if (password == it->second)
-            generateCookie();
+            _sessions[sessionId] = it->first;
         else
             throw(SessionManagement::WrongNamePassException());
     }
