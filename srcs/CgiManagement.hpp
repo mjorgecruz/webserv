@@ -6,15 +6,20 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 17:58:52 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/01 12:41:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:26:07 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "general.hpp"
+#include "InputHandler.hpp"
+#include "HttpRequest.hpp"
 #include <unistd.h>
 #include <sys/wait.h>
+
+struct t_info_struct;
+typedef struct s_info t_info;
+
 class CgiManagement
 {
 

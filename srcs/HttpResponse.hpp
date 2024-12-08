@@ -6,14 +6,21 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:22:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:18:59 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPRESPONSE_HPP
 # define HTTPRESPONSE_HPP
 
-#include "general.hpp"
+#include "webserv.hpp"
+#include "Socket.hpp"
+#include "Server.hpp"
+#include "Location.hpp"
+#include "InputHandler.hpp"
+#include "HttpRequest.hpp"
+#include "SessionManagement.hpp"
+#include "CgiManagement.hpp"
 
 class Server;
 class HttpRequest;

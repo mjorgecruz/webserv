@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:19:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:29:31 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,9 @@ std::string SessionManagement::sessionConfig(HttpRequest &request)
 
 void SessionManagement::addUser(std::string user, std::string password)
 {
-    std::string hashed = crypt(password.c_str(), "$6$");
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it == _userData.end())
-        _userData[user] = hashed;
+        _userData[user] = password;
     else
         throw(SessionManagement::UserAlreadyInUseException());
 }
@@ -59,8 +58,7 @@ void SessionManagement::deleteUser(std::string user, std::string password)
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it != _userData.end())
     {
-        std::string hashed = crypt(password.c_str(), "$6$");
-        if (hashed == it->second)
+        if (password == it->second)
             _userData.erase(it);
         else
             throw(SessionManagement::WrongPasswordException());
@@ -73,8 +71,7 @@ void SessionManagement::handleLogin(const std::string &user, const std::string &
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it != _userData.end())
     {
-        std::string hashed = crypt(password.c_str(), "$6$");
-        if (hashed == it->second)
+        if (password == it->second)
             generateCookie();
         else
             throw(SessionManagement::WrongNamePassException());

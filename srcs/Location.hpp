@@ -6,13 +6,15 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:47:32 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:20:00 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "general.hpp"
+#include "webserv.hpp"
+#include "Socket.hpp"
+#include "Server.hpp"
 
 class Location
 {

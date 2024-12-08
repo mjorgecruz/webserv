@@ -6,13 +6,19 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 23:32:41 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:06:27 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 03:21:54 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "general.hpp"
+#include "webserv.hpp"
+#include "Socket.hpp"
+#include "Server.hpp"
+#include "Location.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+
 
 class Server;
 class HttpRequest;

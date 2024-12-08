@@ -2,7 +2,8 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "general.hpp"
+#include "webserv.hpp"
+#include "Socket.hpp"
 #include "Location.hpp"
 
 class Location;
