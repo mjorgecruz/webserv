@@ -3,13 +3,13 @@
 [V] 2. Finalizar writeContent
 [V] 3. Classe DELETE
 [V] 4. Função de procura de locations
-LUIS [ ] 5. Teste extensivo de preenchimento dos dados no t_info
+[ ] 5. Teste extensivo de preenchimento dos dados no t_info
 [V] 6. cgi-php classe para tratar disso
 [ ] 7. session management and cookies
 [ ] 8. verificar codigos de erro
 [V] 9. criar erro de server se não encontrar o ficheiro de erro
 [ ] 10. verificar e criar std::exceptions()
-[V] 11. Resolver relink do makefile
+[ ] 11. Resolver relink do makefile
 [V] 12. Redirects
 [V] 13. Limit paths to have just one * on conf file
 [V] 14. formato do pedido - se for request para index tem que vir 
@@ -25,20 +25,19 @@ LUIS [ ] 5. Teste extensivo de preenchimento dos dados no t_info
 [V] 24. Allow methods should work on server as well
 [V] 25. find the biggest correspondance on locations
 [V] 26. Define max_body_size for locations
-LUIS [ ] 27. Change the name max_body_size to the actual nginx name
+[ ] 27. Change the name max_body_size to the actual nginx name
 [ ] 28. Tirar os custtomthrow
 [V] 29. Test POST http://localhost:8080/ with a size of 0
 [V] 30. Paths to locations are wrongly configured
 [ ] 31. having multiple location blocks with the exact same path is not allowed and will result in a configuration error when starting
 [V] 32. Define how to clean the request sent in chunks
-LUIS [ ] 33. Verify that two files can be sent at the same time (2 multipart)
-[ ] 34. POST error 100000000
-[ ] 35. Cant find the cgi path
+[ ] 33. Verify that two files can be sent at the same time (2 multipart)
+[V] 34. POST error 100000000
+[V] 35. Cant find the cgi path
 [ ] 36. Confirm size of content to close recv. Gifs sometimes send /r/n/r/n in the middle
 [ ] 37. Query strings (paths com ?)
 [ ] 38. /post_body location, what happens if I send a request to /post_body1 
 [ ] 39. * are only usable for files
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
-[ ] 42. CGI for high sizes, we need a fork inside a fork
 [ ] 43. implement alarm to limit time for reply to request

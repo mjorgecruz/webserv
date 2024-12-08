@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/07 00:38:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:13:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,15 +262,19 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
         
         //prepare response
         HttpResponse *response = new HttpResponse(socket, correctServer);
+        
+        //session config
+        std::string sessionId = allSessions.sessionConfig(*request);
+        
         try{
-            this->reply(socket, request, response, correctServer);
+            this->reply(socket, request, response, correctServer, sessionId);
         }
         catch (std::exception &e)
         {
             std::cerr << "Bad Request" << std::endl;
             response->setStatus(405);
             response->setLength(0);
-            response->setPostHeader();
+            response->setPostHeader(sessionId);
             sendData(socket, response);
         }
         delete(response); 
@@ -320,7 +324,7 @@ Server * Http::findCorrectServerName(HttpRequest *request, std::vector<Server *>
 }
 
 
-void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Server* server)
+void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Server* server, std::string sessionId)
 {
     std::string type;
     std::string path;
@@ -340,7 +344,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::vector<std::pair <std::string, Location *> >::iterator it = this->findLocation(possibleLocations, path);
 
     //define all properties considering path received
-    
     t_info Info;
     Info._status = 0;
     Info._maxBodySize = 0;
@@ -351,6 +354,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     // to print all the fields to console for debuging
     //Info.printInfoConfig();
+    
     std::string  full_path;
     if (path.find("/") != 0 && Info._root.find_last_of("/") != Info._root.size() - 1)
     { 
@@ -365,11 +369,12 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
          if (S_ISDIR(entryInfo.st_mode))
             path = path + "/";
     }
+
     //check method
     if (!(Info._redirect.empty()))
     {
         response->writeRedirectContent(Info, received);
-        response->setGetRedirectHeader(Info);
+        response->setGetRedirectHeader(Info, sessionId);
         sendData(socket, response);
         return;
     }
@@ -382,7 +387,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
             {
                 response->setContentType(received->getMimeType());
                 response->writeContent(path, Info, *received);
-                response->setGetHeader();
+                response->setGetHeader(sessionId);
             }
             else if (type == "POST")
             {
@@ -391,7 +396,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     response->setLength(0);
                     response->setStatus(413);
                     response->writePage413(Info);
-                    response->setPostHeader();
+                    response->setPostHeader(sessionId);
                 }
                 else
                 {
@@ -399,7 +404,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     handlePost.handleDataUpload(path, *received, Info, *response);
                     response->setLength(response->getContent().size());
                     response->setStatus(Info._status);
-                    response->setPostHeader();
+                    response->setPostHeader(sessionId);
                 }
             }
             else
@@ -408,7 +413,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 handleDelete.handleDataDeletion(path, *received, Info);
                 response->setStatus(Info._status);
                 response->setLength(0);
-                response->setDeleteHeader();
+                response->setDeleteHeader(sessionId);
             }
             break;
         }
@@ -418,7 +423,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         throw(std::exception());
     std::cout << response->getHeader()<< std::endl;
     sendData(socket, response);
-    
 }
 
 std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string &path)
@@ -582,49 +586,20 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
 void Http::sendData(int socket, HttpResponse *response)
 {
     std::string total = response->getHeader() + response->getContent(); 
-    // int maxRetries = 5;
-    // for( int i = 0; i < maxRetries; i++ )
-    // {
-    //     ssize_t result = send(socket, response->getHeader().c_str(), response->getHeader().size(), MSG_NOSIGNAL);
-    //     if (result != -1)
-    //         break;
-    //     if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-    //         usleep(1000);
-    //     else
-    //     {
-    //         std::cerr << "Send error: " << strerror(errno) << std::endl;
-    //         return;
-    //     }
-    //     std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
-    // }
-    // if (total.size() != 0)
-    // {
-        size_t dataSize = total.size();
-        size_t totalSent = 0;
-        const char *data;
-        while (totalSent < dataSize)
+    size_t dataSize = total.size();
+    size_t totalSent = 0;
+    const char *data;
+    while (totalSent < dataSize)
+    {
+        data = total.c_str() + totalSent;
+        ssize_t result = send(socket, data, dataSize - totalSent, 0);
+        if (result != -1)
         {
-            data = total.c_str() + totalSent;
-            // for( int i = 0; i < maxRetries; i++ )
-            // {
-            ssize_t result = send(socket, data, dataSize - totalSent, 0);
-            if (result != -1)
-            {
-                totalSent += result;
-                std::cout << "SENDING----------------------------------------" << std::endl;
-            }
-                // if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-                //     usleep(1000);
-                // else
-                // {
-                //     std::cerr << "Send error: " << strerror(errno) << std::endl;
-                //     close(socket);
-                //     return;
-                // }
-            // }
-            // std::cerr << "Failed to send after " << maxRetries << " retries." << std::endl;
+            totalSent += result;
+            std::cout << "SENDING----------------------------------------" << std::endl;
         }
     }
+}
     
 
 

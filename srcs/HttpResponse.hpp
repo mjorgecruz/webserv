@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 13:28:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:22:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@ class HttpResponse
         void setContent(std::string content);
         void setLength(int len);
         void setContentType(std::string type);
-        void setGetHeader();
-        void setPostHeader();
-        void setDeleteHeader();
+        void setGetHeader(std::string sessionId);
+        void setPostHeader(std::string sessionId);
+        void setDeleteHeader(std::string sessionId);
         
         std::string getHeader();
         std::string getContent();
@@ -66,7 +66,7 @@ class HttpResponse
         void writeAutoIndex(std::string path, t_info &info);
 
         void writeRedirectContent(t_info &Info, HttpRequest *request);
-        void setGetRedirectHeader(t_info &Info);
+        void setGetRedirectHeader(t_info &Info, std::string sessionId);
         
 };
 

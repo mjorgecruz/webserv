@@ -6,13 +6,14 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 13:21:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:37:38 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTP_HPP
 # define HTTP_HPP
 
+#include "SessionManagement.hpp"
 #include "InputHandler.hpp"
 #include "general.hpp"
 
@@ -21,6 +22,7 @@ class HttpRequest;
 class HttpResponse;
 class Location;
 class InputHandler;
+class SessionManagement;
 
 class Http
 {
@@ -29,6 +31,8 @@ class Http
         std::vector<Server *> _listServers;
 
     public:
+        SessionManagement allSessions;
+        
         Http( void );
         ~Http( void );
 
@@ -46,7 +50,7 @@ class Http
         void data_transfer(int socket, struct epoll_event &event, HttpRequest *request);
         std::vector<Server *> findCorrespondingServer(int socket);
         Server * findCorrectServerName(HttpRequest *request, std::vector<Server *> &correspondingServers);
-        void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server);
+        void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server, std::string sessionId);
 
         void fillStructInfo(t_info &Info, Server *server, Location *location);
         

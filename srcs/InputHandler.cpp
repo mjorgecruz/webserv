@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 11:57:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:16:13 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "InputHandler.hpp"
 
@@ -56,7 +56,13 @@ void InputHandler::handleDataUpload(std::string path, HttpRequest &request, t_in
             fileSaver(request, info, path);
         }
     }
-    info._status = 204; 
+    info._status = 204;
+    
+    if (path == "/home/masoares/webserv-1/files/login/login_form")
+    {
+        
+        remove(path.c_str());
+    }
 }
 
 void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest &request, HttpResponse &response)

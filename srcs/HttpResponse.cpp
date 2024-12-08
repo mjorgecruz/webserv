@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 10:58:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 01:55:52 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void HttpResponse::setStatus(int status)
     _status = status;
 }
 
-void HttpResponse::setGetHeader()
+void HttpResponse::setGetHeader(std::string sessionId)
 {
     std::string result;
     result = "";
@@ -40,11 +40,12 @@ void HttpResponse::setGetHeader()
             << "\r\ncontent-type: " << _contentType
             << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
+            << "\r\nset-cookie:" << sessionId
             << "\r\n\r\n";
     _header = bufferM.str(); 
 }
 
-void HttpResponse::setPostHeader()
+void HttpResponse::setPostHeader(std::string sessionId)
 {
     std::ostringstream bufferM;
     if (_status == 403)
@@ -53,6 +54,7 @@ void HttpResponse::setPostHeader()
                 << "\r\nContent-type: " << _contentType
                 << "\r\nServer: " << _host
                 << "\r\nContent-length: " << _contentLength
+                << "\r\nset-cookie:" << sessionId
                 << "\r\n\r" << std::endl;
     }
     else
@@ -61,19 +63,21 @@ void HttpResponse::setPostHeader()
                 << "\r\ncontent-type: " << _contentType
                 << "\r\nserver: " << _host
                 << "\r\ncontent-length: " << _contentLength
+                << "\r\nset-cookie:" << sessionId
                 << "\r\n\r" << std::endl;
         
     }
     _header = bufferM.str(); 
 }
 
-void HttpResponse::setDeleteHeader()
+void HttpResponse::setDeleteHeader(std::string sessionId)
 {
     std::ostringstream bufferM;
     bufferM << "HTTP/1.1" << _status
             << "\r\ncontent-type: " << _contentType
             << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
+            << "\r\nset-cookie:" << sessionId
             << "\r\n";
     _header = bufferM.str(); 
 }
@@ -445,16 +449,29 @@ void HttpResponse::writeRedirectContent(t_info &Info, HttpRequest *request)
     setLength(content.size());
 }
 
-void HttpResponse::setGetRedirectHeader(t_info &Info)
+void HttpResponse::setGetRedirectHeader(t_info &Info, std::string sessionId)
 {
     std::istringstream ss(Info._redirect);
     std::string addr;
     ss >> addr >> addr;
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1 " << _status << " Moved Permanently"
-            << "\r\ncontent-type: " << "text/html"
-            << "\r\nLocation: " << "http://" << addr
-            << "\r\ncontent-length: " << 0
-            << "\r\n\r\n";
+    if (_status == 301)
+    {
+        bufferM << "HTTP/1.1 " << _status << " Moved Permanently"
+                << "\r\ncontent-type: " << "text/html"
+                << "\r\nLocation: " << "http://" << addr
+                << "\r\ncontent-length: " << 0
+                << "\r\nset-cookie:" << sessionId
+                << "\r\n\r\n";
+    }
+    else
+    {
+        bufferM << "HTTP/1.1 " << _status << " Found"
+                << "\r\ncontent-type: " << "text/html"
+                << "\r\nLocation: " << "http://" << addr
+                << "\r\ncontent-length: " << 0
+                << "\r\nset-cookie:" << sessionId
+                << "\r\n\r\n";
+    }
     _header = bufferM.str(); 
 }

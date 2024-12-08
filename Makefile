@@ -20,7 +20,7 @@ CFLAGS = -Wall -Werror -Wextra -g
 INCDIR:=srcs
 ODIR:=obj
 
-SRC := main.cpp HttpRequest.cpp HttpResponse.cpp Server.cpp  Socket.cpp Http.cpp FileChecks.cpp Location.cpp InputHandler.cpp DeleteHandler.cpp CgiManagement.cpp utils.cpp
+SRC := main.cpp HttpRequest.cpp HttpResponse.cpp Server.cpp  Socket.cpp Http.cpp FileChecks.cpp Location.cpp InputHandler.cpp DeleteHandler.cpp CgiManagement.cpp utils.cpp SessionManagement.cpp
 
 OBJ := $(patsubst %.cpp, $(ODIR)/%.o,$(SRC))
 

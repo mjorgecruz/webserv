@@ -6,14 +6,14 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/11/30 21:21:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:42:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HTTPREQUEST_HPP
 # define HTTPREQUEST_HPP
 
-#include "general.hpp"
+#include "webserv.hpp"
 #include <map>
 
 class HttpRequest
