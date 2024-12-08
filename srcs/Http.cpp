@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 18:46:01 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 19:01:30 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,6 +386,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
 
     //check if auth is needed and was made
     
+    
     //check method
     if (!(Info._redirect.empty()))
     {
@@ -426,8 +427,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     if (full_path == "/home/masoares/webserv-1/files/login/login_form")
                     {
                         this->allSessions.sessionControl(full_path, sessionId, response);
-
-                        
                         remove(full_path.c_str());
                     }
                 }
