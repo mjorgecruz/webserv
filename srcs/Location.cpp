@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/05 11:42:20 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:47:23 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,9 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
 
     iss >> locationKeyword;
     if (locationKeyword != "location")
-        custtomThrow("ERROR: Location block");
+        custtomLocationThrow("locatin");
     if (!(iss >> locationPath))
-        custtomThrow("ERROR: Location block: path");
+        custtomLocationThrow("path");
 
     int starCount = 0;    
     for(size_t i = 0; i < locationPath.size(); i++)
@@ -117,10 +117,10 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             starCount++;
         
         if (starCount > 1)
-            custtomThrow("Too many ***** in location");
+            custtomLocationThrow("Too many ***** in location");
     }
     if(locationPath[0] != '/' )
-        custtomThrow("ERROR: Invalid Location Path");
+        custtomLocationThrow("Invalid Location Path");
     _path = locationPath;
 
     std::string remaining;
@@ -144,7 +144,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
                 break;
             }
             else
-                custtomThrow("ERROR: Location block: expecting '{'");
+                custtomLocationThrow("expecting '{'");
         }
     }
     bool hasValidKeywords = false;
@@ -159,7 +159,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             break;
 
         if (line[line.size() - 1] != ';')
-            custtomThrow("ERROR: Location block: expecting ';'");
+            custtomLocationThrow("expecting ';'");
         line = line.substr(0, line.size() - 1);
         std::istringstream iss(line);
         std::string keyword;
@@ -213,23 +213,23 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             else if (autoIndexValue == "off")
                 _autoIndex = 0;
             else
-                custtomThrow("ERROR: Location block: autoindex");
+                custtomLocationThrow("autoindex");
             std::string remaining;
             iss >> remaining;
             if (!remaining.empty())
-                custtomThrow("ERROR: Location block: autoindex");
+                custtomLocationThrow("autoindex");
         }
         else if (keyword == "max_body_size")
         {
             keywordMaxBodySize(iss);
         }
         else
-            custtomThrow("ERROR: Location block: Invalid Keyword");
+            custtomLocationThrow("Invalid Keyword");
     }
     if (!hasValidKeywords)
-         custtomThrow("ERROR: 'location' block must contain at least one valid keyword");
+         custtomLocationThrow("Block must contain at least one valid keyword");
     if (line != "}")
-        custtomThrow("ERROR: Location Block: No closing '}' found.");
+        custtomLocationThrow("No closing '}' found.");
 }
 
 void Location::keywordIndex(std::istringstream &iss)
@@ -239,7 +239,7 @@ void Location::keywordIndex(std::istringstream &iss)
     while (iss >> indexFile)
     {
         if (indexFile.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-            custtomThrow("ERROR: Location Block: index");
+            custtomLocationThrow("index");
         addIndex(indexFile);
     }
 }
@@ -249,12 +249,12 @@ void Location::keywordRoot(std::istringstream &iss)
     std::string newRoot;
     iss >> newRoot;
     if (newRoot[0] != '/')
-        custtomThrow("ERROR: Location Block: root");
+        custtomLocationThrow("root");
 
     std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-        custtomThrow("ERROR: Location Block: root");
+        custtomLocationThrow("root");
     setRoot(newRoot);
 }
 
@@ -263,12 +263,12 @@ void Location::keywordCgiPath(std::istringstream &iss)
     std::string path;
     iss >> path;
     if (path.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
-        custtomThrow("ERROR: Location Block: CGI PATH");
+        custtomLocationThrow("CGI PATH");
 
     std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-        custtomThrow("ERROR: Location Block: CGI PATH");
+        custtomLocationThrow("CGI PATH");
     setCgiPath(path);
 }
 
@@ -280,12 +280,12 @@ void Location::keywordMethods(std::istringstream &iss)
     while (iss >> method)
     {
         if (method != "POST" && method != "GET" && method != "DELETE")
-            custtomThrow("ERROR: Location Block: allow_methods");
+            custtomLocationThrow("allow_methods");
         addAllowedMethods(method);
         i++;
     }
     if  (i > 3 || i == 0)
-        custtomThrow("ERROR: Location Block: allow_methods");
+        custtomLocationThrow("allow_methods");
 }
 
 void Location::keywordErrorPages(std::istringstream &iss)
@@ -305,7 +305,7 @@ void Location::keywordErrorPages(std::istringstream &iss)
                 errorCodes.push_back(errorCode);    
             }
             else
-                custtomThrow("ERROR: Location Block: error_page");
+                custtomLocationThrow("error_page");
         }
         else
         {
@@ -314,12 +314,12 @@ void Location::keywordErrorPages(std::istringstream &iss)
         }
     }
     if (errorCodes.empty())
-        custtomThrow("ERROR: Location Block: error_page");
+        custtomLocationThrow("error_page");
     if (errorPage.empty() || errorPage.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
-        custtomThrow("ERROR: Location Block: error_page");
+        custtomLocationThrow("error_page");
     iss >> remaining;
     if (!remaining.empty())
-        custtomThrow("ERROR: Location Block: error_page");
+        custtomLocationThrow("error_page");
     for (std::vector<int>::iterator it = errorCodes.begin(); it != errorCodes.end(); ++it)
     {
         addErrorPages(*it, errorPage);
@@ -332,15 +332,15 @@ void Location::keywordReturn(std::istringstream &iss)
     std::string redir;
     iss >> firstToken;
     if (firstToken.empty())
-        custtomThrow("ERROR: Location Block: return");
+        custtomLocationThrow("return");
     if (isNumeric(firstToken))
     {
         int errorCode = std::atoi(firstToken.c_str());
         if(!isValidError(errorCode))
-            custtomThrow("ERROR: Location Block: return");
+            custtomLocationThrow("return");
     }
     else
-        custtomThrow("ERROR: Location Block: return");
+        custtomLocationThrow("return");
 
     iss >> secondToken;
     if (!secondToken.empty())
@@ -351,7 +351,7 @@ void Location::keywordReturn(std::istringstream &iss)
     std::string remaining;
     iss >> remaining;
     if (!remaining.empty())
-        custtomThrow("ERROR: Location Block: return");
+        custtomLocationThrow("return");
         
     setRedirect(redir);
 }
@@ -364,26 +364,22 @@ void Location::keywordMaxBodySize(std::istringstream &iss)
     errno = 0;
     long maxBodySize = std::strtol(sizeValue.c_str(), &end, 10);
     if (errno == ERANGE || maxBodySize < 0)
-    {
-        std::cout << "Invalid max_body_size (overflow or negative value): " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomLocationThrow("Invalid max_body_size (overflow or negative value)");
     if (*end == 'M' && *(end + 1) == '\0')
     {
         maxBodySize *= 1024 * 1024;
     }
     else if (*end != '\0')
-    {
-        std::cout << "Invalid max_body_size: " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomLocationThrow("Invalid max_body_size: " + sizeValue );
     if (maxBodySize <= 0)
-    {
-        std::cout << "Invalid max_body_size (must be positive): " << sizeValue << "\n";
-        throw std::exception();
-    }
+        custtomLocationThrow("Invalid max_body_size (must be positive): " + sizeValue);
     iss >> extra;
     if(!extra.empty())
-        custtomThrow("ERROR: Server Block: max_body_size");
+        custtomLocationThrow("ERROR: Server Block: max_body_size");
     _maxBodySize = maxBodySize;
 }
+
+const char *Location::exceptionAtLocation::what(void) const throw()
+{
+	return ("Error: At Parsing Location");
+};

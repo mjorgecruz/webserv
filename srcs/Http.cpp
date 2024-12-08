@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:13:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:47:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ Http::Http( void )
 	int epoll_fd = epoll_create(1);
 
 	if (epoll_fd == -1) {
+        std::cout << "\033[33mHttp() ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
 	}
     _epollFd = epoll_fd;
@@ -40,10 +41,10 @@ void Http::webservInitializer(std::string confPath)
                 {
                     server->serverChecker(line, file);
                 }
-                catch (std::exception &e)
+                catch (Server::exceptionAtServer &e)
                 {
                     delete server;
-                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    std::cout << "\033[1;31mAt serverChecker ->  HTTP.cpp @ex \033[0m" << std::endl;
                     throw(std::exception());
                 }
                 
@@ -51,7 +52,7 @@ void Http::webservInitializer(std::string confPath)
                     addServerToList(server);
                 else
                 {
-                    std::cout << "Server Creation Error in ServerChecker @ WebservInitializer" << std::endl;
+                    std::cout << "\033[1;31maddServerToList ->  HTTP.cpp @ex \033[0m" << std::endl;
                     throw(std::exception());
                 }
             }
@@ -112,6 +113,7 @@ void Http::addEpollServer( Server *server )
     
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server->getSocketFd(), &event) == -1)
     {
+        std::cout << "\033[33mepoll_ctl ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
     }
 }
@@ -129,7 +131,10 @@ Server *Http::operator[](int num)
 {
     int len = this->_listServers.size();
     if (num >= len)
+    {
+        std::cout << "\033[33moperator[] ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
+    }
     return this->_listServers[num];
 }
 
@@ -290,7 +295,10 @@ std::vector<Server *> Http::findCorrespondingServer(int socket)
     std::vector<Server *> correspondingServers;
     
     if (getsockname(socket, (sockaddr *) &addr, &len) == -1)
+    {
+        std::cout << "\033[33mgetsockname ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
+    }
     int port = ntohs(addr.sin_port);
     std::string address = inet_ntoa(addr.sin_addr);
     
@@ -306,7 +314,10 @@ std::vector<Server *> Http::findCorrespondingServer(int socket)
         serverNumber++;
     }
     if (serverNumber == _listServers.size() && correspondingServers.empty())
+    {
+        std::cout << "\033[33mfindCorrespondingServer() ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
+    }
     return (correspondingServers);
 }
 
@@ -337,7 +348,10 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     
     //check version
     if (httpVersion != "HTTP/1.1")
+    {
+        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
+    }
 
     //define location
     std::vector<std::pair <std::string, Location *> > possibleLocations = server->getLocations();
@@ -420,7 +434,10 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         i++;
     }
     if (i == Info._allowedMethods.size())
+    {
+        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
         throw(std::exception());
+    }
     std::cout << response->getHeader()<< std::endl;
     sendData(socket, response);
 }

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:35:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:47:32 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,12 @@ class Location
         void keywordErrorPages(std::istringstream &iss);
         void keywordReturn(std::istringstream &iss);
         void keywordMaxBodySize(std::istringstream &iss);
+
+    class exceptionAtLocation : public std::exception
+	{
+	    public:
+		    virtual const char *what() const throw();
+	};
+
 };
 
