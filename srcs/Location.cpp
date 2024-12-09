@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 12:06:08 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 13:24:30 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,7 +420,8 @@ void Location::setAuthFile(std::string file)
         std::string line;
         while (getline(authorized, line))
         {
-            
+            if (line.empty() || line.find(" ") || line.find(":") >= line.size() - 1)
+                custtomLocationThrow("AuthFile badly configured");
         }
     }
     custtomLocationThrow("AuthFile does not exist or permission to open denied")
