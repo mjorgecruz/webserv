@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 11:14:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 22:28:16 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -309,7 +309,14 @@ void HttpResponse::writeErrorPage(t_info &info, int error)
 {
     std::string content = "";
     std::string path;
-    path = info._errorPages.find(error)->second;
+    if (info._errorPages.find(error) != info._errorPages.end())
+        path = info._errorPages.find(error)->second;
+    else
+    {
+        _status = 500;
+        writeFailError();
+        return;
+    }
     _status = error;
     std::fstream file;
     file.open(path.c_str());
@@ -427,10 +434,4 @@ void HttpResponse::setGetRedirectHeader(t_info &Info, std::string sessionId)
                 << "\r\n\r\n";
     }
     _header = bufferM.str(); 
-}
-
-void HttpResponse::setRedirectSession(t_info &Info, std::string sessionId)
-{
-    (void) Info;
-    (void) sessionId;
 }

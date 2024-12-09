@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:10:01 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:34:26 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Location
         std::string getRedirect();
         int getAutoIndex();
         long getMaxBodySize();
+        std::string getAuthFile();
         
         void parseLocation(std::string &line, std::ifstream &file);
         void printLocationConfig() const;

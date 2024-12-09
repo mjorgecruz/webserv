@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 11:40:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 22:01:53 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,7 +385,18 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
 
     //check if auth is needed and was made
-    
+    if(!Info._authFile.empty() && !allSessions.checkSession(sessionId))
+    {
+        response->setStatus(401);
+        response->writeErrorPage(Info, 401);
+        response->setGetHeader(sessionId);
+        sendData(socket, response);
+        return;
+    }
+    else if(!Info._authFile.empty())
+    {
+        allSessions.fillUsers(Info._authFile);
+    }
     
     //check method
     if (!(Info._redirect.empty()))
@@ -423,10 +434,25 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     response->setStatus(Info._status);
                     response->setPostHeader(sessionId);
 
-                    //session config example
-                    if (full_path == "/home/masoares/webserv-1/files/login/login_form")
+                    //session config
+                    if (full_path.find("login_form") != std::string::npos)
                     {
                         this->allSessions.sessionControl(full_path, sessionId, *response, Info);
+                        remove(full_path.c_str());
+                    }
+                    else if (full_path.find("logout_form") != std::string::npos)
+                    {
+                        this->allSessions.handleLogout(sessionId);
+                        remove(full_path.c_str());
+                    }
+                    else if (full_path.find("delete_form") != std::string::npos)
+                    {
+                        this->allSessions.handleDelete(full_path, sessionId, *response, Info);
+                        remove(full_path.c_str());
+                    }
+                    else if (full_path.find("create_form") != std::string::npos)
+                    {
+                        this->allSessions.handleCreate(full_path, sessionId, *response, Info);
                         remove(full_path.c_str());
                     }
                 }
@@ -592,6 +618,11 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
         else
             Info._autoIndex = location->getAutoIndex();
         
+        if (!location->getAuthFile().empty())
+            Info._authFile = location->getAuthFile();
+        else
+            Info._authFile = "";
+            
         Info._cgiPath = location->getCgiPath();
         Info._redirect = location->getRedirect();
         Info._path = location->getPath();
@@ -623,7 +654,7 @@ void Http::sendData(int socket, HttpResponse *response)
         if (result != -1)
         {
             totalSent += result;
-            std::cout << "SENDING----------------------------------------" << std::endl;
+            std::cout << "SENDING----------------------------------------------" << std::endl;
         }
     }
 }

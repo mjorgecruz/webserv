@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SessionManagement.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:24:18 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:41:47 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 21:45:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,16 @@ class SessionManagement
         void deleteUser(std::string user, std::string password);
 
         void handleLogin(const std::string &user, const std::string &password, std::string sessionId);
-        std::string generateCookie();
+        void handleLogout(std::string sessionId);
+        void handleDelete(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info);
+        void handleCreate(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info);
+
         
-        void handleCookie(HttpRequest &request, HttpResponse &response);
+        std::string generateCookie();
+
+        bool checkSession(std::string sessionId);
+        void fillUsers(std::string authFile);
+        
 
         class UserAlreadyInUseException: public std::exception
         {

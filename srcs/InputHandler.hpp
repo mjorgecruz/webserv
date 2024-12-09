@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 23:32:41 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 11:41:18 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:30:36 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_info
     std::string _cgiPath;
     std::string _redirect;
     std::string _path;
+    std::string _authFile;
     
     void printInfoConfig() const;
 

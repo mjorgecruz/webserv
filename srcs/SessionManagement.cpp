@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SessionManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:47:51 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 22:09:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ void SessionManagement::sessionControl(std::string fullPath, std::string session
     std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
     try{
         handleLogin(user, password, sessionId);
-        response.setRedirectSession(info, sessionId);
-        response.setGetRedirectHeader(info, sessionId);
     }
     catch(SessionManagement::WrongNamePassException &e)
     {
@@ -64,7 +62,9 @@ void SessionManagement::addUser(std::string user, std::string password)
 {
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it == _userData.end())
+    {
         _userData[user] = password;
+    }
     else
         throw(SessionManagement::UserAlreadyInUseException());
 }
@@ -102,6 +102,39 @@ void SessionManagement::handleLogin(const std::string &user, const std::string &
         
 }
 
+void SessionManagement::handleLogout(std::string sessionId)
+{
+    if (_sessions.find(sessionId) != _sessions.end())
+        _sessions.erase(_sessions.find(sessionId));
+}
+
+
+void SessionManagement::handleDelete(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info)
+{
+    (void) fullPath;
+    (void) response;
+    (void) info;
+    
+    if (_sessions.find(sessionId) != _sessions.end())
+    {
+        _userData.erase(_sessions.find(sessionId)->second);
+    }
+}
+
+void SessionManagement::handleCreate(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info)
+{   
+    (void) sessionId;
+    (void) response;
+    (void) info;
+    std::ifstream create_form(fullPath.c_str());
+    std::string line;
+    getline(create_form, line);
+
+    std::string user = line.substr(line.find("user=") + 5, line.find("&&password=") - 1 - line.find("user=") - 5);
+    std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
+    addUser(user, password);
+}
+
 std::string SessionManagement::generateCookie()
 {
     std::stringstream ss;
@@ -110,10 +143,26 @@ std::string SessionManagement::generateCookie()
     return ss.str();
 }
 
-void SessionManagement::handleCookie(HttpRequest &request, HttpResponse &response)
+bool SessionManagement::checkSession(std::string sessionId)
 {
-    (void) request;
-    (void) response;
+    if (_sessions.find(sessionId) != _sessions.end())
+    {
+        return true;
+    }
+    return false;
+}
+
+void SessionManagement::fillUsers(std::string authFile)
+{
+    std::ifstream file(authFile.c_str());
+    std::string line;
+    
+    while(getline(file, line))
+    {
+        std::string user = line.substr(0, line.find(":") - 1);
+        std::string pass = line.substr(line.find(":") + 1, line.size() - 1 - line.find(":"));
+        _userData[user] = pass;
+    }
 }
 
 const char * SessionManagement::UserAlreadyInUseException::what() const throw()

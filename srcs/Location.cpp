@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 13:28:03 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:41:42 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 Location::Location( void )
 {
     _maxBodySize = 0;
+    _authFile = "";
 }
 
 Location::~Location( void )
@@ -414,18 +415,19 @@ void Location::setAuthFile(std::string file)
 
     //check if auth file has the correct features
     struct stat aFile;
-    if (stat(file.c_str(), aFile) < 0)
+    if (stat(file.c_str(), &aFile) == 0)
     {
         std::ifstream authorized(file.c_str());
-        authorized.open();
+        authorized.open(file.c_str());
         std::string line;
         while (getline(authorized, line))
         {
             if (line.empty() || line.find(" ") || line.find(":") >= line.size() - 1)
                 custtomLocationThrow("AuthFile badly configured");
         }
+        return;
     }
-    custtomLocationThrow("AuthFile does not exist or permission to open denied")
+    custtomLocationThrow("AuthFile does not exist or permission to open denied");
 }
 
 void Location::keywordAuthBasic(std::istringstream &iss)
@@ -465,4 +467,9 @@ void Location::keywordAuthBasic(std::istringstream &iss)
         if (!foundClosingQuote)
             custtomLocationThrow("Authentication Basic");
     }
+}
+
+std::string Location::getAuthFile()
+{
+    return _authFile;
 }
