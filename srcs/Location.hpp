@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 03:20:00 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 09:22:14 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Location
         int _autoIndex;
         std::string _path;
         long _maxBodySize;
+        std::string _authFile;
         
     public:
         Location( void );

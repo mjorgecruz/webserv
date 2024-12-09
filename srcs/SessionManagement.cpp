@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 00:48:15 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 09:13:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,13 @@ void SessionManagement::sessionControl(std::string fullPath, std::string session
     try{
         handleLogin(user, password, sessionId);
         response.setRedirectSession(info, sessionId);
-        response->setGetRedirectHeader(info, sessionId);
+        response.setGetRedirectHeader(info, sessionId);
     }
     catch(SessionManagement::WrongNamePassException &e)
     {
-        response->setStatus(401);
+        response.setStatus(401);
         response.writeErrorPage(info, 401);
-        response->setPostHeader(sessionId);
+        response.setPostHeader(sessionId);
     }
     
 }
