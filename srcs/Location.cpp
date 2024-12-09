@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:29:24 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:04:05 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -397,7 +397,7 @@ void Location::keywordAuthFile(std::istringstream &iss)
 {
     std::string filePath;
     iss >> filePath;
-    if (filePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/") != std::string::npos)
+    if (filePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
         custtomLocationThrow("Authentication File");
 
     std::string remaining;
@@ -439,31 +439,23 @@ void Location::keywordAuthBasic(std::istringstream &iss)
     {
         iss >> remaining;
         if (!remaining.empty())
-            customLocationThrow("Authentication Basic");   
+            custtomLocationThrow("Authentication Basic");   
     }
-    else //test ""  apegadas a uma unica palavra
+    else
     {
         bool foundClosingQuote = false;
-        if (str.find('"') != std::string::npos)
-        {
-            foundClosingQuote = true;
-            iss >> remaining;
-            if (!remaining.empty())
-                customLocationThrow("Authentication Basic");
-            return;
-        }
-        while (iss >> str) //testa encontrar a segunda aspa numa das outras palavras
+        while (iss >> str)
         {
             if (str.find('"') != std::string::npos)
             {
                 foundClosingQuote = true;
                 iss >> remaining;
                 if (!remaining.empty())
-                    customLocationThrow("Authentication Basic");
+                    custtomLocationThrow("Authentication Basic");
                 break;
             }
         }
         if (!foundClosingQuote)
-            customLocationThrow("Authentication Basic");
+            custtomLocationThrow("Authentication Basic");
     }
 }

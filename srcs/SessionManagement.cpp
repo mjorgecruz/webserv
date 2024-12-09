@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SessionManagement.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 09:13:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:47:51 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ std::string SessionManagement::sessionConfig(HttpRequest &request)
 
 void SessionManagement::sessionControl(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info)
 {
-    std::ifstream login_form(fullPath);
+    std::ifstream login_form(fullPath.c_str());
     std::string line;
     getline(login_form, line);
     
@@ -89,7 +89,6 @@ void SessionManagement::deleteUser(std::string user, std::string password)
 
 void SessionManagement::handleLogin(const std::string &user, const std::string &password, std::string sessionId)
 {
-    (void) response;
     std::map<std::string,std::string>::iterator it = _userData.find(user);
     if (it != _userData.end())
     {

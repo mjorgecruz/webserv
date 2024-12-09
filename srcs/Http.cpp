@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 00:13:07 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:42:56 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Http::webservInitializer(std::string confPath)
             _listServers[i]->printConfig();
         }
 
-        //exit(1);
+        exit(1);
         ///////////////////////////////////////////////////
         //comment this exit to make the program run again//
         //uncomment it to run the make test command      //
@@ -426,7 +426,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     //session config example
                     if (full_path == "/home/masoares/webserv-1/files/login/login_form")
                     {
-                        this->allSessions.sessionControl(full_path, sessionId, response);
+                        this->allSessions.sessionControl(full_path, sessionId, *response, Info);
                         remove(full_path.c_str());
                     }
                 }
