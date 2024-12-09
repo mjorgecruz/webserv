@@ -49,5 +49,5 @@
 [ ] 49. create user list on server start
 [ ] 50. create post page in cgi python
 [ ] 51. create post page in cgi php
-[ ] 52. create infinite loop page in cgi python
-[ ] 53. create page with errors in cgi python
+[V] 52. create infinite loop page in cgi python
+[V] 53. create page with errors in cgi python
