@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   HttpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:39:05 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:45:33 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ class HttpResponse
         std::string _connection;
         
         int _status;
-        int _contentLength;//: 20994
-        std::string _contentType;// text/javascript
+        int _contentLength;
+        std::string _contentType;
         std::string _host;
         std::string _port;
         std::string _header;

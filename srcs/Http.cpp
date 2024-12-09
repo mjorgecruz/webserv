@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:42:56 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:40:05 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Http::webservInitializer(std::string confPath)
             _listServers[i]->printConfig();
         }
 
-        exit(1);
+        // exit(1);
         ///////////////////////////////////////////////////
         //comment this exit to make the program run again//
         //uncomment it to run the make test command      //

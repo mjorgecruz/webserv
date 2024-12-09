@@ -51,3 +51,4 @@
 [V] 51. create post page in cgi php
 [V] 52. create infinite loop page in cgi python
 [V] 53. create page with errors in cgi python
+[ ] 54. Passwords file must be empty or have only user:password lines
