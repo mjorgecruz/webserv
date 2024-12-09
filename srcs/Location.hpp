@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:49:56 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 09:22:14 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:10:01 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ class Location
         void addErrorPages(int errorNum, std::string error);
         void setRedirect(std::string redir);
         void setAutoIndex(int autoindex);
+        void setAuthFile(std::string file);
         
         std::string getPath();
         std::vector<std::string> getIndex();
@@ -61,6 +62,8 @@ class Location
         void keywordErrorPages(std::istringstream &iss);
         void keywordReturn(std::istringstream &iss);
         void keywordMaxBodySize(std::istringstream &iss);
+        void keywordAuthFile(std::istringstream &iss);
+        void keywordAuthBasic(std::istringstream &iss);
 
     class exceptionAtLocation : public std::exception
 	{

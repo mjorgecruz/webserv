@@ -3,20 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   SessionManagement.hpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:24:18 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 18:59:12 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 10:41:47 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "InputHandler.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 
 class HttpResponse;
 class HttpRequest;
+
+struct t_info_struct;
+typedef struct s_info t_info;
 
 typedef struct s_session
 {
@@ -36,7 +40,7 @@ class SessionManagement
         ~SessionManagement();
 
         std::string sessionConfig(HttpRequest &request);
-        void sessionControl(std::string fullPath, std::string sessionId, httpResponse &response, t_info &info);
+        void sessionControl(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info);
 
         void addUser(std::string user, std::string password);
         std::map<std::string,std::string>::iterator getUserByName(std::string user);

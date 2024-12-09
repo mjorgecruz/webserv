@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 10:22:35 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:14:44 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -431,5 +431,6 @@ void HttpResponse::setGetRedirectHeader(t_info &Info, std::string sessionId)
 
 void HttpResponse::setRedirectSession(t_info &Info, std::string sessionId)
 {
-    
+    (void) Info;
+    (void) sessionId;
 }

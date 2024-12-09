@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 09:22:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:04:05 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     std::istringstream iss(line);
     std::string locationKeyword, locationPath;
 
+    bool AuthBasic = false;
     iss >> locationKeyword;
     if (locationKeyword != "location")
         custtomLocationThrow("locatin");
@@ -168,43 +169,35 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         if (keyword == "index")
         {
             hasValidKeywords = true;
-            //last directive - ok
             keywordIndex(iss);
         }
         else if (keyword == "root")
         {
-            //last directive - ok
             keywordRoot(iss);
             hasValidKeywords = true;
         }
         else if (keyword == "cgi_path")
         {
-            //last directive overrides - ok
             keywordCgiPath(iss);
             hasValidKeywords = true;
         }
         else if (keyword == "allow_methods")
         {
-            //last directive overrides  other - ok
             hasValidKeywords = true;
             keywordMethods(iss);
         }
         else if (keyword == "error_page")
         {
-            //accepts multiple in multiple lines - ok
             hasValidKeywords = true;
             keywordErrorPages(iss);
         }
         else if (keyword == "return")
         {
-            //last directive overrides others - ok
             hasValidKeywords = true;
             keywordReturn(iss);
         }
         else if (keyword == "autoindex")
         {
-            //last directive override - ok
-            
             hasValidKeywords = true;
             std::string autoIndexValue;
             iss >> autoIndexValue;
@@ -221,7 +214,22 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         }
         else if (keyword == "max_body_size")
         {
+            hasValidKeywords = true;
             keywordMaxBodySize(iss);
+        }
+        else if (keyword == "auth_basic")
+        {
+            hasValidKeywords = true;
+            keywordAuthBasic(iss);
+            AuthBasic = true;
+        }
+        else if (keyword == "auth_basic_user_file")
+        {
+            hasValidKeywords = true;
+            if (AuthBasic)
+                keywordAuthFile(iss);
+            else
+                custtomLocationThrow("auth_basic_user_file requires a defined auth_basic");
         }
         else
             custtomLocationThrow("Invalid Keyword");
@@ -383,3 +391,71 @@ const char *Location::exceptionAtLocation::what(void) const throw()
 {
 	return ("Error: At Parsing Location");
 };
+
+
+void Location::keywordAuthFile(std::istringstream &iss)
+{
+    std::string filePath;
+    iss >> filePath;
+    if (filePath.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_/.") != std::string::npos)
+        custtomLocationThrow("Authentication File");
+
+    std::string remaining;
+    iss >> remaining;
+    if (!remaining.empty())
+        custtomLocationThrow("Authentication File");
+    setAuthFile(filePath);
+}
+
+void Location::setAuthFile(std::string file)
+{
+    this->_authFile = file;
+}
+
+// void Location::keywordAuthBasic(std::istringstream &iss)
+// {
+//     std::string str;
+//     std::string remaining;
+//     iss >> str;
+//     //if the first element of the str is not a " the there can only be one word in the string
+//     if (str[0] != '"')
+//     {
+//         iss >> remaining;
+//         if (!remaining.empty())
+//             custtomLocationThrow("Authentication Basic");   
+//     }
+//     // when the fisrt element of the string is " iterate the string untill it finds the next one
+//     // if there are any other content after the second "  then throw  custtomLocationThrow("Authentication Basic");
+// }
+
+
+void Location::keywordAuthBasic(std::istringstream &iss)
+{
+    std::string str;
+    std::string remaining;
+    iss >> str;
+
+    if (str[0] != '"') //testa palavras sem ""
+    {
+        iss >> remaining;
+        if (!remaining.empty())
+            custtomLocationThrow("Authentication Basic");   
+    }
+    else
+    {
+        bool foundClosingQuote = false;
+        while (iss >> str)
+        {
+            if (str.find('"') != std::string::npos)
+            {
+                foundClosingQuote = true;
+                iss >> remaining;
+                if (!remaining.empty())
+                    custtomLocationThrow("Authentication Basic");
+                break;
+            }
+        }
+        if (!foundClosingQuote)
+            custtomLocationThrow("Authentication Basic");
+    }
+}
