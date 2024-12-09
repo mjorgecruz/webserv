@@ -47,7 +47,7 @@
 [ ] 47. check if auth is needed and was made on Http.cpp
 [ ] 48. create single function for all cgi
 [ ] 49. create user list on server start
-[ ] 50. create post page in cgi python
-[ ] 51. create post page in cgi php
+[V] 50. create post page in cgi python
+[V] 51. create post page in cgi php
 [V] 52. create infinite loop page in cgi python
 [V] 53. create page with errors in cgi python
