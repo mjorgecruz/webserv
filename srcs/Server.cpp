@@ -220,41 +220,19 @@ void Server::serverKeywords(std::string key, std::string &line)
     if (line.empty())
         custtomServerThrow("Expecting ';' .");
     if (key == "listen")
-    {
-        //would use all ports/ip configurations as long as no duplicate combination found. 
-        //using last directive for us.
         keywordListen(line);
-    }
     else if (key == "server_name")
-    {
-        //uses multiple in line or lines - ok
         keywordServerName(line);
-    }
     else if (key == "index")
-    {
-        //only uses last directive - ok
         keywordIndex(line);
-    }
     else if (key == "root")
-    {
-        //uses last directive - ok
         keywordRoot(line);
-    }
     else if (key == "error_page")
-    {
-        //adding multiple - ok
         keywordErrorPages(line);
-    }
     else if (key == "client_max_body_size")
-    {
-        // using last directive - ok
         keywordMaxBodySize(line);
-    }
     else if (key == "allow_methods")
-    {
-        // using last directive - ok
         keyAllowMethods(line);
-    }
     else
         custtomServerThrow("Invalid Keyword");
 }

@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 11:04:05 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 11:41:52 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     std::string locationKeyword, locationPath;
 
     bool AuthBasic = false;
+    bool AuthFile = false;
     iss >> locationKeyword;
     if (locationKeyword != "location")
         custtomLocationThrow("locatin");
@@ -226,10 +227,8 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
         else if (keyword == "auth_basic_user_file")
         {
             hasValidKeywords = true;
-            if (AuthBasic)
-                keywordAuthFile(iss);
-            else
-                custtomLocationThrow("auth_basic_user_file requires a defined auth_basic");
+            keywordAuthFile(iss);
+            AuthFile = true;
         }
         else
             custtomLocationThrow("Invalid Keyword");
@@ -238,6 +237,8 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
          custtomLocationThrow("Block must contain at least one valid keyword");
     if (line != "}")
         custtomLocationThrow("No closing '}' found.");
+    if ((AuthBasic || AuthFile) && (!AuthBasic || !AuthFile))
+        custtomLocationThrow("Authentication Keywords missing");
 }
 
 void Location::keywordIndex(std::istringstream &iss)
@@ -412,30 +413,13 @@ void Location::setAuthFile(std::string file)
     this->_authFile = file;
 }
 
-// void Location::keywordAuthBasic(std::istringstream &iss)
-// {
-//     std::string str;
-//     std::string remaining;
-//     iss >> str;
-//     //if the first element of the str is not a " the there can only be one word in the string
-//     if (str[0] != '"')
-//     {
-//         iss >> remaining;
-//         if (!remaining.empty())
-//             custtomLocationThrow("Authentication Basic");   
-//     }
-//     // when the fisrt element of the string is " iterate the string untill it finds the next one
-//     // if there are any other content after the second "  then throw  custtomLocationThrow("Authentication Basic");
-// }
-
-
 void Location::keywordAuthBasic(std::istringstream &iss)
 {
     std::string str;
     std::string remaining;
     iss >> str;
 
-    if (str[0] != '"') //testa palavras sem ""
+    if (str[0] != '"')
     {
         iss >> remaining;
         if (!remaining.empty())
@@ -444,6 +428,14 @@ void Location::keywordAuthBasic(std::istringstream &iss)
     else
     {
         bool foundClosingQuote = false;
+        if (str[str.length() -1 ] == '"')
+        {
+            foundClosingQuote = true;
+            iss >> remaining;
+            if (!remaining.empty())
+                custtomLocationThrow("Authentication Basic");
+            return ;
+        }
         while (iss >> str)
         {
             if (str.find('"') != std::string::npos)
