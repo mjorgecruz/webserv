@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 18:58:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 00:48:15 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ std::string SessionManagement::sessionConfig(HttpRequest &request)
     return sessionId;
 }
 
-void SessionManagement::sessionControl(std::string fullPath, std::string sessionId, httpResponse &response, t_info &info)
+void SessionManagement::sessionControl(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info)
 {
     std::ifstream login_form(fullPath);
     std::string line;
@@ -48,11 +48,14 @@ void SessionManagement::sessionControl(std::string fullPath, std::string session
     std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
     try{
         handleLogin(user, password, sessionId);
-        response.setRedirectSession(info);
+        response.setRedirectSession(info, sessionId);
+        response->setGetRedirectHeader(info, sessionId);
     }
     catch(SessionManagement::WrongNamePassException &e)
     {
-        response.writePage401(info);
+        response->setStatus(401);
+        response.writeErrorPage(info, 401);
+        response->setPostHeader(sessionId);
     }
     
 }

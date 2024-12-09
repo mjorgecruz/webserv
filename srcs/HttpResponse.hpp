@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 03:18:59 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 00:30:30 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,14 +66,15 @@ class HttpResponse
         void writeCgiPage(std::string path, t_info  &info, HttpRequest &request);
         
         void writeIndexPage(std::string path, t_info  &info);
-        void writePage404(t_info &info);
-        void writePage403(t_info &info);
-        void writePage413(t_info &info);
+        void writeErrorPage(t_info &info, int error);
+
         void writeFailError();
         void writeAutoIndex(std::string path, t_info &info);
 
         void writeRedirectContent(t_info &Info, HttpRequest *request);
         void setGetRedirectHeader(t_info &Info, std::string sessionId);
+
+        void setRedirectSession(t_info &Info, std::string sessionId);
         
 };
 

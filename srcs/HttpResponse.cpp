@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 01:55:52 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 00:14:54 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,11 +144,11 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            writePage404(info);
+            writeErrorPage(info, 404);
         }
         catch (HttpRequest::HttpPageForbiddenException &e)
         {
-            writePage403(info);
+            writeErrorPage(info, 403);
         }
     }
     else
@@ -159,11 +159,11 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
         {
-            writePage404(info);
+            writeErrorPage(info, 404);
         }
         catch (HttpRequest::HttpPageForbiddenException &e)
         {
-            writePage403(info);
+            writeErrorPage(info, 403);
         }
     }
     
@@ -305,12 +305,12 @@ void HttpResponse::writeIndexPage(std::string path, t_info  &info)
     setLength(content.size());
 }
 
-void HttpResponse::writePage404(t_info &info)
+void HttpResponse::writeErrorPage(t_info &info, int error)
 {
     std::string content = "";
     std::string path;
-    path = info._errorPages.find(404)->second;
-    _status = 404;
+    path = info._errorPages.find(error)->second;
+    _status = error;
     std::fstream file;
     file.open(path.c_str());
     if (!file.is_open())
@@ -328,53 +328,6 @@ void HttpResponse::writePage404(t_info &info)
     setContent(content);
     setLength(content.size());
 }
-
-void HttpResponse::writePage403(t_info &info)
-{
-    std::string content = "";
-    std::string path;
-    path = info._errorPages.find(403)->second;
-    std::fstream file;
-    file.open(path.c_str());
-    if (!file.is_open())
-    {
-        _status = 500;
-        writeFailError();
-        return;
-    }
-    std::string line;
-    while (getline(file, line))
-    {
-        content = content + line;
-        content = content + "\n";
-    }
-    setContent(content);
-    setLength(content.size());
-}
-
-void HttpResponse::writePage413(t_info &info)
-{
-    std::string content = "";
-    std::string path;
-    path = info._errorPages.find(413)->second;
-    std::fstream file;
-    file.open(path.c_str());
-    if (!file.is_open())
-    {
-        _status = 500;
-        writeFailError();
-        return;
-    }
-    std::string line;
-    while (getline(file, line))
-    {
-        content = content + line;
-        content = content + "\n";
-    }
-    setContent(content);
-    setLength(content.size());
-}
-
 
 void HttpResponse::writeFailError()
 {

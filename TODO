@@ -41,9 +41,13 @@
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
 [ ] 43. implement alarm to limit time for reply to request
-[ ] 44. add auth_basic and auth_basic_user_file to possible server keywords
-[ ] 45. create function response.writePage401(info)
+[ ] 44. add auth_basic and auth_basic_user_file to possible location keywords ()
+[V] 45. create function response.writePage401(info)
 [ ] 46. create function response.setRedirectSession(info)
 [ ] 47. check if auth is needed and was made on Http.cpp
 [ ] 48. create single function for all cgi
 [ ] 49. create user list on server start
+[ ] 50. create post page in cgi python
+[ ] 51. create post page in cgi php
+[ ] 52. create infinite loop page in cgi python
+[ ] 53. create page with errors in cgi python

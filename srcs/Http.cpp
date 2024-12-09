@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 19:01:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/09 00:13:07 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -412,7 +412,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                 {
                     response->setLength(0);
                     response->setStatus(413);
-                    response->writePage413(Info);
+                    response->writeErrorPage(Info, 413);
                     response->setPostHeader(sessionId);
                 }
                 else
