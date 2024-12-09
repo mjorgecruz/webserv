@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 11:04:05 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/09 12:06:08 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,6 +410,20 @@ void Location::keywordAuthFile(std::istringstream &iss)
 void Location::setAuthFile(std::string file)
 {
     this->_authFile = file;
+
+    //check if auth file has the correct features
+    struct stat aFile;
+    if (stat(file.c_str(), aFile) < 0)
+    {
+        std::ifstream authorized(file.c_str());
+        authorized.open();
+        std::string line;
+        while (getline(authorized, line))
+        {
+            
+        }
+    }
+    custtomLocationThrow("AuthFile does not exist or permission to open denied")
 }
 
 // void Location::keywordAuthBasic(std::istringstream &iss)
