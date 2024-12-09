@@ -6,6 +6,7 @@
 [V] 5. Teste extensivo de preenchimento dos dados no t_info
 [V] 6. cgi-php classe para tratar disso
 [V] 9. criar erro de server se não encontrar o ficheiro de erro
+[V] 11. Resolver relink do makefile
 [V] 12. Redirects
 [V] 13. Limit paths to have just one * on conf file
 [V] 14. formato do pedido - se for request para index tem que vir 
@@ -29,6 +30,8 @@
 [V] 35. Cant find the cgi path
 [V] 44. add auth_basic and auth_basic_user_file to possible location keywords ()
 [V] 45. create function response.writePage401(info)
+[V] 47. check if auth is needed and was made on Http.cpp
+[V] 49. create user list on request start 
 [V] 50. create post page in cgi python
 [V] 51. create post page in cgi php
 [V] 52. create infinite loop page in cgi python
@@ -37,7 +40,6 @@
 [ ] 7. session management and cookies
 [ ] 8. verificar codigos de erro
 [ ] 10. verificar e criar std::exceptions()
-[ ] 11. Resolver relink do makefile
 [ ] 22. if I add index script.py; it should try cgi first
 LUIS [ ] 31. having multiple location blocks with the exact same path is not allowed and will result in a configuration error when starting
 [ ] 33. Verify that two files can be sent at the same time (2 multipart)
@@ -48,9 +50,7 @@ LUIS [ ] 31. having multiple location blocks with the exact same path is not all
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
 JORGE [ ] 43. implement alarm to limit time for reply to request
-JORGE [ ] 46. create function response.setRedirectSession(info)
-JORGE [ ] 47. check if auth is needed and was made on Http.cpp
 [ ] 48. create single function for all cgi
-JORGE [ ] 49. create user list on request start 
 LUIS [ ] 55. add comments to conf file - only outside servers and starting with '#'
 LUIS [ ] 56. rever costtumthrows()
+JORGE [ ] 57. rever implementação de session management

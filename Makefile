@@ -12,8 +12,7 @@ NAME = 	webserv
 DEFAULT_INDEX = index.html
 DEFAULT_DIR = $(HOME)/html
 DEFAULT_CONF = default.conf
-ERRORS = 204 301 403 404 409 500 502 503 504 413
-ERROR_FILES := $(DEFAULT_DIR)/204 $(DEFAULT_DIR)/301 $(DEFAULT_DIR)/403 $(DEFAULT_DIR)/404 $(DEFAULT_DIR)/409 $(DEFAULT_DIR)/413 $(DEFAULT_DIR)/500 $(DEFAULT_DIR)/502 $(DEFAULT_DIR)/503 $(DEFAULT_DIR)/504
+ERROR_FILES := $(DEFAULT_DIR)/204.html $(DEFAULT_DIR)/301.html $(DEFAULT_DIR)/401.html $(DEFAULT_DIR)/403.html $(DEFAULT_DIR)/404.html $(DEFAULT_DIR)/409.html $(DEFAULT_DIR)/413.html $(DEFAULT_DIR)/500.html $(DEFAULT_DIR)/502.html $(DEFAULT_DIR)/503.html $(DEFAULT_DIR)/504.html
 
 CFLAGS = -Wall -Werror -Wextra -g
 
@@ -31,7 +30,7 @@ RM = rm -rf
 TOTAL_FILES := $(words $(SRC))
 COMPILED_FILES := $(shell if [ -d "$(ODIR)" ]; then find $(ODIR) -name "*.o" | wc -l; else echo 0; fi)
 
-all: $(NAME) $(ERRORS)
+all: $(NAME) $(ERROR_FILES)
 
 $(NAME): $(OBJ)
 	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) $(LIBFLAGS)
@@ -62,25 +61,8 @@ clean:
 	@$(RM) $(ODIR)
 	@printf "$(BOLD_YELLOW)...cleaned$(END)"
 	@printf "\n"
-
-$(ERROR_FILES): $(ERRORS)
-
-$(DEFAULT_DIR)/default.conf: defaults
-
-defaults:
-	@mkdir -p $(DEFAULT_DIR)
-	@echo "This is a test page" > $(DEFAULT_DIR)/index.html
-	@echo "server {" > $(DEFAULT_DIR)/default.conf
-	@echo "	listen 127.0.0.1:8080;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	server_name example.com;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	index index.html;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	location / {" >> $(DEFAULT_DIR)/default.conf
-	@echo "		index index.html;" >> $(DEFAULT_DIR)/default.conf
-	@echo "	}" >> $(DEFAULT_DIR)/default.conf
-	@echo "}" >> $(DEFAULT_DIR)/default.conf
-	
-	
-204: defaults
+		
+$(DEFAULT_DIR)/204.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(DEFAULT_DIR)/204.html
 	@echo "<html lang=\"en\">" >> $(DEFAULT_DIR)/204.html
 	@echo "<head>" >> $(DEFAULT_DIR)/204.html
@@ -93,7 +75,7 @@ defaults:
 	@echo "</body>" >> $(DEFAULT_DIR)/204.html
 	@echo "</html>" >> $(DEFAULT_DIR)/204.html
 
-301: defaults
+$(DEFAULT_DIR)/301.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/301.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/301.html
 	@echo "<head>" >> $(HOME)/html/301.html
@@ -106,7 +88,20 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/301.html
 	@echo "</html>" >> $(HOME)/html/301.html
 
-403: defaults
+$(DEFAULT_DIR)/401.html: $(DEFAULT_DIR)/default.conf
+	@echo "<!DOCTYPE html>" > $(HOME)/html/401.html
+	@echo "<html lang=\"en\">" >> $(HOME)/html/401.html
+	@echo "<head>" >> $(HOME)/html/401.html
+	@echo "	<meta charset=\"UTF-8\">" >> $(HOME)/html/401.html
+	@echo "	<title>Unauthorized access</title>" >> $(HOME)/html/401.html
+	@echo "</head>" >> $(HOME)/html/401.html
+	@echo "<body>" >> $(HOME)/html/401.html
+	@echo "	<h1>401 Unauthorized access</h1>" >> $(HOME)/html/401.html
+	@echo "	<p>You do not have permission to access this resource.</p>" >> $(HOME)/html/401.html
+	@echo "</body>" >> $(HOME)/html/401.html
+	@echo "</html>" >> $(HOME)/html/401.html
+
+$(DEFAULT_DIR)/403.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/403.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/403.html
 	@echo "<head>" >> $(HOME)/html/403.html
@@ -119,7 +114,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/403.html
 	@echo "</html>" >> $(HOME)/html/403.html
 
-404: defaults
+$(DEFAULT_DIR)/404.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/404.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/404.html
 	@echo "<head>" >> $(HOME)/html/404.html
@@ -132,7 +127,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/404.html
 	@echo "</html>" >> $(HOME)/html/404.html
 
-409: defaults
+$(DEFAULT_DIR)/409.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/409.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/409.html
 	@echo "<head>" >> $(HOME)/html/409.html
@@ -145,7 +140,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/409.html
 	@echo "</html>" >> $(HOME)/html/409.html
 
-413: defaults
+$(DEFAULT_DIR)/413.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/413.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/413.html
 	@echo "<head>" >> $(HOME)/html/413.html
@@ -158,7 +153,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/413.html
 	@echo "</html>" >> $(HOME)/html/413.html
 
-500: defaults
+$(DEFAULT_DIR)/500.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/500.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/500.html
 	@echo "<head>" >> $(HOME)/html/500.html
@@ -171,7 +166,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/500.html
 	@echo "</html>" >> $(HOME)/html/500.html
 
-502: defaults
+$(DEFAULT_DIR)/502.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/502.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/502.html
 	@echo "<head>" >> $(HOME)/html/502.html
@@ -184,7 +179,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/502.html
 	@echo "</html>" >> $(HOME)/html/502.html
 
-503: defaults
+$(DEFAULT_DIR)/503.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/503.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/503.html
 	@echo "<head>" >> $(HOME)/html/503.html
@@ -197,7 +192,7 @@ defaults:
 	@echo "</body>" >> $(HOME)/html/503.html
 	@echo "</html>" >> $(HOME)/html/503.html
 
-504: defaults
+$(DEFAULT_DIR)/504.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/504.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/504.html
 	@echo "<head>" >> $(HOME)/html/504.html
@@ -209,6 +204,18 @@ defaults:
 	@echo "	<p>The server did not receive a timely response from the upstream server.</p>" >> $(HOME)/html/504.html
 	@echo "</body>" >> $(HOME)/html/504.html
 	@echo "</html>" >> $(HOME)/html/504.html
+
+$(DEFAULT_DIR)/default.conf:
+	@mkdir -p $(DEFAULT_DIR)
+	@echo "This is a test page" > $(DEFAULT_DIR)/index.html
+	@echo "server {" > $(DEFAULT_DIR)/default.conf
+	@echo "	listen 127.0.0.1:8080;" >> $(DEFAULT_DIR)/default.conf
+	@echo "	server_name example.com;" >> $(DEFAULT_DIR)/default.conf
+	@echo "	index index.html;" >> $(DEFAULT_DIR)/default.conf
+	@echo "	location / {" >> $(DEFAULT_DIR)/default.conf
+	@echo "		index index.html;" >> $(DEFAULT_DIR)/default.conf
+	@echo "	}" >> $(DEFAULT_DIR)/default.conf
+	@echo "}" >> $(DEFAULT_DIR)/default.conf
 
 re: fclean all
 
