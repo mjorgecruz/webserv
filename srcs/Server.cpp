@@ -148,6 +148,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
 
     if  (firstWord != "server")
         custtomServerThrow("Expected 'server' keyword at the beginning of the server block");
+    
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
@@ -157,7 +158,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     {
         while (std::getline(file, line))
         {
-            if (line.find_first_not_of(" \t") == std::string::npos)
+            if (line.find_first_not_of(" \t") == std::string::npos || line[0] == '#')
                 continue;
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
@@ -177,20 +178,18 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
 
     if (!serverBracket)
         custtomServerThrow("Missing opening '{' in block");
+
     while (std::getline(file, line))
     {
-        if (line.find_first_not_of(" \t") == std::string::npos)
+        if (line.find_first_not_of(" \t") == std::string::npos || line[0] == '#')
             continue;
-          
         line.erase(0, line.find_first_not_of(" \t"));
         line.erase(line.find_last_not_of(" \t") + 1);
         if (line == "}")
             break;
-
         std::istringstream iss(line);
         std::string keyword;
         iss >> keyword;
-
         if (keyword == "location")
         {
             Location *location = new Location();
@@ -210,6 +209,78 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     }
     this->setDefaultProperties();
 }
+
+// void Server::serverChecker(std::string &line, std::ifstream &file)
+// {
+//     bool serverBracket = false;
+//     std::istringstream iss(line);
+//     std::string firstWord;
+//     iss >> firstWord;
+
+//     if  (firstWord != "server")
+//         custtomServerThrow("Expected 'server' keyword at the beginning of the server block");
+//     std::string remaining;
+//     std::getline(iss, remaining);
+//     remaining.erase(0, remaining.find_first_not_of(" \t"));
+//     remaining.erase(remaining.find_last_not_of(" \t") + 1);
+
+//     if (remaining != "{")
+//     {
+//         while (std::getline(file, line))
+//         {
+//             if (line.find_first_not_of(" \t") == std::string::npos)
+//                 continue;
+//             line.erase(0, line.find_first_not_of(" \t"));
+//             line.erase(line.find_last_not_of(" \t") + 1);
+//             if (line == "{")
+//             {
+//                 serverBracket = true;
+//                 break;
+//             }
+//             else if (!line.empty())
+//                 custtomServerThrow("Expected '{' after 'server' keyword\n");
+//         }
+//     }
+//     else
+//     {
+//         serverBracket = true;
+//     }
+
+//     if (!serverBracket)
+//         custtomServerThrow("Missing opening '{' in block");
+//     while (std::getline(file, line))
+//     {
+//         if (line.find_first_not_of(" \t") == std::string::npos)
+//             continue;
+          
+//         line.erase(0, line.find_first_not_of(" \t"));
+//         line.erase(line.find_last_not_of(" \t") + 1);
+//         if (line == "}")
+//             break;
+
+//         std::istringstream iss(line);
+//         std::string keyword;
+//         iss >> keyword;
+
+//         if (keyword == "location")
+//         {
+//             Location *location = new Location();
+//             try
+//             {
+//                 location->parseLocation(line, file);
+//                 _locations.push_back(std::make_pair(location->getPath(), location));
+//             }
+//             catch (Location::exceptionAtLocation &e) 
+//             {
+//                 delete location;
+//                 custtomServerThrow("Location Creation Error @ ServerChecker");
+//             }
+//         }
+//         else
+//             serverKeywords(keyword, line);
+//     }
+//     this->setDefaultProperties();
+// }
 
 void Server::serverKeywords(std::string key, std::string &line)
 {

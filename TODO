@@ -40,6 +40,7 @@
 [V] 52. create infinite loop page in cgi python
 [V] 53. create page with errors in cgi python
 [V] 54. Passwords file must be empty or have only user:password lines
+[V] 55. add comments to conf file - only outside servers and starting with '#'
 [V] 57. rever implementação de session management
 [ ] 8. verificar codigos de erro
 [ ] 10. verificar e criar std::exceptions()
@@ -52,5 +53,4 @@ LUIS [ ] 31. having multiple location blocks with the exact same path is not all
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
 JORGE [ ] 43. implement alarm to limit time for reply to request
-LUIS [ ] 55. add comments to conf file - only outside servers and starting with '#'
 LUIS [ ] 56. rever costtumthrows()

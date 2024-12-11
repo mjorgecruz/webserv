@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/10 21:57:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 10:00:46 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,50 +26,44 @@ Http::Http( void )
 void Http::webservInitializer(std::string confPath)
 {
     std::ifstream file(confPath.c_str());
-    if(file)
+    if (file)
     {
         std::string line;
         
         while (std::getline(file, line))
         {
-            if (line.find_first_not_of(" \t") == std::string::npos)
+            size_t comment_pos = line.find_first_of('#');
+            if (comment_pos != std::string::npos)
+                line = line.substr(0, comment_pos); 
+            line.erase(0, line.find_first_not_of(" \t"));
+            line.erase(line.find_last_not_of(" \t") + 1);
+
+            if (line.empty())
                 continue;
+            Server *server = new Server();
+            try
+            {
+                server->serverChecker(line, file);
+            }
+            catch (Server::exceptionAtServer &e)
+            {
+                delete server;
+                std::cout << "\033[1;31mAt serverChecker ->  HTTP.cpp @ex \033[0m" << std::endl;
+                throw(std::exception());
+            }
+            if (server)
+                addServerToList(server);
             else
             {
-                Server *server = new Server();
-                try
-                {
-                    server->serverChecker(line, file);
-                }
-                catch (Server::exceptionAtServer &e)
-                {
-                    delete server;
-                    std::cout << "\033[1;31mAt serverChecker ->  HTTP.cpp @ex \033[0m" << std::endl;
-                    throw(std::exception());
-                }
-                
-                if (server)
-                    addServerToList(server);
-                else
-                {
-                    std::cout << "\033[1;31maddServerToList ->  HTTP.cpp @ex \033[0m" << std::endl;
-                    throw(std::exception());
-                }
+                std::cout << "\033[1;31maddServerToList ->  HTTP.cpp @ex \033[0m" << std::endl;
+                throw(std::exception());
             }
         }
         file.close();
-    
         for (size_t i = 0; i < _listServers.size(); i++)
         {
             _listServers[i]->printConfig();
         }
-
-        // exit(1);
-        ///////////////////////////////////////////////////
-        //comment this exit to make the program run again//
-        //uncomment it to run the make test command      //
-        ///////////////////////////////////////////////////
-                
         for (size_t i = 0; i < _listServers.size(); i++)
         {
             _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
@@ -93,7 +87,6 @@ void Http::addServerToList(Server *server)
     _listServers.push_back(server);
 }
 
-
 Http::~Http( void )
 {
     close(_epollFd);
@@ -103,7 +96,6 @@ Http::~Http( void )
         delete(_listServers[i]);
     }
 }
-
 
 void Http::addEpollServer( Server *server )
 {
