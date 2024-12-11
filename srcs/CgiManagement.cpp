@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CgiManagement.cpp                                  :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/06 13:38:21 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:33:46 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "CgiManagement.hpp"
 
@@ -164,16 +164,15 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         close(inputFd);
         close(outputFd);
         
-        char **args = (char **) malloc( sizeof(char *) * 3);
-        args[0] = strdup(info._cgiPath.c_str());
-        args[1] = strdup(file.c_str());
-        args[2] = NULL;
-        if(execve(args[0], args, envp.data()) == -1)
+        std::vector<char*> args;
+        args.push_back(strdup(info._cgiPath.c_str()));
+        args.push_back(strdup(file.c_str()));
+        args.push_back(NULL); 
+        if (execve(args[0], args.data(), envp.data()) == -1)
         {
-            std::cout << "execve error" << std::endl;
+            std::cerr << "execve error" << std::endl;
             free(args[0]);
             free(args[1]);
-            free(args);
             exit(EXIT_FAILURE);
         }
     }
@@ -214,7 +213,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     envp.push_back(NULL);
     
     char inputTemplate[] = "/tmp/cgi_input_XXXXXX";
-    char outputTemplate[] = "/tmp/cgi_input_XXXXXX";
+    char outputTemplate[] = "/tmp/cgi_output_XXXXXX";
     int inputFd = mkstemp(inputTemplate);
     int outputFd = mkstemp(outputTemplate);
     if (inputFd == -1 || outputFd == -1)
@@ -244,38 +243,40 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         close(inputFd);
         close(outputFd);
         
-        char **args = (char **) malloc( sizeof(char *) * 3);
-        args[0] = strdup(info._cgiPath.c_str());
-        args[1] = strdup(file.c_str());
-        args[2] = NULL;
-        if(execve(args[0], args, envp.data()) == -1)
+        std::vector<char*> args;
+        args.push_back(strdup(info._cgiPath.c_str()));
+        args.push_back(strdup(file.c_str()));
+        args.push_back(NULL);
+        
+        if (execve(args[0], args.data(), envp.data()) == -1)
         {
-            std::cout << "execve error" << std::endl;
+            std::cerr << "execve error" << std::endl;
             free(args[0]);
             free(args[1]);
-            free(args[2]);
-            free(args);
             exit(EXIT_FAILURE);
         }
     }
     else
     {
         int status;
-        close(inputFd);
         waitpid(pid, &status, 0);
+        close(inputFd);
         
         char buffer[1024];
         ssize_t bytes_read;
 
         lseek(outputFd, 0, SEEK_SET);
+        //std::ofstream outputFile(file.c_str());
         while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
         {
-            if (bytes_read == -1)
-                break;
+            // if (bytes_read == -1)
+            //     break;
             buffer[bytes_read] = '\0';
             content += buffer;
+           // outputFile << buffer;
         }
         close(outputFd);
+        //outputFile.close();
         unlink(inputTemplate);
         unlink(outputTemplate);
         info._status = 200;

@@ -20,6 +20,7 @@ Server::Server()
     std::vector<std::string> possibleErrors;
     possibleErrors.push_back("204");
     possibleErrors.push_back("301");
+    possibleErrors.push_back("401");
     possibleErrors.push_back("403");
     possibleErrors.push_back("404");
     possibleErrors.push_back("409");

@@ -5,6 +5,7 @@
 [V] 4. Função de procura de locations
 [V] 5. Teste extensivo de preenchimento dos dados no t_info
 [V] 6. cgi-php classe para tratar disso
+[V] 7. session management and cookies
 [V] 9. criar erro de server se não encontrar o ficheiro de erro
 [V] 11. Resolver relink do makefile
 [V] 12. Redirects
@@ -28,6 +29,7 @@
 [V] 32. Define how to clean the request sent in chunks
 [V] 34. POST error 100000000
 [V] 35. Cant find the cgi path
+[V] 38. /post_body location, what happens if I send a request to /post_body1 
 [V] 44. add auth_basic and auth_basic_user_file to possible location keywords ()
 [V] 45. create function response.writePage401(info)
 [V] 47. check if auth is needed and was made on Http.cpp
@@ -37,7 +39,7 @@
 [V] 52. create infinite loop page in cgi python
 [V] 53. create page with errors in cgi python
 [V] 54. Passwords file must be empty or have only user:password lines
-[ ] 7. session management and cookies
+[V] 57. rever implementação de session management
 [ ] 8. verificar codigos de erro
 [ ] 10. verificar e criar std::exceptions()
 [ ] 22. if I add index script.py; it should try cgi first
@@ -45,7 +47,6 @@ LUIS [ ] 31. having multiple location blocks with the exact same path is not all
 [ ] 33. Verify that two files can be sent at the same time (2 multipart)
 [ ] 36. Confirm size of content to close recv. Gifs sometimes send /r/n/r/n in the middle
 [ ] 37. Query strings (paths com ?)
-[ ] 38. /post_body location, what happens if I send a request to /post_body1 
 [ ] 39. * are only usable for files
 [ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
@@ -53,4 +54,3 @@ JORGE [ ] 43. implement alarm to limit time for reply to request
 [ ] 48. create single function for all cgi
 LUIS [ ] 55. add comments to conf file - only outside servers and starting with '#'
 LUIS [ ] 56. rever costtumthrows()
-JORGE [ ] 57. rever implementação de session management

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 22:28:16 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:36:55 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,10 @@ void HttpResponse::setGetHeader(std::string sessionId)
 void HttpResponse::setPostHeader(std::string sessionId)
 {
     std::ostringstream bufferM;
+    std::string result;
+    result = "";
+    if(_status == 200)
+        result = "OK";
     if (_status == 403)
     {
         bufferM << "HTTP/1.1 " << _status << " Forbidden"
@@ -59,7 +63,7 @@ void HttpResponse::setPostHeader(std::string sessionId)
     }
     else
     {
-        bufferM << "HTTP/1.1 " << _status
+        bufferM << "HTTP/1.1 " << _status << " " << result
                 << "\r\ncontent-type: " << _contentType
                 << "\r\nserver: " << _host
                 << "\r\ncontent-length: " << _contentLength
@@ -137,9 +141,10 @@ void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &re
         try
         {
             if (info._cgiPath.empty())
+            {
                 writeNormalPage(path, info);
+            }
             else
-
                 writeCgiPage(path, info, request);
         }
         catch (HttpRequest::HttpPageNotFoundException &e)
@@ -200,10 +205,10 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
     CgiManagement pageCreate;
-    if (info._cgiPath.find("ubuntu_cgi_tester"))
+    // if (info._cgiPath.find("ubuntu_cgi_tester"))
         pageCreate.solveCgiTester(path, info, content, request);
-    else
-        pageCreate.solveCgiPhp(path, info, content, request);
+    // else
+    //     pageCreate.solveCgiPhp(path, info, content, request);
 
     //find type of response
     size_t h1 = content.find("Content-type: ");
@@ -215,7 +220,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     std::string type = "*/*";
     if (h1 != std::string::npos)
     {
-        std::string type = content.substr(h1 + 14 , h2 - h1 - 14);
+        type = content.substr(h1 + 14 , h2 - h1 - 14);
     }
     //find status of response
     h1 = content.find("Status: ");

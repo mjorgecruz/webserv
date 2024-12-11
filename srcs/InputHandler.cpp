@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 17:50:17 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:42:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,10 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     std::string content = "";
     struct stat test;
     std::fstream file;
+    if (path.find("/") != 0 && info._root.find_last_of("/") != info._root.size() - 1)
+    { 
+        info._root += "/";
+    }
     path = info._root + path;
     std::string full_path = path;
     full_path = full_path.substr(0, full_path.size() - 1 );
@@ -75,15 +79,15 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     else
         path = path.substr(0, path.size() - 1);
     std::cout << path << std::endl;
-    file.open(path.c_str(), std::ios::out);
+    file.open(path.c_str());
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
     CgiManagement pageCreate;
-    if (info._cgiPath.find("ubuntu_cgi_tester"))
-        pageCreate.solveCgiTester(path, info, content, request);
-    else
-        pageCreate.solveCgiPhp(path, info, content, request);
+    // if (info._cgiPath.find("ubuntu_cgi_tester"))
+    pageCreate.solveCgiTester(path, info, content, request);
+    // else
+    //     pageCreate.solveCgiPhp(path, info, content, request);
     
     //find type of response
     size_t h1 = content.find("Content-type: ");
@@ -127,6 +131,7 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
 
 
     response.setContent(content);
+    response.setContentType(type);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 22:01:53 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/10 21:57:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -393,9 +393,9 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         sendData(socket, response);
         return;
     }
-    else if(!Info._authFile.empty())
+    else if(!(Info._root + "/.protected").empty())
     {
-        allSessions.fillUsers(Info._authFile);
+        allSessions.fillUsers(Info._root + "/.protected");
     }
     
     //check method
@@ -654,7 +654,7 @@ void Http::sendData(int socket, HttpResponse *response)
         if (result != -1)
         {
             totalSent += result;
-            std::cout << "SENDING----------------------------------------------" << std::endl;
+            std::cout << "SENDING----------------------------------------------------" << std::endl;
         }
     }
 }

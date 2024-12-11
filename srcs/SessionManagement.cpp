@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 15:27:57 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 22:09:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/10 11:57:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ void SessionManagement::sessionControl(std::string fullPath, std::string session
     std::string line;
     getline(login_form, line);
     
-    std::string user = line.substr(line.find("user=") + 5, line.find("&&password=") - 1 - line.find("user=") - 5);
-    std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
+    std::string user = line.substr(line.find("username=") + 9, line.find("&password=") - line.find("username=") - 9);
+    std::string password = line.substr(line.find("&password=") + 10, line.size() - line.find("&password=") - 10);
     try{
         handleLogin(user, password, sessionId);
     }
@@ -117,8 +117,25 @@ void SessionManagement::handleDelete(std::string fullPath, std::string sessionId
     
     if (_sessions.find(sessionId) != _sessions.end())
     {
-        _userData.erase(_sessions.find(sessionId)->second);
+        std::string user = _sessions.find(sessionId)->second;
+        _userData.erase(user);
+        std::ifstream infile((info._root + "/.protected").c_str());
+        std::ofstream tempFile((info._root + "/temp").c_str());
+        std::string line;
+        while (getline(infile, line))
+        {
+            if (line.find(user + ":") != 0)
+            {
+                tempFile << line << std::endl;
+            }
+        }
+        infile.close();
+        tempFile.close();
+
+        std::remove((info._root + "/.protected").c_str());
+        std::rename((info._root + "/temp").c_str(), (info._root + "/.protected").c_str());
     }
+    
 }
 
 void SessionManagement::handleCreate(std::string fullPath, std::string sessionId, HttpResponse &response, t_info &info)
@@ -130,9 +147,15 @@ void SessionManagement::handleCreate(std::string fullPath, std::string sessionId
     std::string line;
     getline(create_form, line);
 
-    std::string user = line.substr(line.find("user=") + 5, line.find("&&password=") - 1 - line.find("user=") - 5);
-    std::string password = line.substr(line.find("&&password=") + 11, line.size() - line.find("&&password=") - 11);
+    std::string user = line.substr(line.find("username=") + 9, line.find("&password=") - line.find("username=") - 9);
+    std::string password = line.substr(line.find("&password=") + 10, line.size() - line.find("&password=") - 10);
     addUser(user, password);
+    std::ofstream user_file((info._root + "/.protected").c_str(), std::ios::app);
+    if (user_file.is_open())
+    {
+        user_file << user << ":" << password << std::endl;
+        user_file.close();
+    }
 }
 
 std::string SessionManagement::generateCookie()
@@ -159,7 +182,7 @@ void SessionManagement::fillUsers(std::string authFile)
     
     while(getline(file, line))
     {
-        std::string user = line.substr(0, line.find(":") - 1);
+        std::string user = line.substr(0, line.find(":"));
         std::string pass = line.substr(line.find(":") + 1, line.size() - 1 - line.find(":"));
         _userData[user] = pass;
     }
