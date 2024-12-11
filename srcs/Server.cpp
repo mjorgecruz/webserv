@@ -196,6 +196,13 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             try
             {
                 location->parseLocation(line, file);
+                for (size_t i = 0; i < _locations.size(); ++i)
+                {
+                    if (_locations[i].first == location->getPath())
+                    {
+                        custtomServerThrow("Location Path Duplication");
+                    }
+                }
                 _locations.push_back(std::make_pair(location->getPath(), location));
             }
             catch (Location::exceptionAtLocation &e) 

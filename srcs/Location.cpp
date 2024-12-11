@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 20:41:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 11:11:05 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     }
     if(locationPath[0] != '/' )
         custtomLocationThrow("Invalid Location Path");
-    _path = locationPath;
+    this->_path = locationPath;
 
     std::string remaining;
     std::getline(iss, remaining);
