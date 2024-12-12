@@ -16,7 +16,7 @@
 Server::Server()
 {
     _maxBodySize = 0;
-    
+    _hasSocket = false;
     std::vector<std::string> possibleErrors;
     possibleErrors.push_back("204");
     possibleErrors.push_back("301");
@@ -213,7 +213,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
             catch (Location::exceptionAtLocation &e) 
             {
                 delete location;
-                custtomServerThrow("Location Creation Error @ ServerChecker");
+                custtomServerThrow("In Location");
             }
         }
         else
@@ -227,10 +227,10 @@ void Server::serverKeywords(std::string key, std::string &line)
     line.erase(line.find_last_not_of(" \t") + 1);
 
     if (line[line.size() -1] != ';')
-        custtomServerThrow("Expecting ';' .");
+        custtomServerThrow("Expecting a ';'");
     line = line.substr(0, line.size() - 1);
     if (line.empty())
-        custtomServerThrow("Expecting ';' .");
+        custtomServerThrow("Expecting a ';'");
     if (key == "listen")
         keywordListen(line);
     else if (key == "server_name")
@@ -340,14 +340,14 @@ void Server::keywordListen(std::string &line)
             octetCount++;
         }
         if (octetCount != 4 || !validIP)
-            custtomServerThrow("Invalid IP: " + host);
+            custtomServerThrow("Invalid IP: " + host + ".");
         setHost(host);
         char* end;
         errno = 0;
         long portValue = std::strtol(portStr.c_str(), &end, 10);
 
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-            custtomServerThrow("Invalid Port: " + portStr);
+            custtomServerThrow("Invalid Port: " + portStr + ".");
         port = static_cast<int>(portValue);
     }
     else
@@ -356,14 +356,14 @@ void Server::keywordListen(std::string &line)
         errno = 0;
         long portValue = std::strtol(address.c_str(), &end, 10);
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-                    custtomServerThrow("Invalid Port: " + address );
+                    custtomServerThrow("Invalid Port: " + address + ".");
         port = static_cast<int>(portValue);
     }
     std::string extraStuffinLine;
     iss >> extraStuffinLine;
 
     if(!extraStuffinLine.empty())
-        custtomServerThrow("Listen.");
+        custtomServerThrow("Invalid Listen content.");
     setPorts(port);
 }
 
@@ -378,7 +378,7 @@ void Server::keywordServerName(std::string &line)
     if (hostname.empty())
         custtomServerThrow("server_name unused.");
     if (hostname.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.") != std::string::npos || hostname[0] == '-' || hostname[hostname.size() - 1] == '-')
-        custtomServerThrow("Invalid server_name: " + hostname);
+        custtomServerThrow("Invalid server_name: " + hostname + ".");
     hostnames.push_back(hostname);
 
     while (iss >> hostname)
@@ -399,17 +399,17 @@ void Server::keywordIndex(std::string &line)
     iss >> indexName;
 
     if(indexName.empty())
-        custtomServerThrow("Server Block: Index empty");
+        custtomServerThrow("Keyword Index no content");
 
     index.clear();
     
     if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-            custtomServerThrow("Index format");
+            custtomServerThrow("Invalid Index format");
     index.push_back(indexName);
     while (iss >> indexName)
     {
         if (indexName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.") != std::string::npos)
-            custtomServerThrow("Index format");
+            custtomServerThrow("Invalide Index format");
         index.push_back(indexName);
     }
     setIndex(index);
@@ -425,11 +425,11 @@ void Server::keywordRoot(std::string &line)
     iss >> root;
     iss >> temp;
     if (!temp.empty())
-        custtomServerThrow("root invalid");
+        custtomServerThrow("invalid Keyword root");
     if (root.empty())
-        custtomServerThrow("root invalid");
+        custtomServerThrow("invalid Keyword root");
     if (root[0] != '/')
-        custtomServerThrow("root invalid");
+        custtomServerThrow("invalid Keyword root");
     setRoot(root);
 }
 
@@ -450,7 +450,7 @@ void Server::keywordErrorPages(std::string &line)
             if (isValidError(errorCode))
                 errorCodes.push_back(errorCode);
             else
-                custtomServerThrow("Invalid error code.");
+                custtomServerThrow("Invalid error code value.");
         }
         else
         {
@@ -484,13 +484,13 @@ void Server::keywordMaxBodySize(std::string &line)
         maxBodySize *= 1024 * 1024;
     }
     else if (*end != '\0')
-        custtomServerThrow("Invalid max_body_size");
+        custtomServerThrow("Invalid client_max_body_size");
 
     if (maxBodySize <= 0)
-        custtomServerThrow("Invalid max_body_size (overflow or negative value)");
+        custtomServerThrow("Invalid client_max_body_size (overflow or negative value)");
     iss >> extra;
     if(!extra.empty())
-        custtomServerThrow("max_body_size");
+        custtomServerThrow("keyword client_max_body_size invalid");
     _maxBodySize = maxBodySize;
 }
 
@@ -518,3 +518,13 @@ const char *Server::exceptionAtServer::what(void) const throw()
 {
     return ("Error: At Parsing Server");
 };
+
+void Server::setHasSocket(bool value)
+{
+    this->_hasSocket = value;
+}
+
+bool Server::checkSocketExistence(void)
+{
+    return _hasSocket;
+}

@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 18:30:07 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 18:40:44 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,9 @@
 Http::Http( void )
 {
 	int epoll_fd = epoll_create(1);
-
-	if (epoll_fd == -1) {
-        std::cout << "\033[33mHttp() ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
-	}
+    this->_validConf = false;
+	if (epoll_fd == -1)
+        throw(ExectutionException());
     _epollFd = epoll_fd;
 }
 
@@ -48,16 +46,14 @@ void Http::webservInitializer(std::string confPath)
             catch (Server::exceptionAtServer &e)
             {
                 delete server;
-                std::cout << "\033[1;31mAt serverChecker ->  HTTP.cpp @ex \033[0m" << std::endl;
-                throw(std::exception());
+                throw(ConfigurationFailedException());
             }
             if (server)
-                addServerToList(server);
-            else
             {
-                std::cout << "\033[1;31maddServerToList ->  HTTP.cpp @ex \033[0m" << std::endl;
-                throw(std::exception());
+                addServerToList(server);
             }
+            else
+                throw(ExectutionException());
         }
         file.close();
         for (size_t i = 0; i < _listServers.size(); i++)
@@ -69,17 +65,18 @@ void Http::webservInitializer(std::string confPath)
             _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
         }
         this->addServersToEpoll();
-        
         return ;
     }
     Server *server = new Server();
     server->setConfigs("");
     this->addServerToList(server);
+    
     for (size_t i = 0; i < _listServers.size(); i++)
     {
         _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+        _listServers[i]->setHasSocket(true);
     }
-    this->addServersToEpoll();  
+    this->addServersToEpoll();
 }
 
 void Http::addServerToList(Server *server)
@@ -92,7 +89,8 @@ Http::~Http( void )
     close(_epollFd);
     for (size_t i = 0; i < _listServers.size(); i++)
     {
-        close(_listServers[i]->getSocketFd());
+        if(_listServers[i]->checkSocketExistence() == true)
+            close(_listServers[i]->getSocketFd());
         delete(_listServers[i]);
     }
 }
@@ -104,10 +102,7 @@ void Http::addEpollServer( Server *server )
 	event.data.fd = server->getSocketFd();
     
     if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, server->getSocketFd(), &event) == -1)
-    {
-        std::cout << "\033[33mepoll_ctl ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
-    }
+        throw(ExectutionException());
 }
 
 void Http::addServersToEpoll( void )
@@ -123,10 +118,7 @@ Server *Http::operator[](int num)
 {
     int len = this->_listServers.size();
     if (num >= len)
-    {
-        std::cout << "\033[33moperator[] ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
-    }
+        throw(ExectutionException());
     return this->_listServers[num];
 }
 
@@ -277,7 +269,8 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
         //session config
         std::string sessionId = allSessions.sessionConfig(*request);
         
-        try{
+        try
+        {
             this->reply(socket, request, response, correctServer, sessionId);
         }
         catch (std::exception &e)
@@ -301,10 +294,7 @@ std::vector<Server *> Http::findCorrespondingServer(int socket)
     std::vector<Server *> correspondingServers;
     
     if (getsockname(socket, (sockaddr *) &addr, &len) == -1)
-    {
-        std::cout << "\033[33mgetsockname ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
-    }
+        throw(ExectutionException());
     int port = ntohs(addr.sin_port);
     std::string address = inet_ntoa(addr.sin_addr);
     
@@ -321,8 +311,8 @@ std::vector<Server *> Http::findCorrespondingServer(int socket)
     }
     if (serverNumber == _listServers.size() && correspondingServers.empty())
     {
-        std::cout << "\033[33mfindCorrespondingServer() ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
+        std::cerr << "\033[33mFinding Corresponding Server @ HTTP\033[0m" << std::endl;
+        throw(ExectutionException());
     }
     return (correspondingServers);
 }
@@ -369,7 +359,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     //check version
     if (httpVersion != "HTTP/1.1")
     {
-        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
         std::cerr << "Unsupported Http version" << std::endl;
         response->setStatus(505);
         response->writeErrorPage(Info, 505);
@@ -483,8 +472,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     }
     if (i == Info._allowedMethods.size())
     {
-        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
+        std::cerr << "\033[33mIn HTTP @ reply\033[0m" << std::endl;
+        throw(ExectutionException());
     }
     std::cout << response->getHeader()<< std::endl;
     sendData(socket, response);
@@ -691,10 +680,17 @@ void Http::sendData(int socket, HttpResponse *response)
     //alarm(0);
 }
 
-    
-
-
 const char *Http::MaxBodySizeException::what( void ) const throw()
 {
     return "Max body size reached";
+}
+
+const char *Http::ConfigurationFailedException::what(void) const throw()
+{
+    return "Invalid Configuration File";
+}
+
+const char *Http:: ExectutionException::what(void) const throw()
+{
+    return "Execution Error Detected:\nProgram Closed.\n";
 }
