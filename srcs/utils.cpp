@@ -1,6 +1,7 @@
 #include "general.hpp"
 
-void handle_alarm(int sig) {
+void handle_alarm(int sig)
+{
     (void) sig;
     std::cerr << "Timeout occurred while sending data" << std::endl;
     throw std::runtime_error("Timeout occurred");
@@ -34,15 +35,15 @@ bool isNumeric(const std::string &str)
 
 void custtomServerThrow(std::string str)
 {
-    std::cout << "\033[1;31mERROR -> Server: \033[0m";
-    std::cout << str << std::endl;
+    std::cerr << "\033[1;31mServer Block: \033[0m";
+    std::cerr << str << std::endl;
     throw Server::exceptionAtServer();
 }
 
 void custtomLocationThrow(std::string str)
 {
-    std::cout << "\033[1;31mERROR: -> Location: \033[0m";
-    std::cout << str << std::endl;
+    std::cerr << "\033[1;31mLocation Block: \033[0m";
+    std::cerr << str << std::endl;
     throw Location::exceptionAtLocation();
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:37:38 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:27:21 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,18 @@ class Http
 
         
         class MaxBodySizeException: public std::exception
+        {
+            public:
+                const char *what( void ) const throw();
+        };
+
+        class ConfigurationFailedException: public std::exception
+        {
+            public:
+                const char *what( void ) const throw();
+        };
+
+        class ExectutionException: public std::exception
         {
             public:
                 const char *what( void ) const throw();

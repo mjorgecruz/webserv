@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 13:18:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:13:03 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
             if (!remaining.empty())
                 custtomLocationThrow("autoindex");
         }
-        else if (keyword == "max_body_size")
+        else if (keyword == "client_max_body_size")
         {
             hasValidKeywords = true;
             keywordMaxBodySize(iss);
