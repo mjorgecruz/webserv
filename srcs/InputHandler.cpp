@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 11:20:58 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 19:40:40 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "InputHandler.hpp"
 
@@ -70,15 +70,14 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     }
     path = info._root + path;
     std::string full_path = path;
-    full_path = full_path.substr(0, full_path.size() - 1 );
+    //full_path = full_path.substr(0, full_path.size() - 1 );
     if (stat(full_path.c_str(), &test) == 0)
     {
-        if (S_ISREG(test.st_mode))
+        if (S_ISREG(test.st_mode) && path.find_last_of("/") == path.size() -1 )
             path = path.substr(0, path.size() - 1);
     }
-    else
+    else if (path.find_last_of("/") == path.size() - 1)
         path = path.substr(0, path.size() - 1);
-    std::cout << path << std::endl;
     file.open(path.c_str());
     if (!file.is_open())
     {

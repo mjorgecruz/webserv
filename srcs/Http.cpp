@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 18:40:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 20:13:59 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -277,7 +277,8 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
         {
             std::cerr << "Bad Request" << std::endl;
             response->setStatus(405);
-            response->setLength(0);
+            response->setContent("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>405 Method Not Allowed</title></head><body><h1>405 Method Not Allowed</h1><p>The requested method is not allowed for the URL.</p></body></html>");
+            response->setLength(response->getContent().size());
             response->setPostHeader(sessionId);
             sendData(socket, response);
         }
@@ -559,10 +560,11 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             iter++;
         }
         temp = temp.substr(pathToRemove.size(), temp.size());
-        if (path.find_last_of("/") != path.size() - 1)
-            path = temp.substr(0, temp.size() - 1);
-        else
+        if (path.find_last_of("/") == path.size() - 1)
             path = temp;
+        else
+            path = temp.substr(0, temp.size() - 1);
+        std::cout << path << std::endl;
         return it;
     }
 }

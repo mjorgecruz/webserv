@@ -29,11 +29,6 @@
     </form>  
 
     <h2>Send a DELETE Request</h2>
-    <form id="uploadForm" action="/submit/" method="delete" enctype="multipart/form-data">
-        <input type="file" id="fileInput" name="file" style="display: none;" onchange="submitForm()">
-        <button type="button" class="button" onclick="sendDeleteRequest()">Choose File to Delete</button>
-    </form>  
-
     <form onsubmit="event.preventDefault(); sendDeleteRequest();">
         <label for="fileName">Enter filename to delete:</label><br>
         <input type="text" id="fileName" name="fileName" placeholder="e.g., file.txt"><br><br>
