@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 15:38:36 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/12 18:22:59 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Http::Http( void )
 {
 	int epoll_fd = epoll_create(1);
-
+    this->_validConf = false;
 	if (epoll_fd == -1)
         throw(ExectutionException());
     _epollFd = epoll_fd;
@@ -49,7 +49,9 @@ void Http::webservInitializer(std::string confPath)
                 throw(ConfigurationFailedException());
             }
             if (server)
+            {
                 addServerToList(server);
+            }
             else
                 throw(ExectutionException());
         }
@@ -63,17 +65,18 @@ void Http::webservInitializer(std::string confPath)
             _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
         }
         this->addServersToEpoll();
-        
         return ;
     }
     Server *server = new Server();
     server->setConfigs("");
     this->addServerToList(server);
+    
     for (size_t i = 0; i < _listServers.size(); i++)
     {
         _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+        _listServers[i]->setHasSocket(true);
     }
-    this->addServersToEpoll();  
+    this->addServersToEpoll();
 }
 
 void Http::addServerToList(Server *server)
@@ -86,7 +89,8 @@ Http::~Http( void )
     close(_epollFd);
     for (size_t i = 0; i < _listServers.size(); i++)
     {
-        close(_listServers[i]->getSocketFd());
+        if(_listServers[i]->checkSocketExistence() == true)
+            close(_listServers[i]->getSocketFd());
         delete(_listServers[i]);
     }
 }

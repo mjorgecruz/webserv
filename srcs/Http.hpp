@@ -6,7 +6,7 @@
 /*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 15:27:21 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/12 18:10:25 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ class Http
     private:
         int _epollFd;
         std::vector<Server *> _listServers;
+        bool _validConf;
 
     public:
         SessionManagement allSessions;

@@ -21,6 +21,7 @@ class Server : public Socket
         std::vector<std::string> _allowedMethods;
         long _maxBodySize;
         int _autoIndex;
+        bool _hasSocket;
     
         Server(const Server & src);
 
@@ -42,8 +43,9 @@ class Server : public Socket
         std::vector<std::string> getAllowedMethods();
         int getMaxBodySize();
         int getAutoIndex();
+        bool checkSocketExistence(void);
 
-
+        void setHasSocket(bool value);   
         void setHost(std::string host);
         void setPorts(int port);
         void setHostname( std::vector<std::string> hostnames);

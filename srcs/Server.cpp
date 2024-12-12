@@ -16,7 +16,7 @@
 Server::Server()
 {
     _maxBodySize = 0;
-    
+    _hasSocket = false;
     std::vector<std::string> possibleErrors;
     possibleErrors.push_back("204");
     possibleErrors.push_back("301");
@@ -518,3 +518,13 @@ const char *Server::exceptionAtServer::what(void) const throw()
 {
     return ("Error: At Parsing Server");
 };
+
+void Server::setHasSocket(bool value)
+{
+    this->_hasSocket = value;
+}
+
+bool Server::checkSocketExistence(void)
+{
+    return _hasSocket;
+}
