@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 13:18:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 18:30:07 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
         close(client_fd);
     }
-    std::cout<< "Added: " << client_fd << std::endl;
+    //std::cout<< "Added: " << client_fd << std::endl;
 }
 
 void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * request)
@@ -392,7 +392,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     struct stat entryInfo;
     if (stat(full_path.c_str(), &entryInfo) == 0)
     {
-         if (S_ISDIR(entryInfo.st_mode))
+         if (S_ISDIR(entryInfo.st_mode) && path.find("/") != path.size() - 1)
             path = path + "/";
     }
 
@@ -570,7 +570,10 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             iter++;
         }
         temp = temp.substr(pathToRemove.size(), temp.size());
-        path = temp;
+        if (path.find_last_of("/") != path.size() - 1)
+            path = temp.substr(0, temp.size() - 1);
+        else
+            path = temp;
         return it;
     }
 }

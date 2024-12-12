@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 11:38:34 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 17:45:02 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,10 +216,7 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
         throw(HttpRequest::HttpPageNotFoundException());
     file.close();
     CgiManagement pageCreate;
-    // if (info._cgiPath.find("ubuntu_cgi_tester"))
-        pageCreate.solveCgiTester(path, info, content, request);
-    // else
-    //     pageCreate.solveCgiPhp(path, info, content, request);
+    pageCreate.solveCgiTester(path, info, content, request);
 
     //find type of response
     size_t h1 = content.find("Content-type: ");
@@ -247,6 +244,8 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
         getline(X, line, ' ');
         _status = strtol(line.c_str(), NULL, 10);
     }
+    else
+        _status = 200;
     
     
     //write content

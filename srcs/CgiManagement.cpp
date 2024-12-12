@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 13:12:28 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 17:59:32 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,8 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         std::vector<char*> args;
         args.push_back(strdup(info._cgiPath.c_str()));
         args.push_back(strdup(file.c_str()));
-        args.push_back(NULL); 
+        args.push_back(NULL);
+        alarm(10);
         try{
             if (execve(args[0], args.data(), envp.data()) == -1)
             {
@@ -181,12 +182,19 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         }
         catch (...)
         {
-            exit(EXIT_FAILURE);
+            free(args[0]);
+            free(args[1]);
+            exit(1000);
             alarm(0);
         }
     }
     int status;
     waitpid(pid, &status, 0);
+    if (status == 14 || status == EXIT_FAILURE)
+    {
+        content = "Status: 500\r\nContent-Type: text/html\r\n\r\n<html><body><h1>500 Internal Server Error</h1><p>Server misconfiguration.</p></body></html>";
+        return;
+    }
 
     char buffer[1024];
     ssize_t bytes_read;
@@ -270,7 +278,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         }
         catch (...)
         {
-            exit(EXIT_FAILURE);
+            exit(1000);
             alarm(0);
         }
     }
@@ -278,6 +286,11 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
     {
         int status;
         waitpid(pid, &status, 0);
+        if (status == 14 || status == EXIT_FAILURE)
+        {
+            content = "Status: 500\r\nContent-Type: text/html\r\n\r\n<html><body><h1>500 Internal Server Error</h1><p>Server misconfiguration.</p></body></html>";
+            return;
+        }
         close(inputFd);
         
         char buffer[1024];
