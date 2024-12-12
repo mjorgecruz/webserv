@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 00:36:55 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 11:38:34 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,23 @@ void HttpResponse::setGetHeader(std::string sessionId)
     if(_status == 200)
         result = "OK";
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1 " << _status << " " << result
-            << "\r\ncontent-type: " << _contentType
-            << "\r\nserver:" << _host
-            << "\r\ncontent-length: " << _contentLength
-            << "\r\nset-cookie:" << sessionId
-            << "\r\n\r\n";
+    if (sessionId != "")
+    {
+        bufferM << "HTTP/1.1 " << _status << " " << result
+                << "\r\ncontent-type: " << _contentType
+                << "\r\nserver:" << _host
+                << "\r\ncontent-length: " << _contentLength
+                << "\r\nset-cookie:" << sessionId
+                << "\r\n\r\n";
+    }
+    else
+    {
+        bufferM << "HTTP/1.1 " << _status << " " << result
+                << "\r\ncontent-type: " << _contentType
+                << "\r\nserver:" << _host
+                << "\r\ncontent-length: " << _contentLength
+                << "\r\n\r\n";
+    }
     _header = bufferM.str(); 
 }
 
@@ -341,9 +352,25 @@ void HttpResponse::writeErrorPage(t_info &info, int error)
     setLength(content.size());
 }
 
+void HttpResponse::writeError408()
+{
+    std::string response = 
+        "<html><body><h1>408 Request Timeout</h1><p>The server timed out waiting for the request.</p></body></html>";
+    setContent(response);
+    setLength(response.size());
+}
+
+void HttpResponse::writeError504()
+{
+    std::string response = 
+        "<html><body><h1>504 Gateway Timeout</h1><p>The server did not respond in time. Please try again later.</p></body></html>";
+    setContent(response);
+    setLength(response.size());
+}
+
 void HttpResponse::writeFailError()
 {
-     std::string response = 
+    std::string response = 
         "<html><body><h1>500 Internal Server Error</h1><p>Server misconfiguration.</p></body></html>";
     setContent(response);
     setLength(response.size());

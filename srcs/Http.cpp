@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/10 21:57:09 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 09:16:12 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,8 +252,22 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
     //check for the corresponding server
     std::vector<Server *> correspondingServers;
     correspondingServers = findCorrespondingServer(socket); 
-
-    request->completed = request->completeRequest(socket);
+    try{
+        request->completed = request->completeRequest(socket);
+    }
+    catch (std::exception &e)
+    {
+        std::cerr << "Connection timed out" << std::endl;
+        Server *correctServer = findCorrectServerName(request, correspondingServers);
+        server_fd = correctServer->getSocketFd();
+        HttpResponse *response = new HttpResponse(socket, correctServer);
+        response->setStatus(408);
+        response->writeError408();
+        response->setGetHeader("");
+        sendData(socket, response);
+        delete(response);
+        return;
+    }
 
     if (request->completed)
     {
@@ -346,12 +360,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
     
-    //check version
-    if (httpVersion != "HTTP/1.1")
-    {
-        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
-        throw(std::exception());
-    }
 
     //define location
     std::vector<std::pair <std::string, Location *> > possibleLocations = server->getLocations();
@@ -366,6 +374,18 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     else
         fillStructInfo(Info, server, NULL);
 
+    //check version
+    if (httpVersion != "HTTP/1.1")
+    {
+        std::cout << "\033[33mreply() ->  HTTP.cpp @ex \033[0m" << std::endl;
+        std::cerr << "Unsupported Http version" << std::endl;
+        response->setStatus(505);
+        response->writeErrorPage(Info, 505);
+        response->setGetHeader(sessionId);
+        sendData(socket, response);
+        return;
+    }
+    
     // to print all the fields to console for debuging
     //Info.printInfoConfig();
     
@@ -643,21 +663,39 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
 
 void Http::sendData(int socket, HttpResponse *response)
 {
-    std::string total = response->getHeader() + response->getContent(); 
-    size_t dataSize = total.size();
-    size_t totalSent = 0;
-    const char *data;
-    while (totalSent < dataSize)
+    // signal(SIGALRM, handle_alarm);
+    // alarm(5);
+    try 
     {
-        data = total.c_str() + totalSent;
-        ssize_t result = send(socket, data, dataSize - totalSent, 0);
-        if (result != -1)
+        std::string total = response->getHeader() + response->getContent(); 
+        size_t dataSize = total.size();
+        size_t totalSent = 0;
+        const char *data;
+        while (totalSent < dataSize)
         {
-            totalSent += result;
-            std::cout << "SENDING----------------------------------------------------" << std::endl;
+            data = total.c_str() + totalSent;
+            ssize_t result = send(socket, data, dataSize - totalSent, 0);
+            if (result > 0)
+            {
+                //alarm(5);
+                totalSent += result;
+                std::cout << "SENDING----------------------------------------------------" << std::endl;
+            }
         }
     }
+    catch (std::exception())
+    {
+        response->setStatus(504);
+        response->writeError504();
+        response->setGetHeader("");
+        sendData(socket, response);
+        close(socket);
+        return;
+            
+    }
+    //alarm(0);
 }
+
     
 
 

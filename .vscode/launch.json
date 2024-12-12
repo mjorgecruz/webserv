@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/webserv",
-            "args": ["${workspaceFolder}/eval_test.conf"],
+            "args": ["${workspaceFolder}/exemple.conf"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

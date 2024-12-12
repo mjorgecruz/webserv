@@ -30,6 +30,7 @@
 [V] 34. POST error 100000000
 [V] 35. Cant find the cgi path
 [V] 38. /post_body location, what happens if I send a request to /post_body1 
+[V] 40. case of wrong http version
 [V] 44. add auth_basic and auth_basic_user_file to possible location keywords ()
 [V] 45. create function response.writePage401(info)
 [V] 47. check if auth is needed and was made on Http.cpp
@@ -49,7 +50,6 @@ LUIS [ ] 31. having multiple location blocks with the exact same path is not all
 [ ] 36. Confirm size of content to close recv. Gifs sometimes send /r/n/r/n in the middle
 [ ] 37. Query strings (paths com ?)
 [ ] 39. * are only usable for files
-[ ] 40. case of wrong http version
 [ ] 41. /r/n/r/n does not happen in application form ending, it is defined by content length
 JORGE [ ] 43. implement alarm to limit time for reply to request
 LUIS [ ] 55. add comments to conf file - only outside servers and starting with '#'

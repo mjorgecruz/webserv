@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/10 21:57:33 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 11:36:44 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,9 @@ class HttpResponse
         
         void writeIndexPage(std::string path, t_info  &info);
         void writeErrorPage(t_info &info, int error);
+        void writeError408();
+        void writeError504();
+        
 
         void writeFailError();
         void writeAutoIndex(std::string path, t_info &info);

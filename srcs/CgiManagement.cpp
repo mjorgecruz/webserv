@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 00:33:46 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 12:12:48 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,8 @@ void CgiManagement::solveCgiTester(std::string file, t_info &info, std::string &
     }
 }
 
+
+
 void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &info, std::string &content, HttpRequest &request)
 {
     (void) request;
@@ -168,12 +170,19 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         args.push_back(strdup(info._cgiPath.c_str()));
         args.push_back(strdup(file.c_str()));
         args.push_back(NULL); 
-        if (execve(args[0], args.data(), envp.data()) == -1)
+        try{
+            if (execve(args[0], args.data(), envp.data()) == -1)
+            {
+                std::cerr << "execve error" << std::endl;
+                free(args[0]);
+                free(args[1]);
+                exit(EXIT_FAILURE);
+            }
+        }
+        catch (...)
         {
-            std::cerr << "execve error" << std::endl;
-            free(args[0]);
-            free(args[1]);
             exit(EXIT_FAILURE);
+            alarm(0);
         }
     }
     int status;
@@ -248,12 +257,21 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         args.push_back(strdup(file.c_str()));
         args.push_back(NULL);
         
-        if (execve(args[0], args.data(), envp.data()) == -1)
+        signal(SIGALRM, handle_alarm);
+        alarm(5);
+        try{
+            if (execve(args[0], args.data(), envp.data()) == -1)
+            {
+                std::cerr << "execve error" << std::endl;
+                free(args[0]);
+                free(args[1]);
+                exit(EXIT_FAILURE);
+            }
+        }
+        catch (...)
         {
-            std::cerr << "execve error" << std::endl;
-            free(args[0]);
-            free(args[1]);
             exit(EXIT_FAILURE);
+            alarm(0);
         }
     }
     else

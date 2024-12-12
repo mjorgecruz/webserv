@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/08 02:42:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 10:34:46 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,11 @@ class HttpRequest
         std::string _body;
         std::map<std::string, std::string> _reqProperties;
         std::string _mimeType;
+
+        int counter;
         
     public:
+        
         bool completed;
         HttpRequest();
         ~HttpRequest();
@@ -56,7 +59,12 @@ class HttpRequest
         class HttpPageForbiddenException: public std::exception
         {
             virtual const char *what() const throw();
-        };        
+        };
+        
+        class HttpRequestTimeoutException: public std::exception
+        {
+            virtual const char *what() const throw();
+        };       
 };
 
 

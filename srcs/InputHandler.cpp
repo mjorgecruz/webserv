@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 00:42:25 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 11:20:58 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,12 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     std::cout << path << std::endl;
     file.open(path.c_str());
     if (!file.is_open())
-        throw(HttpRequest::HttpPageNotFoundException());
+    {
+        file.open(path.c_str(), std::ios::out);
+        if (!file.is_open())
+            throw(HttpRequest::HttpPageNotFoundException());
+    }
+        
     file.close();
     CgiManagement pageCreate;
     // if (info._cgiPath.find("ubuntu_cgi_tester"))

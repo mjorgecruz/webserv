@@ -23,12 +23,14 @@ Server::Server()
     possibleErrors.push_back("401");
     possibleErrors.push_back("403");
     possibleErrors.push_back("404");
+    possibleErrors.push_back("408");
     possibleErrors.push_back("409");
     possibleErrors.push_back("413");
     possibleErrors.push_back("500");
     possibleErrors.push_back("502");
     possibleErrors.push_back("503");
     possibleErrors.push_back("504");
+    possibleErrors.push_back("505");
     
     for (size_t i = 0; i < possibleErrors.size(); i++)
     {

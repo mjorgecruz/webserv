@@ -12,7 +12,7 @@ NAME = 	webserv
 DEFAULT_INDEX = index.html
 DEFAULT_DIR = $(HOME)/html
 DEFAULT_CONF = default.conf
-ERROR_FILES := $(DEFAULT_DIR)/204.html $(DEFAULT_DIR)/301.html $(DEFAULT_DIR)/401.html $(DEFAULT_DIR)/403.html $(DEFAULT_DIR)/404.html $(DEFAULT_DIR)/409.html $(DEFAULT_DIR)/413.html $(DEFAULT_DIR)/500.html $(DEFAULT_DIR)/502.html $(DEFAULT_DIR)/503.html $(DEFAULT_DIR)/504.html
+ERROR_FILES := $(DEFAULT_DIR)/204.html $(DEFAULT_DIR)/301.html $(DEFAULT_DIR)/401.html $(DEFAULT_DIR)/403.html $(DEFAULT_DIR)/404.html $(DEFAULT_DIR)/408.html $(DEFAULT_DIR)/409.html $(DEFAULT_DIR)/413.html $(DEFAULT_DIR)/500.html $(DEFAULT_DIR)/502.html $(DEFAULT_DIR)/503.html $(DEFAULT_DIR)/504.html $(DEFAULT_DIR)/505.html
 
 CFLAGS = -Wall -Werror -Wextra -g
 
@@ -127,6 +127,19 @@ $(DEFAULT_DIR)/404.html: $(DEFAULT_DIR)/default.conf
 	@echo "</body>" >> $(HOME)/html/404.html
 	@echo "</html>" >> $(HOME)/html/404.html
 
+$(DEFAULT_DIR)/408.html: $(DEFAULT_DIR)/default.conf
+	@echo "<!DOCTYPE html>" > $(HOME)/html/408.html
+	@echo "<html lang=\"en\">" >> $(HOME)/html/408.html
+	@echo "<head>" >> $(HOME)/html/408.html
+	@echo "	<meta charset=\"UTF-8\">" >> $(HOME)/html/408.html
+	@echo "	<title>Request Timeout</title>" >> $(HOME)/html/408.html
+	@echo "</head>" >> $(HOME)/html/408.html
+	@echo "<body>" >> $(HOME)/html/408.html
+	@echo "	<h1>408 Request Timeout</h1>" >> $(HOME)/html/408.html
+	@echo "	<p>The server timed out waiting for the request.</p>" >> $(HOME)/html/408.html
+	@echo "</body>" >> $(HOME)/html/408.html
+	@echo "</html>" >> $(HOME)/html/408.html
+
 $(DEFAULT_DIR)/409.html: $(DEFAULT_DIR)/default.conf
 	@echo "<!DOCTYPE html>" > $(HOME)/html/409.html
 	@echo "<html lang=\"en\">" >> $(HOME)/html/409.html
@@ -204,6 +217,19 @@ $(DEFAULT_DIR)/504.html: $(DEFAULT_DIR)/default.conf
 	@echo "	<p>The server did not receive a timely response from the upstream server.</p>" >> $(HOME)/html/504.html
 	@echo "</body>" >> $(HOME)/html/504.html
 	@echo "</html>" >> $(HOME)/html/504.html
+
+$(DEFAULT_DIR)/505.html: $(DEFAULT_DIR)/default.conf
+	@echo "<!DOCTYPE html>" > $(HOME)/html/505.html
+	@echo "<html lang=\"en\">" >> $(HOME)/html/505.html
+	@echo "<head>" >> $(HOME)/html/505.html
+	@echo "	<meta charset=\"UTF-8\">" >> $(HOME)/html/505.html
+	@echo "	<title>HTTP Version Not Supported</title>" >> $(HOME)/html/505.html
+	@echo "</head>" >> $(HOME)/html/505.html
+	@echo "<body>" >> $(HOME)/html/505.html
+	@echo "	<h1>505 HTTP Version Not Supported</h1>" >> $(HOME)/html/505.html
+	@echo "	<p>The server does not support the HTTP protocol version used in the request.</p>" >> $(HOME)/html/505.html
+	@echo "</body>" >> $(HOME)/html/505.html
+	@echo "</html>" >> $(HOME)/html/505.html
 
 $(DEFAULT_DIR)/default.conf:
 	@mkdir -p $(DEFAULT_DIR)

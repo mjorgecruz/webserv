@@ -1,5 +1,11 @@
 #include "general.hpp"
 
+void handle_alarm(int sig) {
+    (void) sig;
+    std::cerr << "Timeout occurred while sending data" << std::endl;
+    throw std::runtime_error("Timeout occurred");
+}
+
 /* Function has all the accepted error codes in HTTP 1.1 proctocol for this webserv project */
 bool isValidError(int errorCode)
 {

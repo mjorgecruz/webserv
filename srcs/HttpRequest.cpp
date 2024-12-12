@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/07 12:10:54 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 09:20:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ HttpRequest::HttpRequest()
 {
     _request = "";
     completed = false;
+    counter = 0;
 }
 
 HttpRequest::~HttpRequest()
@@ -28,23 +29,26 @@ bool HttpRequest::completeRequest(int socket)
     int bytes_read;
     
     while (1)
-    {    
+    {
         memset(&buffer, 0, BUFSIZ);
         bytes_read = recv(socket, buffer, BUFSIZ, 0);
+        
         if (bytes_read < 0)
         {
-            //break;
+            //counter++;
             close(socket);
             return false;
         }
         else if (bytes_read == 0)
         {
+           // counter++;
             std::cout << "Connection closed by client" << std::endl;
             close(socket);
-            return false;
+            break;
         }
         else
         {
+            counter = 0;
             remainder.append(buffer, bytes_read);
             if (bytes_read < BUFSIZ)
             {
@@ -57,7 +61,10 @@ bool HttpRequest::completeRequest(int socket)
     {
         return true;
     }
-
+    // if (counter >= 30)
+    // {
+    //     throw HttpRequestTimeoutException();
+    // }
     return false;
 }        
 
@@ -262,6 +269,11 @@ const char *HttpRequest::HttpPageNotFoundException::what() const throw()
 const char *HttpRequest::HttpPageForbiddenException::what() const throw()
 {
     return "Error: Forbidden";
+}
+
+const char *HttpRequest::HttpRequestTimeoutException::what() const throw()
+{
+    return "Error: Request Timeout";
 }
 
 bool HttpRequest::checkRequestEnd()
