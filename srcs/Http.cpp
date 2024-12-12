@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 09:16:12 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 11:35:40 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,7 @@ void Http::runApplication()
                     {
                         requests[fd] = new HttpRequest();
                     }
-                    std::cout << "TRANSFERRING-------------------------------------------------" << std::endl;
+                    //std::cout << "TRANSFERRING-------------------------------------------------" << std::endl;
 
                     data_transfer(fd, events[i], requests[fd]);
                     if (requests[fd]->completed)
@@ -226,12 +226,12 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cout<< "fd negativo" << std::endl;
         return;
     }
-    int flags = fcntl(client_fd, F_GETFL, 0);
-    if (flags == -1) {
-        std::cerr << "Error getting socket flags: " << strerror(errno) << std::endl;
-        return;
-    }
-    if (fcntl(client_fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+    // int flags = fcntl(client_fd, F_GETFL, 0);
+    // if (flags == -1) {
+    //     std::cerr << "Error getting socket flags: " << strerror(errno) << std::endl;
+    //     return;
+    // }
+    if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
         std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
     event.data.fd = client_fd;

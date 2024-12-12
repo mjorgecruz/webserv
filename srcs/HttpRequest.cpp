@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 09:20:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 10:57:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ bool HttpRequest::completeRequest(int socket)
         if (bytes_read < 0)
         {
             //counter++;
-            close(socket);
+            //close(socket);
             return false;
         }
         else if (bytes_read == 0)

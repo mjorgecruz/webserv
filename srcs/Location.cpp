@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/09 20:41:42 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 11:47:43 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ Location::Location( void )
 {
     _maxBodySize = 0;
     _authFile = "";
+    _autoIndex = -1;
 }
 
 Location::~Location( void )

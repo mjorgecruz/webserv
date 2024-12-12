@@ -47,7 +47,10 @@ Server::Server()
 }
 Server::~Server()
 {
-    
+    for (size_t i = 0; i < _locations.size(); i++)
+    {
+        delete _locations[i].second;
+    }
 }
 
 void Server::setConfigs(std::string path)

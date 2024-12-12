@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 12:12:48 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:12:28 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,7 +258,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         args.push_back(NULL);
         
         signal(SIGALRM, handle_alarm);
-        alarm(5);
+        alarm(10);
         try{
             if (execve(args[0], args.data(), envp.data()) == -1)
             {
