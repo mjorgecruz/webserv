@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 21:10:14 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 21:41:08 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -43,7 +43,7 @@ bool HttpRequest::completeRequest(int socket)
         {
            // counter++;
             std::cout << "Connection closed by client" << std::endl;
-            close(socket);
+            //close(socket);
             break;
         }
         else
