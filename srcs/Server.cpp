@@ -153,6 +153,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
 
     if  (firstWord != "server")
         custtomServerThrow("Expected 'server' keyword at the beginning of the server block");
+    
     std::string remaining;
     std::getline(iss, remaining);
     remaining.erase(0, remaining.find_first_not_of(" \t"));
@@ -162,7 +163,7 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
     {
         while (std::getline(file, line))
         {
-            if (line.find_first_not_of(" \t") == std::string::npos)
+            if (line.find_first_not_of(" \t") == std::string::npos || line[0] == '#')
                 continue;
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
@@ -182,26 +183,31 @@ void Server::serverChecker(std::string &line, std::ifstream &file)
 
     if (!serverBracket)
         custtomServerThrow("Missing opening '{' in block");
+
     while (std::getline(file, line))
     {
-        if (line.find_first_not_of(" \t") == std::string::npos)
+        if (line.find_first_not_of(" \t") == std::string::npos || line[0] == '#')
             continue;
-          
         line.erase(0, line.find_first_not_of(" \t"));
         line.erase(line.find_last_not_of(" \t") + 1);
         if (line == "}")
             break;
-
         std::istringstream iss(line);
         std::string keyword;
         iss >> keyword;
-
         if (keyword == "location")
         {
             Location *location = new Location();
             try
             {
                 location->parseLocation(line, file);
+                for (size_t i = 0; i < _locations.size(); ++i)
+                {
+                    if (_locations[i].first == location->getPath())
+                    {
+                        custtomServerThrow("Location Path Duplication");
+                    }
+                }
                 _locations.push_back(std::make_pair(location->getPath(), location));
             }
             catch (Location::exceptionAtLocation &e) 

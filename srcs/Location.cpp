@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 11:47:43 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:18:25 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void Location::parseLocation(std::string &line, std::ifstream &file)
     }
     if(locationPath[0] != '/' )
         custtomLocationThrow("Invalid Location Path");
-    _path = locationPath;
+    this->_path = locationPath;
 
     std::string remaining;
     std::getline(iss, remaining);
