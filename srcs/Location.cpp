@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 16:01:05 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:03:04 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,7 @@ void Location::keywordErrorPages(std::istringstream &iss)
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            if(isValidError(errorCode))
+            if(isValidError(errorCode) && errorCode >= 400 && errorCode < 500)
             {
                 errorCodes.push_back(errorCode);    
             }

@@ -447,7 +447,7 @@ void Server::keywordErrorPages(std::string &line)
         if (isNumeric(token))
         {
             int errorCode = std::atoi(token.c_str());
-            if (isValidError(errorCode))
+            if (isValidError(errorCode) &&  && errorCode >= 400 && errorCode < 500)
                 errorCodes.push_back(errorCode);
             else
                 custtomServerThrow("Invalid error code value.");
