@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/11 11:36:44 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 14:55:05 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ class HttpResponse
         std::string _content;
         
     public:
+        bool completed;
+        size_t totalDataSent;
         HttpResponse(int client, Server *server);
         ~HttpResponse();
         void setStatus(int status);
@@ -60,6 +62,7 @@ class HttpResponse
         std::string getHeader();
         std::string getContent();
         int getLength();
+        int getStatus();
         
         void writeContent(std::string path, t_info &info, HttpRequest &request);
         

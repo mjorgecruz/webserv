@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   InputHandler.cpp                                   :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 10:44:15 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 12:42:23 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "InputHandler.hpp"
 
@@ -100,7 +100,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     if (h1 != std::string::npos)
     {
         type = content.substr(h1 + 14 , h2 - h1 - 14);
-        std::cout << type << std::endl;
     }
     
     //find status of response
@@ -111,7 +110,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     if (h1 != std::string::npos)
     {
         std::string status = content.substr(h1 + 8, h2 - h1 - 8);
-        std::cout << status << std::endl;
         std::stringstream X(status);
         std::string line;
         getline(X, line, ' ');

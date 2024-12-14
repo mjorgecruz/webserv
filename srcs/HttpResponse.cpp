@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 17:45:02 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 15:59:27 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ HttpResponse::HttpResponse(int client , Server *server)
     _host = server->getHost();
     _port = server->getPorts();
     _content = "";
+    completed = false;
+    totalDataSent = 0;
 
 }
 
@@ -127,6 +129,10 @@ int HttpResponse::getLength()
 {
     return _contentLength;
 }
+int HttpResponse::getStatus()
+{
+    return _status;
+}
 
 void HttpResponse::writeContent(std::string path, t_info  &info, HttpRequest &request)
 {   
@@ -210,7 +216,6 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     std::string content = "";
     std::fstream file;
     path = info._root + path;
-    std::cout << path << std::endl;
     file.open(path.c_str());
     if (!file.is_open())
         throw(HttpRequest::HttpPageNotFoundException());
@@ -238,7 +243,6 @@ void HttpResponse::writeCgiPage(std::string path, t_info  &info, HttpRequest &re
     if (h1 != std::string::npos)
     {
         std::string status = content.substr(h1 + 8, h2 - h1 - 8);
-        std::cout << status << std::endl;
         std::stringstream X(status);
         std::string line;
         getline(X, line, ' ');
@@ -270,7 +274,6 @@ void HttpResponse::writeIndexPage(std::string path, t_info  &info)
     std::string content = "";
     std::fstream file;
     path = info._root + path;
-    std::cout << path << std::endl;
     if (info._index.empty())
     {
         file.open(((path + "index.html")).c_str());
@@ -379,7 +382,6 @@ void HttpResponse::writeAutoIndex(std::string path, t_info &info)
 {
     DIR * dir;
     dir = opendir(path.c_str());
-    std::cout << path << std::endl;
     
     if (dir)
     {
@@ -411,31 +413,16 @@ void HttpResponse::writeRedirectContent(t_info &Info, HttpRequest *request)
     std::string strStatus;
     std::string addr;
     ss >> strStatus >> addr;
+    setStatus(std::atoi(strStatus.c_str()));
     std::string content;
-    if (strStatus == "301")
-    {    
-        content = "<html>\n"
-                "  <head>\n"
-                "    <title>301 Moved Permanently</title>\n"
-                "  </head>\n"
-                "  <body>\n"
-                "    <h1>Moved Permanently</h1>\n"
-                "  </body>\n"
-                "</html>";
-        setStatus(301);
-    }
-    else if (strStatus == "302")
-    {
-        content = "<html>\n"
-                "  <head>\n"
-                "    <title>302 Found</title>\n"
-                "  </head>\n"
-                "  <body>\n"
-                "    <h1>Found</h1>\n"
-                "  </body>\n"
-                "</html>";
-        setStatus(302);
-    }
+    content = "<html>\n"
+              "  <head>\n"
+              "    <title>" + strStatus + " Redirect</title>\n"
+              "  </head>\n"
+              "  <body>\n"
+              "    <h1>" + strStatus + " Redirect</h1>\n"
+              "  </body>\n"
+              "</html>";
     setContent(content);
     setLength(content.size());
 }
@@ -445,24 +432,23 @@ void HttpResponse::setGetRedirectHeader(t_info &Info, std::string sessionId)
     std::istringstream ss(Info._redirect);
     std::string addr;
     ss >> addr >> addr;
+    if (addr.find("http://") == std::string::npos && addr.find("https://") == std::string::npos)
+        addr = "http://" + addr;
     std::ostringstream bufferM;
-    if (_status == 301)
-    {
-        bufferM << "HTTP/1.1 " << _status << " Moved Permanently"
-                << "\r\ncontent-type: " << "text/html"
-                << "\r\nLocation: " << "http://" << addr
-                << "\r\ncontent-length: " << 0
-                << "\r\nset-cookie:" << sessionId
-                << "\r\n\r\n";
+    std::string statusMessage;
+    if (_status == 301) {
+        statusMessage = "Moved Permanently";
+    } else if (_status == 302) {
+        statusMessage = "Found";
+    } else {
+        statusMessage = "Redirect";
     }
-    else
-    {
-        bufferM << "HTTP/1.1 " << _status << " Found"
-                << "\r\ncontent-type: " << "text/html"
-                << "\r\nLocation: " << "http://" << addr
-                << "\r\ncontent-length: " << 0
-                << "\r\nset-cookie:" << sessionId
-                << "\r\n\r\n";
-    }
+    bufferM << "HTTP/1.1 " << _status << " " << statusMessage
+        << "\r\ncontent-type: text/html"
+        << "\r\nLocation: " << addr
+        << "\r\ncontent-length: " << 0
+        << "\r\nset-cookie: " << sessionId
+        << "\r\n\r\n";
+        
     _header = bufferM.str(); 
 }

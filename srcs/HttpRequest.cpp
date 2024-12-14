@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   HttpRequest.cpp                                    :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 11:07:15 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 12:42:50 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "HttpRequest.hpp"
 
@@ -35,13 +35,14 @@ bool HttpRequest::completeRequest(int socket)
         
         if (bytes_read < 0)
         {
-            //close(socket);
+            close(socket);
+            _request = remainder;
             return false;
         }
         else if (bytes_read == 0)
         {
             std::cout << "Connection closed by client" << std::endl;
-            //close(socket);
+            close(socket);
             break;
         }
         else
@@ -56,7 +57,6 @@ bool HttpRequest::completeRequest(int socket)
     _request = remainder;
     if (checkRequestEnd())
     {
-        std::cout << _request.size() << std::endl;
         return true;
     }
     return false;
@@ -162,7 +162,6 @@ void HttpRequest::setHeader()
 {
     size_t header_end = _request.find("\r\n\r\n");
     _header = _request.substr(0, header_end);
-    std::cout << _header << std::endl;
 }
 
 void HttpRequest::defineMimeType()

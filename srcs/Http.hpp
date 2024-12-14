@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Http.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 10:22:40 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 18:10:25 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/14 15:10:09 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ class Http
 
         void accept_new_connection(int server_socket, int epoll_fd );
         
-        void data_transfer(int socket, struct epoll_event &event, HttpRequest *request);
+        bool data_transfer(int socket, struct epoll_event &event, HttpRequest *request);
         std::vector<Server *> findCorrespondingServer(int socket);
         Server * findCorrectServerName(HttpRequest *request, std::vector<Server *> &correspondingServers);
         void reply(int socket, HttpRequest *received, HttpResponse *response, Server* server, std::string sessionId);

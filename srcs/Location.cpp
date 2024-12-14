@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/29 13:50:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 15:13:03 by luis-ffe         ###   ########.fr       */
+/*   Updated: 2024/12/14 16:01:05 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,7 +347,7 @@ void Location::keywordReturn(std::istringstream &iss)
     if (isNumeric(firstToken))
     {
         int errorCode = std::atoi(firstToken.c_str());
-        if(!isValidError(errorCode))
+        if(!isValidError(errorCode) || errorCode >= 400 || errorCode < 300)
             custtomLocationThrow("return");
     }
     else

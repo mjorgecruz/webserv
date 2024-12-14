@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 10:43:20 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 15:29:22 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "Http.hpp"
 
@@ -62,7 +62,8 @@ void Http::webservInitializer(std::string confPath)
         }
         for (size_t i = 0; i < _listServers.size(); i++)
         {
-            _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+           _listServers[i]->createSocket(_listServers[i]->getPorts(), _listServers[i]->getHost());
+            
         }
         this->addServersToEpoll();
         return ;
@@ -129,6 +130,7 @@ int Http::listServersSize() const
 
 void Http::runApplication()
 {
+    bool status = false;
     struct epoll_event events[1024];
     int event_count;
     std::map<int, HttpRequest*> requests;
@@ -171,11 +173,12 @@ void Http::runApplication()
                 {
                     if (requests.find(fd) == requests.end())
                         requests[fd] = new HttpRequest();
-                    data_transfer(fd, events[i], requests[fd]);
-                    if (requests[fd]->completed)
+                    status = data_transfer(fd, events[i], requests[fd]);
+                    if (requests[fd]->completed && status)
                     {
                         delete requests[fd];
                         requests.erase(fd);
+                        status = false;
                     }
                 }
             }
@@ -203,7 +206,7 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
     client_fd = accept(server_socket, &client, &length);
     if (client_fd == -1)
     {
-        std::cout<< "fd negativo" << std::endl;
+        std::cout<< "fd negativo - connection not established" << std::endl;
         return;
     }
     if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
@@ -216,10 +219,9 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cerr << "Failed to add client socket to epoll: " << strerror(errno) << std::endl;
         close(client_fd);
     }
-    //std::cout<< "Added: " << client_fd << std::endl;
 }
 
-void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * request)
+bool Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * request)
 {
     int server_fd = 0;
     (void) event;
@@ -241,7 +243,7 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
         response->setGetHeader("");
         sendData(socket, response);
         delete(response);
-        return;
+        return true;
     }
 
     if (request->completed)
@@ -273,9 +275,15 @@ void Http::data_transfer(int socket, struct epoll_event &event, HttpRequest * re
             response->setPostHeader(sessionId);
             sendData(socket, response);
         }
-        delete(response); 
+        if (!response->completed)
+            return false;   
+        else
+        {
+            delete(response);
+            return true;
+        }
     }
-    
+    return false;
 }
 
 std::vector<Server *> Http::findCorrespondingServer(int socket)
@@ -466,8 +474,8 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
         std::cerr << "\033[33mIn HTTP @ reply\033[0m" << std::endl;
         throw(ExectutionException());
     }
-    std::cout << response->getHeader()<< std::endl;
     sendData(socket, response);
+    std::cout << "[" << received->getRequestType().substr(0, received->getRequestType().size() - 1) << "] -> STATUS: " << response->getStatus() << std::endl;
 }
 
 std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(std::vector<std::pair <std::string, Location *> > &possibleLocations, std::string &path)
@@ -518,7 +526,6 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
                 if(locations.find(name) == locations.end())
                     locations[name] = it;
             }
-            std::cout << name << std::endl;
         }
         //if it matches up to the end or up to a "/"
         else
@@ -554,7 +561,6 @@ std::vector<std::pair <std::string, Location *> >::iterator Http::findLocation(s
             path = temp;
         else
             path = temp.substr(0, temp.size() - 1);
-        std::cout << path << std::endl;
         return it;
     }
 }
@@ -643,18 +649,23 @@ void Http::sendData(int socket, HttpResponse *response)
     {
         std::string total = response->getHeader() + response->getContent(); 
         size_t dataSize = total.size();
-        size_t totalSent = 0;
         const char *data;
-        while (totalSent < dataSize)
+        ssize_t result = 0;
+        while (response->totalDataSent < dataSize)
         {
-            data = total.c_str() + totalSent;
-            ssize_t result = send(socket, data, dataSize - totalSent, 0);
+            data = total.c_str() + response->totalDataSent;
+            result = send(socket, data, dataSize - response->totalDataSent, 0);
             if (result > 0)
             {
-                totalSent += result;
-                std::cout << "SENDING----------------------------------------------------" << std::endl;
+                response->totalDataSent += result;
             }
         }
+        if (result == 0 || response->totalDataSent == dataSize)
+        {
+            response->completed = true;
+        }
+        else if (result == -1)
+            close(socket);
     }
     catch (std::exception())
     {
@@ -666,7 +677,6 @@ void Http::sendData(int socket, HttpResponse *response)
         return;
             
     }
-    //alarm(0);
 }
 
 const char *Http::MaxBodySizeException::what( void ) const throw()

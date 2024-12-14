@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
@@ -6,14 +6,13 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 09:45:31 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 10:39:46 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 14:40:02 by masoares         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "general.hpp"
 
-int g_signal = 0;
-char **envs = environ; 
+int g_signal = 0; 
 
 void sigint_handler(int signal)
 {
@@ -72,7 +71,7 @@ int main (int ac, char **av)
     }
     catch(std::exception &e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Failed while binding sockets to ports and hosts" << std::endl;
         return -1;
     }
     
