@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 23:51:55 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 19:40:40 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 10:44:15 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -70,7 +70,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     }
     path = info._root + path;
     std::string full_path = path;
-    //full_path = full_path.substr(0, full_path.size() - 1 );
     if (stat(full_path.c_str(), &test) == 0)
     {
         if (S_ISREG(test.st_mode) && path.find_last_of("/") == path.size() -1 )
@@ -88,10 +87,7 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
         
     file.close();
     CgiManagement pageCreate;
-    // if (info._cgiPath.find("ubuntu_cgi_tester"))
     pageCreate.solveCgiTester(path, info, content, request);
-    // else
-    //     pageCreate.solveCgiPhp(path, info, content, request);
     
     //find type of response
     size_t h1 = content.find("Content-type: ");
@@ -132,7 +128,6 @@ void InputHandler::writePostCgiPage(std::string path, t_info  &info, HttpRequest
     }
     else
         content = content.substr(header_end + 4, content.size() - header_end - 4);
-
 
     response.setContent(content);
     response.setContentType(type);

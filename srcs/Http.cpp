@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/12 20:13:59 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/14 10:43:20 by masoares         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -170,11 +170,7 @@ void Http::runApplication()
                 if (!isServerSocket)
                 {
                     if (requests.find(fd) == requests.end())
-                    {
                         requests[fd] = new HttpRequest();
-                    }
-                    //std::cout << "TRANSFERRING-------------------------------------------------" << std::endl;
-
                     data_transfer(fd, events[i], requests[fd]);
                     if (requests[fd]->completed)
                     {
@@ -210,11 +206,6 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
         std::cout<< "fd negativo" << std::endl;
         return;
     }
-    // int flags = fcntl(client_fd, F_GETFL, 0);
-    // if (flags == -1) {
-    //     std::cerr << "Error getting socket flags: " << strerror(errno) << std::endl;
-    //     return;
-    // }
     if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
         std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
@@ -343,7 +334,6 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
     std::istringstream request(received->getRequestType());
     request >> type >> path >> httpVersion;
     
-
     //define location
     std::vector<std::pair <std::string, Location *> > possibleLocations = server->getLocations();
     std::vector<std::pair <std::string, Location *> >::iterator it = this->findLocation(possibleLocations, path);
@@ -649,8 +639,6 @@ void Http::fillStructInfo(t_info &Info, Server *server, Location *location)
 
 void Http::sendData(int socket, HttpResponse *response)
 {
-    // signal(SIGALRM, handle_alarm);
-    // alarm(5);
     try 
     {
         std::string total = response->getHeader() + response->getContent(); 
@@ -663,7 +651,6 @@ void Http::sendData(int socket, HttpResponse *response)
             ssize_t result = send(socket, data, dataSize - totalSent, 0);
             if (result > 0)
             {
-                //alarm(5);
                 totalSent += result;
                 std::cout << "SENDING----------------------------------------------------" << std::endl;
             }
