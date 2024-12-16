@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:44 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/27 15:41:37 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/11 10:34:46 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,25 +19,52 @@
 class HttpRequest
 {
     private:
-        std::string request;
-        std::string requestType;
-        std::map<std::string, std::string> reqProperties;
-        std::string mimeType;
+        int _clientFd;
+        std::string _request;
+        std::string _requestType;
+        std::string _header;
+        std::string _body;
+        std::map<std::string, std::string> _reqProperties;
+        std::string _mimeType;
+
+        int counter;
         
     public:
+        
+        bool completed;
         HttpRequest();
         ~HttpRequest();
+        bool completeRequest(int socket);
         void setRequest(std::string req);
+        void setClientFd(int fd);
         void fillReqProperties();
         void defineMimeType();
+        void setRequestBody();
+        std::string chunkCleaning(std::string completeBody);
+        void setHeader();
         std::string getRequestType();
         std::string searchProperty(std::string property);
         std::string getMimeType();
-        
+        std::string getRequest();
+        std::string getRequestBody();
+        std::string getHeader();
+
+        bool checkRequestEnd();
+
         class HttpPageNotFoundException: public std::exception
         {
             virtual const char *what() const throw();
         };
+
+        class HttpPageForbiddenException: public std::exception
+        {
+            virtual const char *what() const throw();
+        };
+        
+        class HttpRequestTimeoutException: public std::exception
+        {
+            virtual const char *what() const throw();
+        };       
 };
 
 

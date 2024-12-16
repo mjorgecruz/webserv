@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:42:35 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 21:15:41 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:50:34 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,14 @@ extern int g_signal;
 #include "webserv.hpp"
 #include "Socket.hpp"
 #include "Server.hpp"
+#include "Location.hpp"
+#include "InputHandler.hpp"
+#include "DeleteHandler.hpp"
 #include "HttpRequest.hpp"
+#include "SessionManagement.hpp"
 #include "HttpResponse.hpp"
 #include "Http.hpp"
-#include "Location.hpp"
-
-
-void accept_new_connection(int server_socket, int epoll_fd );
-void read_data_from_socket(int socket);
-void reply(int socket, HttpRequest received);
-
+#include "CgiManagement.hpp"
 
 #endif
 

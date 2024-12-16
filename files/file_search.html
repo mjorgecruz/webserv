@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Files</title>
+</head>
+
+<body>
+    <h1>Upload Files</h1>
+
+    <!-- Upload File Form -->
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        <label for="file">Choose a file to upload:</label>
+        <input type="file" id="file" name="file1" multiple>
+        <input type="file" id="file" name="file2" multiple>
+        <input type="submit" value="Upload" class="button">
+    </form>
+
+    <!-- Back to Menu Link -->
+    <a href="/index.html" class="button">Back to Menu</a>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', uploadFiles);
+
+        async function uploadFiles(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const fileInput = document.getElementById('file');
+            const files = fileInput.files;
+
+            if (files.length === 0) {
+                alert('Please select at least one file to upload.');
+                return;
+            }
+
+            // Prepare form data
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i]);
+            }
+
+            // Send the POST request with custom headers
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'X-Filename': Array.from(files).map(file => file.name).join(', ') // Add the filenames in a custom header
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    alert('Files uploaded successfully.');
+                } else {
+                    alert('File upload failed.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during file upload.');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

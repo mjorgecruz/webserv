@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
+/*   By: luis-ffe <luis-ffe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:33 by masoares          #+#    #+#             */
-/*   Updated: 2024/10/29 19:19:56 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/12 18:16:24 by luis-ffe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,16 @@ void Socket::createSocket(int port, std::string host){
     sa.sin_addr.s_addr = inet_addr(host.c_str());
     sa.sin_port = htons(port);
 
-    socket_fd = socket(sa.sin_family, SOCK_STREAM, 0);
+    socket_fd = socket(sa.sin_family, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if( socket_fd == -1)
         throw(std::exception());
+    int opt = 1;
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+    setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)); 
     status = bind(socket_fd, (struct sockaddr *)&sa, sizeof(sa));
     if (status == -1)
         throw(std::exception());
-
-    fcntl(socket_fd, F_SETFL, O_NONBLOCK);
+        
     if (listen(socket_fd, SOMAXCONN) == -1)
     {
         std::cerr << "[E] listen failed\n";
@@ -77,4 +79,21 @@ int Socket::getSocketFd() const
 const sockaddr_in Socket::getAddr() const
 {
     return _addr;
+}
+
+//Exceptions
+
+const char *Socket::FdCreationException::what() const throw()
+{
+    return "Error while creating SocketFd";
+}
+
+const char *Socket::BindException::what() const throw()
+{
+     return "Error while creating Bind";
+}
+
+const char *Socket::ListenException::what() const throw()
+{
+     return "Error while creating SocketFd";
 }
