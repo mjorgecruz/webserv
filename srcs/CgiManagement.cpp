@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   CgiManagement.cpp                                  :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 19:10:43 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 12:41:30 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/16 11:36:31 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "CgiManagement.hpp"
 
@@ -75,7 +75,7 @@ void CgiManagement::getCgiTester(std::string requ, std::string file, t_info &inf
         args.push_back(strdup(info._cgiPath.c_str()));
         args.push_back(strdup(file.c_str()));
         args.push_back(NULL);
-        alarm(10);
+        alarm(5);
         try{
             if (execve(args[0], args.data(), envp.data()) == -1)
             {
@@ -170,7 +170,7 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         args.push_back(NULL);
         
         signal(SIGALRM, handle_alarm);
-        alarm(10);
+        alarm(5);
         try{
             if (execve(args[0], args.data(), envp.data()) == -1)
             {
@@ -201,17 +201,32 @@ void CgiManagement::postCgiTester(std::string requ, std::string file, t_info &in
         ssize_t bytes_read;
 
         lseek(outputFd, 0, SEEK_SET);
-        std::ofstream outputFile(file.c_str());
-        while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
+        if (info._cgiPath.find("tester") != std::string::npos)
         {
-            // if (bytes_read == -1)
-            //     break;
-            buffer[bytes_read] = '\0';
-            content += buffer;
-            outputFile << buffer;
+            std::ofstream outputFile(file.c_str());
+            while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
+            {
+                if (bytes_read == -1)
+                    break;
+                buffer[bytes_read] = '\0';
+                content += buffer;
+                outputFile << buffer;
+            }
+            close(outputFd);
+            outputFile.close(); 
         }
-        close(outputFd);
-        outputFile.close();
+        else
+        {
+            while ((bytes_read = read(outputFd, buffer, sizeof(buffer) - 1)) != 0)
+            {
+                if (bytes_read == -1)
+                    break;
+                buffer[bytes_read] = '\0';
+                content += buffer;
+            }
+            close(outputFd);
+        }
+        
         unlink(inputTemplate);
         unlink(outputTemplate);
         info._status = 200;
