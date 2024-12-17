@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 15:29:22 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/17 10:05:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -457,7 +457,7 @@ void Http::reply(int socket, HttpRequest *received, HttpResponse *response, Serv
                     }
                 }
             }
-            else
+            else if (type == "DELETE")
             {
                 DeleteHandler handleDelete;
                 handleDelete.handleDataDeletion(path, *received, Info);
@@ -657,6 +657,7 @@ void Http::sendData(int socket, HttpResponse *response)
             result = send(socket, data, dataSize - response->totalDataSent, 0);
             if (result > 0)
             {
+                std::cout << data << std::endl;
                 response->totalDataSent += result;
             }
         }

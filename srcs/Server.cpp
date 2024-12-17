@@ -43,6 +43,7 @@ Server::Server()
     _root = _root + "/html";
     _host = "127.0.0.1";
     _autoIndex = -1;
+    _ports = 0;
 
 }
 Server::~Server()
@@ -313,6 +314,10 @@ void Server::setDefaultProperties( void )
 
 void Server::keywordListen(std::string &line)
 {
+    if (_ports != 0)
+    {
+        custtomServerThrow("Redefinition of port number.");
+    }
     std::string address;
     std::string host;
     std::istringstream iss(line);
@@ -357,7 +362,7 @@ void Server::keywordListen(std::string &line)
         errno = 0;
         long portValue = std::strtol(address.c_str(), &end, 10);
         if (*end != '\0' || errno == ERANGE || portValue <= 0 || portValue > 65535)
-                    custtomServerThrow("Invalid Port: " + address + ".");
+            custtomServerThrow("Invalid Port: " + address + ".");
         port = static_cast<int>(portValue);
     }
     std::string extraStuffinLine;

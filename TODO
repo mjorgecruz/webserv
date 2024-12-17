@@ -1,5 +1,3 @@
-space on delete error code
 
-else for delete on type of request should not be like that, it cannot be just an else
-
-locations with the same port twice
+there is a problem with post and delete for bigger files
+delete code is still not appearing

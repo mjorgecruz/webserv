@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 15:59:27 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/17 10:07:47 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,8 @@ void HttpResponse::setPostHeader(std::string sessionId)
 void HttpResponse::setDeleteHeader(std::string sessionId)
 {
     std::ostringstream bufferM;
-    bufferM << "HTTP/1.1" << _status
-            << "\r\ncontent-type: " << _contentType
+    bufferM << "HTTP/1.1 " << _status
+            << "\r\ncontent-type: " << "*/*"
             << "\r\nserver:" << _host
             << "\r\ncontent-length: " << _contentLength
             << "\r\nset-cookie:" << sessionId
