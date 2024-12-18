@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/17 10:05:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:37:45 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,6 +180,14 @@ void Http::runApplication()
                         requests.erase(fd);
                         status = false;
                     }
+                    else
+                    {
+                        if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, events[i].data.fd, NULL) == -1)
+                        {
+                            std::cerr << "Failed to remove file descriptor from epoll instance: " << strerror(errno) << std::endl;
+                        }
+                        close(fd);
+                    }   
                 }
             }
 		}
@@ -654,10 +662,10 @@ void Http::sendData(int socket, HttpResponse *response)
         while (response->totalDataSent < dataSize)
         {
             data = total.c_str() + response->totalDataSent;
+            usleep(10000);
             result = send(socket, data, dataSize - response->totalDataSent, 0);
             if (result > 0)
             {
-                std::cout << data << std::endl;
                 response->totalDataSent += result;
             }
         }
@@ -665,8 +673,8 @@ void Http::sendData(int socket, HttpResponse *response)
         {
             response->completed = true;
         }
-        else if (result == -1)
-            close(socket);
+        // else if (result == -1)
+        //     close(socket);
     }
     catch (std::exception())
     {

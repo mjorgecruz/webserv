@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/17 10:07:47 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/17 23:23:55 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,16 @@ void HttpResponse::setGetHeader(std::string sessionId)
     {
         bufferM << "HTTP/1.1 " << _status << " " << result
                 << "\r\ncontent-type: " << _contentType
-                << "\r\nserver:" << _host
+                << "\r\nserver: " << _host
                 << "\r\ncontent-length: " << _contentLength
-                << "\r\nset-cookie:" << sessionId
+                << "\r\nset-cookie: " << sessionId
                 << "\r\n\r\n";
     }
     else
     {
         bufferM << "HTTP/1.1 " << _status << " " << result
                 << "\r\ncontent-type: " << _contentType
-                << "\r\nserver:" << _host
+                << "\r\nserver: " << _host
                 << "\r\ncontent-length: " << _contentLength
                 << "\r\n\r\n";
     }
@@ -71,7 +71,7 @@ void HttpResponse::setPostHeader(std::string sessionId)
                 << "\r\nContent-type: " << _contentType
                 << "\r\nServer: " << _host
                 << "\r\nContent-length: " << _contentLength
-                << "\r\nset-cookie:" << sessionId
+                << "\r\nset-cookie: " << sessionId
                 << "\r\n\r" << std::endl;
     }
     else
@@ -80,7 +80,7 @@ void HttpResponse::setPostHeader(std::string sessionId)
                 << "\r\ncontent-type: " << _contentType
                 << "\r\nserver: " << _host
                 << "\r\ncontent-length: " << _contentLength
-                << "\r\nset-cookie:" << sessionId
+                << "\r\nset-cookie: " << sessionId
                 << "\r\n\r" << std::endl;
         
     }
@@ -92,10 +92,11 @@ void HttpResponse::setDeleteHeader(std::string sessionId)
     std::ostringstream bufferM;
     bufferM << "HTTP/1.1 " << _status
             << "\r\ncontent-type: " << "*/*"
-            << "\r\nserver:" << _host
+            << "\r\nserver: " << _host
             << "\r\ncontent-length: " << _contentLength
-            << "\r\nset-cookie:" << sessionId
-            << "\r\n";
+            << "\r\nset-cookie: " << sessionId
+            << "\r\nconnection: close"
+            << "\r\n\r" << std::endl;
     _header = bufferM.str(); 
 }
 

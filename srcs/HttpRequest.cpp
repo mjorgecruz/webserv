@@ -6,7 +6,7 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 14:40:37 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/14 12:42:50 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/17 22:59:21 by masoares         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,19 @@ bool HttpRequest::completeRequest(int socket)
     while (1)
     {
         memset(&buffer, 0, BUFSIZ);
+        usleep(10000);
         bytes_read = recv(socket, buffer, BUFSIZ, 0);
         
         if (bytes_read < 0)
         {
-            close(socket);
+            //close(socket);
             _request = remainder;
             return false;
         }
         else if (bytes_read == 0)
         {
             std::cout << "Connection closed by client" << std::endl;
-            close(socket);
+            //close(socket);
             break;
         }
         else
