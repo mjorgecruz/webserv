@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Http.cpp                                           :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: masoares <masoares@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/28 13:37:26 by masoares          #+#    #+#             */
-/*   Updated: 2024/12/17 23:37:45 by masoares         ###   ########.fr       */
+/*   Updated: 2024/12/20 12:06:40 by masoares         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "Http.hpp"
 
@@ -180,14 +180,6 @@ void Http::runApplication()
                         requests.erase(fd);
                         status = false;
                     }
-                    else
-                    {
-                        if (epoll_ctl(_epollFd, EPOLL_CTL_DEL, events[i].data.fd, NULL) == -1)
-                        {
-                            std::cerr << "Failed to remove file descriptor from epoll instance: " << strerror(errno) << std::endl;
-                        }
-                        close(fd);
-                    }   
                 }
             }
 		}
@@ -216,9 +208,6 @@ void Http::accept_new_connection(int server_socket, int epoll_fd )
     {
         std::cout<< "fd negativo - connection not established" << std::endl;
         return;
-    }
-    if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1) {
-        std::cerr << "Error setting socket to non-blocking: " << strerror(errno) << std::endl;
     }
     event.data.fd = client_fd;
     event.events = EPOLLIN | EPOLLET;
@@ -662,7 +651,6 @@ void Http::sendData(int socket, HttpResponse *response)
         while (response->totalDataSent < dataSize)
         {
             data = total.c_str() + response->totalDataSent;
-            usleep(10000);
             result = send(socket, data, dataSize - response->totalDataSent, 0);
             if (result > 0)
             {
@@ -673,8 +661,8 @@ void Http::sendData(int socket, HttpResponse *response)
         {
             response->completed = true;
         }
-        // else if (result == -1)
-        //     close(socket);
+        else if (result == -1)
+            close(socket);
     }
     catch (std::exception())
     {
